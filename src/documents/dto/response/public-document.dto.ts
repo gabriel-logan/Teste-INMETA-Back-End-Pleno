@@ -13,26 +13,10 @@ export class PublicDocumentResponseDto {
   })
   public id: Types.ObjectId;
 
-  @ApiProperty({
-    type: String,
-    format: "ObjectId",
-    description:
-      "Unique identifier for the employee associated with the document",
-    example: "60c72b2f9b1e8c001c8f8e1e",
-  })
+  @ApiProperty()
   public employee: Employee;
 
-  @ApiProperty({
-    type: DocumentType,
-    description: "The type of the document",
-    example: {
-      _id: "688205905a14025cdfb57ae5",
-      name: "CPF",
-      createdAt: "2025-07-24T10:06:08.724Z",
-      updatedAt: "2025-07-24T10:06:08.724Z",
-      __v: 0,
-    },
-  })
+  @ApiProperty()
   public documentType: DocumentType;
 
   @ApiProperty({
