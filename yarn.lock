@@ -3895,6 +3895,7 @@ __metadata:
     helmet: "npm:^8.1.0"
     jest: "npm:^29.7.0"
     mongoose: "npm:^8.16.4"
+    multiform-validator: "npm:^2.6.1"
     prettier: "npm:^3.4.2"
     reflect-metadata: "npm:^0.2.2"
     rxjs: "npm:^7.8.1"
@@ -6448,6 +6449,13 @@ __metadata:
     type-is: "npm:^1.6.18"
     xtend: "npm:^4.0.2"
   checksum: 10c0/d3b99dd0512169bbabf15440e1bbb3ecdc000b761e5a3e4aaca40b5e5e213c6cdcc9b7dffebaa601b7691a84f6876aa87e0173ffcc47139253793cf5657819eb
+  languageName: node
+  linkType: hard
+
+"multiform-validator@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "multiform-validator@npm:2.6.1"
+  checksum: 10c0/01e60ad8fd5dab3a79ef904c0c84cdfce210884e038e5c13681a71463af539f186e2112a8b9867d4e9d10314913473e1eda6302edab062e52c380d2b150d3b15
   languageName: node
   linkType: hard
 
