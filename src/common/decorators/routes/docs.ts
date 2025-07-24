@@ -1,7 +1,9 @@
 import type { Type } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 import { applyDecorators } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -23,6 +25,7 @@ export type ResponseOptions = {
     description: string;
     type: typeOkResponse;
     isArray?: boolean;
+    statusCode?: HttpStatus;
   };
   badRequest?: boolean;
   notFound?: boolean;
@@ -33,13 +36,25 @@ export type ResponseOptions = {
 export function ApiStandardResponses(
   options: ResponseOptions,
 ): MethodDecorator & ClassDecorator {
-  const decorators = [
-    ApiOkResponse({
-      description: options.ok.description,
-      type: options.ok.type,
-      isArray: options.ok.isArray,
-    }),
-  ];
+  const decorators = [];
+
+  if (options.ok.statusCode === HttpStatus.CREATED) {
+    decorators.push(
+      ApiCreatedResponse({
+        description: options.ok.description,
+        type: options.ok.type,
+        isArray: options.ok.isArray,
+      }),
+    );
+  } else {
+    decorators.push(
+      ApiOkResponse({
+        description: options.ok.description,
+        type: options.ok.type,
+        isArray: options.ok.isArray,
+      }),
+    );
+  }
 
   if (options.badRequest) {
     decorators.push(
