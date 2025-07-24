@@ -7,7 +7,11 @@ export class CreateEmployeeRequestDto {
   @IsNotBlankString()
   public name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    description: "The CPF (Cadastro de Pessoas Físicas) of the employee",
+    example: "123.456.789-09",
+  })
   @IsCpf()
   public cpf: string;
 }
