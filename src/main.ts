@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
@@ -25,6 +25,8 @@ async function bootstrap(): Promise<void> {
   if (nodeEnv === "production") {
     app.use(helmet());
   }
+
+  app.useGlobalPipes(new ValidationPipe());
 
   // Initialize Swagger
   swaggerInitializer(app, { globalPrefix });
