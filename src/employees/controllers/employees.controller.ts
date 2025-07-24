@@ -8,11 +8,7 @@ import {
   Post,
 } from "@nestjs/common";
 import { ApiInternalServerErrorResponse, ApiResponse } from "@nestjs/swagger";
-import {
-  ApiOkAndBadRequestAndNotFoundResponse,
-  ApiOkAndBadRequestResponse,
-  ApiOkAndNotFoundResponse,
-} from "src/common/decorators/routes/docs";
+import { ApiStandardResponses } from "src/common/decorators/routes/docs";
 
 import { InternalServerErrorDto } from "../../common/dto/exception/internal-server-error.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
@@ -37,18 +33,24 @@ export class EmployeesController {
     return await this.employeesService.findAll();
   }
 
-  @ApiOkAndNotFoundResponse({
-    typeOkResponse: PublicEmployeeResponseDto,
-    descriptionOkResponse: "Employee details by ID",
+  @ApiStandardResponses({
+    ok: {
+      description: "Employee details by ID",
+      type: PublicEmployeeResponseDto,
+    },
+    notFound: true,
   })
   @Get(":id")
   async findById(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.findById(id);
   }
 
-  @ApiOkAndBadRequestResponse({
-    typeOkResponse: PublicEmployeeResponseDto,
-    descriptionOkResponse: "Create a new employee",
+  @ApiStandardResponses({
+    ok: {
+      description: "Create a new employee",
+      type: PublicEmployeeResponseDto,
+    },
+    badRequest: true,
   })
   @Post()
   async create(
@@ -57,9 +59,13 @@ export class EmployeesController {
     return await this.employeesService.create(createEmployeeRequestDto);
   }
 
-  @ApiOkAndBadRequestAndNotFoundResponse({
-    typeOkResponse: PublicEmployeeResponseDto,
-    descriptionOkResponse: "Update employee details by ID",
+  @ApiStandardResponses({
+    ok: {
+      description: "Update employee details",
+      type: PublicEmployeeResponseDto,
+    },
+    notFound: true,
+    badRequest: true,
   })
   @Patch(":id")
   async update(
@@ -69,9 +75,12 @@ export class EmployeesController {
     return await this.employeesService.update(id, updateEmployeeRequestDto);
   }
 
-  @ApiOkAndNotFoundResponse({
-    typeOkResponse: PublicEmployeeResponseDto,
-    descriptionOkResponse: "Employee details by ID",
+  @ApiStandardResponses({
+    ok: {
+      description: "Delete an employee",
+      type: PublicEmployeeResponseDto,
+    },
+    notFound: true,
   })
   @Delete(":id")
   async delete(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {

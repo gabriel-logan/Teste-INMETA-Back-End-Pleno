@@ -16,63 +16,44 @@ export type typeOkResponse =
   | [(...args: any[]) => any]
   | undefined;
 
-export function ApiOkAndNotFoundResponse({
-  descriptionOkResponse,
-  typeOkResponse,
-}: {
-  descriptionOkResponse: string;
-  typeOkResponse: typeOkResponse;
-}): MethodDecorator {
-  return applyDecorators(
-    ApiOkResponse({
-      description: descriptionOkResponse,
-      type: typeOkResponse,
-    }),
-    ApiNotFoundResponse({
-      description: "Not found",
-      type: NotFoundExceptionDto,
-    }),
-  );
-}
+export type ResponseOptions = {
+  ok: {
+    description: string;
+    type: typeOkResponse;
+  };
+  badRequest?: boolean;
+  notFound?: boolean;
+};
 
-export function ApiOkAndBadRequestResponse({
-  descriptionOkResponse,
-  typeOkResponse,
-}: {
-  typeOkResponse: typeOkResponse;
-  descriptionOkResponse: string;
-}): MethodDecorator {
-  return applyDecorators(
-    ApiOkResponse({
-      description: descriptionOkResponse,
-      type: typeOkResponse,
-    }),
-    ApiBadRequestResponse({
-      description: "Bad request",
-      type: BadRequestExceptionDto,
-    }),
-  );
-}
+export function ApiStandardResponses(
+  options: ResponseOptions,
+): MethodDecorator {
+  const decorators = [];
 
-export function ApiOkAndBadRequestAndNotFoundResponse({
-  descriptionOkResponse,
-  typeOkResponse,
-}: {
-  typeOkResponse: typeOkResponse;
-  descriptionOkResponse: string;
-}): MethodDecorator {
-  return applyDecorators(
+  decorators.push(
     ApiOkResponse({
-      description: descriptionOkResponse,
-      type: typeOkResponse,
-    }),
-    ApiBadRequestResponse({
-      description: "Bad request",
-      type: BadRequestExceptionDto,
-    }),
-    ApiNotFoundResponse({
-      description: "Not found",
-      type: NotFoundExceptionDto,
+      description: options.ok.description,
+      type: options.ok.type,
     }),
   );
+
+  if (options.badRequest) {
+    decorators.push(
+      ApiBadRequestResponse({
+        description: "Bad request",
+        type: BadRequestExceptionDto,
+      }),
+    );
+  }
+
+  if (options.notFound) {
+    decorators.push(
+      ApiNotFoundResponse({
+        description: "Not found",
+        type: NotFoundExceptionDto,
+      }),
+    );
+  }
+
+  return applyDecorators(...decorators);
 }
