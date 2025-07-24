@@ -8,12 +8,14 @@ import {
   Post,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiResponse,
 } from "@nestjs/swagger";
 
+import { BadRequestExceptionDto } from "../dto/exception/bad-request.dto";
 import { InternalServerErrorDto } from "../dto/exception/internal-server-error.dto";
 import { NotFoundExceptionDto } from "../dto/exception/not-found.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
@@ -58,6 +60,14 @@ export class EmployeesController {
   @ApiOkResponse({
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: "Internal server error",
+    type: InternalServerErrorDto,
+  })
+  @ApiBadRequestResponse({
+    description: "Bad request",
+    type: BadRequestExceptionDto,
   })
   @Post()
   async create(
