@@ -3720,6 +3720,7 @@ __metadata:
     eslint: "npm:^9.18.0"
     eslint-config-prettier: "npm:^10.0.1"
     eslint-plugin-prettier: "npm:^5.2.2"
+    eslint-plugin-simple-import-sort: "npm:^12.1.1"
     globals: "npm:^16.0.0"
     jest: "npm:^29.7.0"
     prettier: "npm:^3.4.2"
@@ -3883,6 +3884,15 @@ __metadata:
     eslint-config-prettier:
       optional: true
   checksum: 10c0/7524e381b400fec67dd2bd1a71779c220a5410f0063cd220d144431f291ec800bee1985709ef0dd38d666d01e0e53bec93824063912784d4021db8473fafe73e
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-simple-import-sort@npm:^12.1.1":
+  version: 12.1.1
+  resolution: "eslint-plugin-simple-import-sort@npm:12.1.1"
+  peerDependencies:
+    eslint: ">=5.0.0"
+  checksum: 10c0/0ad1907ad9ddbadd1db655db0a9d0b77076e274b793a77b982c8525d808d868e6ecfce24f3a411e8a1fa551077387f9ebb38c00956073970ebd7ee6a029ce2b3
   languageName: node
   linkType: hard
 

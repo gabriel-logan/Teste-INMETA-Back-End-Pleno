@@ -1,15 +1,27 @@
 import eslint from "@eslint/js";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["eslint.config.mjs"],
+    ignores: ["eslint.config.*"],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
+  {
+    plugins: { "simple-import-sort": simpleImportSort },
+    rules: {
+      "simple-import-sort/imports": [
+        "warn",
+        {
+          groups: [["^\\u0000"], ["^@?\\w"], ["^@company/"], ["^"], ["^\\."]],
+        },
+      ],
+    },
+  },
   {
     languageOptions: {
       globals: {
