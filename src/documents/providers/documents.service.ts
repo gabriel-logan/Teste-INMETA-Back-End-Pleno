@@ -77,10 +77,18 @@ export class DocumentsService {
   ): Promise<PublicDocumentResponseDto> {
     const { documentTypeId, status } = updateDocumentDto;
 
+    let documentType = { id: documentTypeId };
+
+    if (documentTypeId) {
+      documentType = await this.documentTypesService.findById(
+        documentTypeId.toString(),
+      );
+    }
+
     const updatedDocument = await this.documentModel
       .findByIdAndUpdate(
         id,
-        { documentType: documentTypeId, status },
+        { documentType: documentType.id, status },
         { new: true, runValidators: true },
       )
       .exec();
