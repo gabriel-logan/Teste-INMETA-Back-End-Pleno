@@ -10,11 +10,11 @@ import { Employee } from "../schemas/employee.schema";
 @Injectable()
 export class EmployeesService {
   constructor(
-    @InjectModel(Employee.name) private readonly userModel: Model<Employee>,
+    @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
   ) {}
 
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return (await this.userModel.find().exec()).map((employee) => ({
+    return (await this.employeeModel.find().exec()).map((employee) => ({
       id: employee._id,
       name: employee.name,
       createdAt: employee.createdAt,
@@ -23,7 +23,7 @@ export class EmployeesService {
   }
 
   async findById(id: string): Promise<PublicEmployeeResponseDto> {
-    const employee = await this.userModel.findById(id).exec();
+    const employee = await this.employeeModel.findById(id).exec();
 
     if (!employee) {
       throw new NotFoundException(`Employee with id ${id} not found`);
@@ -42,7 +42,7 @@ export class EmployeesService {
   ): Promise<PublicEmployeeResponseDto> {
     const { name } = createEmployeeRequestDto;
 
-    const createdEmployee = new this.userModel({
+    const createdEmployee = new this.employeeModel({
       name,
     });
 
@@ -62,7 +62,7 @@ export class EmployeesService {
   ): Promise<PublicEmployeeResponseDto> {
     const { name } = updateEmployeeRequestDto;
 
-    const updatedEmployee = await this.userModel
+    const updatedEmployee = await this.employeeModel
       .findByIdAndUpdate(id, { name }, { new: true })
       .exec();
 
@@ -79,7 +79,9 @@ export class EmployeesService {
   }
 
   async delete(id: string): Promise<PublicEmployeeResponseDto> {
-    const deletedEmployee = await this.userModel.findByIdAndDelete(id).exec();
+    const deletedEmployee = await this.employeeModel
+      .findByIdAndDelete(id)
+      .exec();
 
     if (!deletedEmployee) {
       throw new NotFoundException(`Employee with id ${id} not found`);
