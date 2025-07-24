@@ -1,6 +1,5 @@
 import type { Type } from "@nestjs/common";
-import { HttpStatus } from "@nestjs/common";
-import { applyDecorators } from "@nestjs/common";
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
