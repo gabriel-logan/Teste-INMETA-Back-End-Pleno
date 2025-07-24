@@ -7,43 +7,64 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
+import { ApiOkResponse } from "@nestjs/swagger";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
-import { EmployeeDocument } from "../schemas/employee.schema";
 
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
+  @ApiOkResponse({
+    description: "List of all employees",
+    type: [PublicEmployeeResponseDto],
+  })
   @Get()
-  async findAll(): Promise<EmployeeDocument[]> {
+  async findAll(): Promise<PublicEmployeeResponseDto[]> {
     return await this.employeesService.findAll();
   }
 
+  @ApiOkResponse({
+    description: "Employee details by ID",
+    type: PublicEmployeeResponseDto,
+  })
   @Get(":id")
-  async findById(@Param("id") id: string): Promise<EmployeeDocument> {
+  async findById(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.findById(id);
   }
 
+  @ApiOkResponse({
+    description: "Employee details by ID",
+    type: PublicEmployeeResponseDto,
+  })
   @Post()
   async create(
     @Body() createEmployeeRequestDto: CreateEmployeeRequestDto,
-  ): Promise<EmployeeDocument> {
+  ): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.create(createEmployeeRequestDto);
   }
 
+  @ApiOkResponse({
+    description: "Employee details by ID",
+    type: PublicEmployeeResponseDto,
+  })
   @Patch(":id")
   async update(
     @Param("id") id: string,
     @Body() updateEmployeeRequestDto: UpdateEmployeeRequestDto,
-  ): Promise<EmployeeDocument> {
+  ): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.update(id, updateEmployeeRequestDto);
   }
 
+  @ApiOkResponse({
+    description: "Employee details by ID",
+    type: PublicEmployeeResponseDto,
+  })
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<EmployeeDocument> {
+  async delete(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.delete(id);
   }
 }
