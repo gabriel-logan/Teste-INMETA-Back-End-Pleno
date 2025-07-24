@@ -9,6 +9,11 @@ export class AppController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Successful response",
+    schema: {
+      type: "string",
+      example: "Hello World!",
+      readOnly: true,
+    },
   })
   @Get()
   getHello(): string {
