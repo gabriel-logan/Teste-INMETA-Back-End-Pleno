@@ -30,7 +30,7 @@ export class Document {
   public documentType: DocumentType;
 
   @Prop({ type: String, default: null })
-  public url: string | null;
+  public documentUrl: string | null;
 
   public createdAt: Date;
   public updatedAt: Date;

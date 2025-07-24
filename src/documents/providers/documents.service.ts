@@ -29,7 +29,7 @@ export class DocumentsService {
       employee: doc.employee,
       documentType: doc.documentType,
       status: doc.status,
-      url: doc.url,
+      documentUrl: doc.documentUrl,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     }));
@@ -51,7 +51,7 @@ export class DocumentsService {
       employee: document.employee,
       documentType: document.documentType,
       status: document.status,
-      url: document.url,
+      documentUrl: document.documentUrl,
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     };
@@ -83,7 +83,7 @@ export class DocumentsService {
       employee: savedDocument.employee,
       documentType: savedDocument.documentType,
       status: savedDocument.status,
-      url: savedDocument.url,
+      documentUrl: savedDocument.documentUrl,
       createdAt: savedDocument.createdAt,
       updatedAt: savedDocument.updatedAt,
     };
@@ -125,7 +125,7 @@ export class DocumentsService {
       employee: updatedDocument.employee,
       documentType: updatedDocument.documentType,
       status: updatedDocument.status,
-      url: updatedDocument.url,
+      documentUrl: updatedDocument.documentUrl,
       createdAt: updatedDocument.createdAt,
       updatedAt: updatedDocument.updatedAt,
     };
