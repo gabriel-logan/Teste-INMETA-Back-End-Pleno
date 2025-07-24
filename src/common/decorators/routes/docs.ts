@@ -3,15 +3,16 @@ import { HttpStatus } from "@nestjs/common";
 import { applyDecorators } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
 } from "@nestjs/swagger";
+import { BadRequestExceptionDto } from "src/common/dto/exception/bad-request.dto";
+import { ConflictExceptionDto } from "src/common/dto/exception/conflict.dto";
 import { InternalServerErrorDto } from "src/common/dto/exception/internal-server-error.dto";
-
-import { BadRequestExceptionDto } from "../../dto/exception/bad-request.dto";
-import { NotFoundExceptionDto } from "../../dto/exception/not-found.dto";
+import { NotFoundExceptionDto } from "src/common/dto/exception/not-found.dto";
 
 export type typeOkResponse =
   | string
@@ -28,6 +29,7 @@ export type ResponseOptions = {
     statusCode?: HttpStatus;
   };
   badRequest?: boolean;
+  conflict?: boolean;
   notFound?: boolean;
   unauthorized?: boolean;
   forbidden?: boolean;
@@ -61,6 +63,15 @@ export function ApiStandardResponses(
       ApiBadRequestResponse({
         description: "Bad request",
         type: BadRequestExceptionDto,
+      }),
+    );
+  }
+
+  if (options.conflict) {
+    decorators.push(
+      ApiConflictResponse({
+        description: "Conflict",
+        type: ConflictExceptionDto,
       }),
     );
   }
