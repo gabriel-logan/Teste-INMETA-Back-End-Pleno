@@ -1,8 +1,8 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { EmployeesService } from "../providers/employees.service";
 import { EmployeesController } from "./employees.controller";
-import { EmployeesService } from "./employees.service";
 
 describe("EmployeesController", () => {
   let controller: EmployeesController;

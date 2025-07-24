@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { EmployeesController } from "./employees.controller";
-import { EmployeesService } from "./employees.service";
+import { EmployeesController } from "./controllers/employees.controller";
+import { EmployeesService } from "./providers/employees.service";
 
 @Module({
   controllers: [EmployeesController],
