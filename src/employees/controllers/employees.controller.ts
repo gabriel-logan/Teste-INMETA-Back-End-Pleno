@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -50,6 +51,7 @@ export class EmployeesController {
     ok: {
       description: "Create a new employee",
       type: PublicEmployeeResponseDto,
+      statusCode: HttpStatus.CREATED,
     },
     badRequest: true,
   })

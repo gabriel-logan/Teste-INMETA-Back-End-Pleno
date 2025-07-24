@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -50,6 +51,7 @@ export class DocumentsController {
     ok: {
       description: "Creates a new document",
       type: PublicDocumentResponseDto,
+      statusCode: HttpStatus.CREATED,
     },
     badRequest: true,
   })
