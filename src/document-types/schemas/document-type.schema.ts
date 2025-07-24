@@ -5,7 +5,7 @@ export type DocumentTypeDocument = HydratedDocument<DocumentType>;
 
 @Schema({ timestamps: true })
 export class DocumentType {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   public name: string;
 
   public createdAt: Date;
