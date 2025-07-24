@@ -1,27 +1,67 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { Employee, EmployeeDocument } from "../schemas/employee.schema";
 
 @Injectable()
 export class EmployeesService {
-  async create(createEmployeeRequestDto: CreateEmployeeRequestDto) {
-    return "This action adds a new employee";
+  constructor(
+    @InjectModel(Employee.name) private readonly userModel: Model<Employee>,
+  ) {}
+
+  async findAll(): Promise<EmployeeDocument[]> {
+    return await this.userModel.find().exec();
   }
 
-  async findAll() {
-    return `This action returns all employees`;
+  async findById(id: string): Promise<EmployeeDocument> {
+    const employee = await this.userModel.findById(id).exec();
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${id} not found`);
+    }
+
+    return employee;
   }
 
-  async findOne(id: string) {
-    return `This action returns a #${id} employee`;
+  async create(
+    createEmployeeRequestDto: CreateEmployeeRequestDto,
+  ): Promise<EmployeeDocument> {
+    const { name } = createEmployeeRequestDto;
+
+    const createdEmployee = new this.userModel({
+      name,
+    });
+
+    return await createdEmployee.save();
   }
 
-  async update(id: string, updateEmployeeRequestDto: UpdateEmployeeRequestDto) {
-    return `This action updates a #${id} employee`;
+  async update(
+    id: string,
+    updateEmployeeRequestDto: UpdateEmployeeRequestDto,
+  ): Promise<EmployeeDocument> {
+    const { name } = updateEmployeeRequestDto;
+
+    const updatedEmployee = await this.userModel
+      .findByIdAndUpdate(id, { name }, { new: true })
+      .exec();
+
+    if (!updatedEmployee) {
+      throw new NotFoundException(`Employee with id ${id} not found`);
+    }
+
+    return updatedEmployee;
   }
 
-  async remove(id: string) {
-    return `This action removes a #${id} employee`;
+  async delete(id: string): Promise<EmployeeDocument> {
+    const deletedEmployee = await this.userModel.findByIdAndDelete(id).exec();
+
+    if (!deletedEmployee) {
+      throw new NotFoundException(`Employee with id ${id} not found`);
+    }
+
+    return deletedEmployee;
   }
 }
