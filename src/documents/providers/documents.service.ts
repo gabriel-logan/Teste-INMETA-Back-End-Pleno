@@ -53,7 +53,7 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status } = createDocumentDto;
+    const { documentTypeId, status, employeeId } = createDocumentDto;
 
     const documentType = await this.documentTypesService.findById(
       documentTypeId.toString(),
@@ -62,6 +62,7 @@ export class DocumentsService {
     const newDocument = new this.documentModel({
       documentType: documentType.id,
       status,
+      employee: employeeId,
     });
 
     const savedDocument = await newDocument.save();
@@ -81,7 +82,7 @@ export class DocumentsService {
     id: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status } = updateDocumentDto;
+    const { documentTypeId, status, employeeId } = updateDocumentDto;
 
     let documentType = { id: documentTypeId };
 
@@ -94,7 +95,7 @@ export class DocumentsService {
     const updatedDocument = await this.documentModel
       .findByIdAndUpdate(
         id,
-        { documentType: documentType.id, status },
+        { documentType: documentType.id, status, employee: employeeId },
         { new: true, runValidators: true },
       )
       .exec();
