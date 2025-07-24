@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { Document } from "src/documents/schemas/document.schema";
 import type { Employee } from "src/employees/schemas/employee.schema";
 
 export class PublicEmployeeResponseDto implements Employee {
@@ -13,6 +14,14 @@ export class PublicEmployeeResponseDto implements Employee {
 
   @ApiProperty()
   public name: string;
+
+  @ApiProperty({
+    type: Document,
+    description: "List of documents associated with the employee",
+    isArray: true,
+    default: null,
+  })
+  public documents: Document[] | null;
 
   @ApiProperty({
     type: Date,
