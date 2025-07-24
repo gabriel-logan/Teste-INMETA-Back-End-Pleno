@@ -81,7 +81,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Deletes a document by ID",
-      type: PublicDocumentResponseDto,
+      type: void 0,
     },
     notFound: true,
   })
