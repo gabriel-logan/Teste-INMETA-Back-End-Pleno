@@ -37,7 +37,6 @@ export class DocumentsService {
         .find()
         .populate("documentType")
         .populate("employee")
-        .exec()
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
 
@@ -45,8 +44,7 @@ export class DocumentsService {
     const document = await this.documentModel
       .findById(id)
       .populate("documentType")
-      .populate("employee")
-      .exec();
+      .populate("employee");
 
     if (!document) {
       throw new NotFoundException(`Document with id ${id} not found`);
@@ -98,13 +96,11 @@ export class DocumentsService {
       employee = await this.employeesService.findById(employeeId.toString());
     }
 
-    const updatedDocument = await this.documentModel
-      .findByIdAndUpdate(
-        id,
-        { documentType: documentType.id, status, employee: employee.id },
-        { new: true, runValidators: true },
-      )
-      .exec();
+    const updatedDocument = await this.documentModel.findByIdAndUpdate(
+      id,
+      { documentType: documentType.id, status, employee: employee.id },
+      { new: true, runValidators: true },
+    );
 
     if (!updatedDocument) {
       throw new NotFoundException(`Document with id ${id} not found`);
@@ -114,9 +110,7 @@ export class DocumentsService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedDocument = await this.documentModel
-      .findByIdAndDelete(id)
-      .exec();
+    const deletedDocument = await this.documentModel.findByIdAndDelete(id);
 
     if (!deletedDocument) {
       throw new NotFoundException(`Document with id ${id} not found`);
