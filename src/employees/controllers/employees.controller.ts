@@ -72,6 +72,14 @@ export class EmployeesController {
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
   })
+  @ApiBadRequestResponse({
+    description: "Bad request",
+    type: BadRequestExceptionDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Employee not found",
+    type: NotFoundExceptionDto,
+  })
   @Patch(":id")
   async update(
     @Param("id") id: string,
@@ -83,6 +91,10 @@ export class EmployeesController {
   @ApiOkResponse({
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Employee not found",
+    type: NotFoundExceptionDto,
   })
   @Delete(":id")
   async delete(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
