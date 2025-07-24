@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { DocumentTypesController } from "./document-types.controller";
-import { DocumentTypesService } from "./document-types.service";
+import { DocumentTypesController } from "./controllers/document-types.controller";
+import { DocumentTypesService } from "./providers/document-types.service";
 
 @Module({
   controllers: [DocumentTypesController],

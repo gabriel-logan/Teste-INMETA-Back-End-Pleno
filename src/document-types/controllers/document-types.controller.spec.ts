@@ -2,7 +2,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { DocumentTypesController } from "./document-types.controller";
-import { DocumentTypesService } from "./document-types.service";
+import { DocumentTypesService } from "../providers/document-types.service";
 
 describe("DocumentTypesController", () => {
   let controller: DocumentTypesController;

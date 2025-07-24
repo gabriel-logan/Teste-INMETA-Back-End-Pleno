@@ -8,7 +8,7 @@ import {
   Post,
 } from "@nestjs/common";
 
-import { DocumentTypesService } from "./document-types.service";
+import { DocumentTypesService } from "../providers/document-types.service";
 import { CreateDocumentTypeDto } from "./dto/create-document-type.dto";
 import { UpdateDocumentTypeDto } from "./dto/update-document-type.dto";
 
