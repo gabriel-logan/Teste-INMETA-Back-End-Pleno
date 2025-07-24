@@ -19,7 +19,7 @@ export function IsCpf(
     {
       name: IS_CPF,
       validator: {
-        validate: (value): boolean => isCpf(value),
+        validate: (value) => isCpf(value),
         defaultMessage: buildMessage(
           (eachPrefix) => eachPrefix + "$property must be a valid CPF",
           validationOptions,

@@ -18,7 +18,7 @@ export function IsNotBlankString(
     {
       name: IS_NOT_BLANK_STRING,
       validator: {
-        validate: (value): boolean => isNotBlankString(value),
+        validate: (value) => isNotBlankString(value),
         defaultMessage: buildMessage(
           (eachPrefix) => eachPrefix + "$property should be a non-blank string",
           validationOptions,
