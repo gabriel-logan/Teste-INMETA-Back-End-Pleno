@@ -28,7 +28,7 @@ export interface EnvGlobalConfig {
 }
 
 export interface EnvSecretConfig {
-  token: {
+  jwtToken: {
     secret: string;
     expiration: string;
   };

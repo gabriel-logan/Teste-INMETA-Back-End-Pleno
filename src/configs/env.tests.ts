@@ -23,7 +23,7 @@ export default (): EnvTestConfig => ({
     },
   },
 
-  token: {
+  jwtToken: {
     secret: "your_jwt_token_secret",
     expiration: "1d",
   },
