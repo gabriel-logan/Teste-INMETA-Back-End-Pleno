@@ -23,6 +23,10 @@ import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 
+@ApiInternalServerErrorResponse({
+  description: "Internal server error",
+  type: InternalServerErrorDto,
+})
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
@@ -30,10 +34,6 @@ export class EmployeesController {
   @ApiResponse({
     description: "List of all employees",
     type: [PublicEmployeeResponseDto],
-  })
-  @ApiInternalServerErrorResponse({
-    description: "Internal server error",
-    type: InternalServerErrorDto,
   })
   @Get()
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
@@ -43,10 +43,6 @@ export class EmployeesController {
   @ApiOkResponse({
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
-  })
-  @ApiInternalServerErrorResponse({
-    description: "Internal server error",
-    type: InternalServerErrorDto,
   })
   @ApiNotFoundResponse({
     description: "Employee not found",
@@ -60,10 +56,6 @@ export class EmployeesController {
   @ApiOkResponse({
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
-  })
-  @ApiInternalServerErrorResponse({
-    description: "Internal server error",
-    type: InternalServerErrorDto,
   })
   @ApiBadRequestResponse({
     description: "Bad request",
