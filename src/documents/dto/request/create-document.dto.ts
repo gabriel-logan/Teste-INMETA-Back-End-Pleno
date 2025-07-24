@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
-import { Types } from "mongoose";
 import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
 import { DocumentStatus } from "src/documents/schemas/document.schema";
 
@@ -12,7 +11,7 @@ export class CreateDocumentRequestDto {
     example: "1234567890abcdef12345678",
   })
   @IsObjectIdString()
-  public documentTypeId: Types.ObjectId;
+  public documentTypeId: string;
 
   @ApiProperty({
     enum: DocumentStatus,
@@ -29,5 +28,5 @@ export class CreateDocumentRequestDto {
     example: "1234567890abcdef12345678",
   })
   @IsObjectIdString()
-  public employeeId: Types.ObjectId;
+  public employeeId: string;
 }

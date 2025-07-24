@@ -2,7 +2,9 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
+import { Employee } from "src/employees/schemas/employee.schema";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -22,8 +24,8 @@ export class DocumentsService {
   ): PublicDocumentResponseDto {
     return {
       id: document._id,
-      employee: document.employee,
-      documentType: document.documentType,
+      employee: document.employee as Employee,
+      documentType: document.documentType as DocumentType,
       status: document.status,
       documentUrl: document.documentUrl,
       createdAt: document.createdAt,
@@ -60,13 +62,10 @@ export class DocumentsService {
   ): Promise<PublicDocumentResponseDto> {
     const { documentTypeId, status, employeeId } = createDocumentDto;
 
-    const documentType = await this.documentTypesService.findById(
-      documentTypeId.toString(),
-    );
+    const documentType =
+      await this.documentTypesService.findById(documentTypeId);
 
-    const employee = await this.employeesService.findById(
-      employeeId.toString(),
-    );
+    const employee = await this.employeesService.findById(employeeId);
 
     const newDocument = new this.documentModel({
       documentType: documentType.id,
@@ -85,22 +84,25 @@ export class DocumentsService {
   ): Promise<PublicDocumentResponseDto> {
     const { documentTypeId, status, employeeId } = updateDocumentDto;
 
-    let documentType = { id: documentTypeId };
-    let employee = { id: employeeId };
+    const updateData: Partial<Document> = {};
 
     if (documentTypeId) {
-      documentType = await this.documentTypesService.findById(
-        documentTypeId.toString(),
-      );
+      const docType = await this.documentTypesService.findById(documentTypeId);
+      updateData.documentType = docType.id;
     }
 
     if (employeeId) {
-      employee = await this.employeesService.findById(employeeId.toString());
+      const emp = await this.employeesService.findById(employeeId);
+      updateData.employee = emp.id;
+    }
+
+    if (status) {
+      updateData.status = status;
     }
 
     const updatedDocument = await this.documentModel.findByIdAndUpdate(
       id,
-      { documentType: documentType.id, status, employee: employee.id },
+      updateData,
       { new: true, runValidators: true },
     );
 
