@@ -37,9 +37,36 @@ export default tseslint.config(
   },
   {
     rules: {
+      "no-console": "error",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/no-unsafe-argument": "warn",
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/prefer-readonly": "error",
+      "no-else-return": ["error", { allowElseIf: false }],
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "class",
+          format: ["PascalCase"],
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/consistent-type-exports": "error",
+      "@typescript-eslint/explicit-member-accessibility": [
+        "error",
+        {
+          accessibility: "explicit",
+          overrides: {
+            accessors: "explicit",
+            constructors: "no-public",
+            methods: "no-public",
+            properties: "explicit",
+            parameterProperties: "explicit",
+          },
+        },
+      ],
+      "@typescript-eslint/no-unnecessary-condition": "error",
     },
   },
 );
