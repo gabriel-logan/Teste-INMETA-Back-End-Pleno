@@ -5,6 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
+import { EmployeesModule } from "./employees/employees.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import envGlobal from "./configs/env.global";
       }),
       inject: [ConfigService],
     }),
+    EmployeesModule,
   ],
   controllers: [AppController],
   providers: [],
