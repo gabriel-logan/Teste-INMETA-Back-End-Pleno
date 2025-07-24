@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateDocumentsTypeRequestDto {
+export class CreateDocumentTypeRequestDto {
   @ApiProperty()
   public name: string;
 }

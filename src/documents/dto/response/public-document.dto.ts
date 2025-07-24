@@ -4,7 +4,7 @@ import {
   Document,
   DocumentStatus,
 } from "src/documents/schemas/document.schema";
-import { DocumentsType } from "src/documents-types/schemas/documents-type.schema";
+import { DocumentType } from "src/documents-types/schemas/document-type.schema";
 
 export class PublicDocumentResponseDto implements Document {
   @ApiProperty({
@@ -25,7 +25,7 @@ export class PublicDocumentResponseDto implements Document {
       "Unique identifier for the employee associated with the document",
     example: "60c72b2f9b1e8c001c8f8e1e",
   })
-  public documentsType: DocumentsType;
+  public documentsType: DocumentType;
 
   @ApiProperty({
     type: DocumentStatus,

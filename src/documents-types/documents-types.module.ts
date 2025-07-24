@@ -4,16 +4,16 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { DocumentsTypesController } from "./controllers/documents-types.controller";
 import { DocumentsTypesService } from "./providers/documents-types.service";
 import {
-  DocumentsType,
-  DocumentsTypeSchema,
-} from "./schemas/documents-type.schema";
+  DocumentType,
+  DocumentTypeSchema,
+} from "./schemas/document-type.schema";
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
-        name: DocumentsType.name,
-        schema: DocumentsTypeSchema,
+        name: DocumentType.name,
+        schema: DocumentTypeSchema,
       },
     ]),
   ],

@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { DocumentsType } from "src/documents-types/schemas/documents-type.schema";
+import { DocumentType } from "src/documents-types/schemas/document-type.schema";
 
-export class PublicDocumentsTypeResponseDto implements DocumentsType {
+export class PublicDocumentTypeResponseDto implements DocumentType {
   @ApiProperty({
     type: String,
     format: "ObjectId",

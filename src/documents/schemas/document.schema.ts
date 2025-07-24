@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { DocumentsType } from "src/documents-types/schemas/documents-type.schema";
+import { DocumentType } from "src/documents-types/schemas/document-type.schema";
 
 export type DocumentDocument = HydratedDocument<Document>;
 
@@ -19,8 +19,8 @@ export class Document {
   @Prop({ required: true })
   public status: DocumentStatus;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DocumentsType.name })
-  public documentsType: DocumentsType;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DocumentType.name })
+  public documentsType: DocumentType;
 
   public createdAt: Date;
   public updatedAt: Date;
