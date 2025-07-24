@@ -5,8 +5,8 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
+  Put,
 } from "@nestjs/common";
 import {
   ApiGlobalErrorResponses,
@@ -72,7 +72,7 @@ export class DocumentTypesController {
     notFound: true,
     badRequest: true,
   })
-  @Patch(":id")
+  @Put(":id")
   async update(
     @Param("id") id: string,
     @Body() updateDocumentsTypeDto: UpdateDocumentTypeRequestDto,
