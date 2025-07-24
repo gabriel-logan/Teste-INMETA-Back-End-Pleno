@@ -17,7 +17,11 @@ export class DocumentsService {
 
   async findAll(): Promise<PublicDocumentResponseDto[]> {
     return (
-      await this.documentModel.find().populate("documentType").exec()
+      await this.documentModel
+        .find()
+        .populate("documentType")
+        .populate("employee")
+        .exec()
     ).map((doc) => ({
       id: doc._id,
       employee: doc.employee,
@@ -33,6 +37,7 @@ export class DocumentsService {
     const document = await this.documentModel
       .findById(id)
       .populate("documentType")
+      .populate("employee")
       .exec();
 
     if (!document) {

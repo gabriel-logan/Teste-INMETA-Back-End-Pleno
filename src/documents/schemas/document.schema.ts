@@ -12,7 +12,7 @@ export enum DocumentStatus {
 
 @Schema({ timestamps: true })
 export class Document {
-  @Prop({ required: true, default: DocumentStatus.MISSING })
+  @Prop({ required: true, enum: DocumentStatus })
   public status: DocumentStatus;
 
   @Prop({

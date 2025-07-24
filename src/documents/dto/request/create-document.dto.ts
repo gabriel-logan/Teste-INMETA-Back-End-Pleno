@@ -23,9 +23,10 @@ export class CreateDocumentRequestDto {
   public status: DocumentStatus;
 
   @ApiProperty({
+    type: String,
+    format: "ObjectId",
     description: "The ID of the employee to whom the document belongs",
     example: "1234567890abcdef12345678",
-    type: String,
   })
   @IsNotBlankString()
   public employeeId: Types.ObjectId;
