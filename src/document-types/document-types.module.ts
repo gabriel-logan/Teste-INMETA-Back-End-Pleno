@@ -19,5 +19,6 @@ import {
   ],
   controllers: [DocumentTypesController],
   providers: [DocumentTypesService],
+  exports: [DocumentTypesService],
 })
 export class DocumentTypesModule {}
