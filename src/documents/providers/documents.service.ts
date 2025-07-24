@@ -60,6 +60,7 @@ export class DocumentsService {
     const newDocument = new this.documentModel({
       documentType: documentType.id,
       status,
+      url: null,
     });
 
     const savedDocument = await newDocument.save();
