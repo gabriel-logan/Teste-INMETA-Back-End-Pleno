@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -14,28 +14,31 @@ export class DocumentTypesService {
     private readonly documentTypeModel: Model<DocumentType>,
   ) {}
 
+  private toPublicDocumentTypeResponseDto(
+    documentType: DocumentType & { _id: Types.ObjectId },
+  ): PublicDocumentTypeResponseDto {
+    return {
+      id: documentType._id,
+      name: documentType.name,
+      createdAt: documentType.createdAt,
+      updatedAt: documentType.updatedAt,
+    };
+  }
+
   async findAll(): Promise<PublicDocumentTypeResponseDto[]> {
-    return (await this.documentTypeModel.find().exec()).map((docType) => ({
-      id: docType._id,
-      name: docType.name,
-      createdAt: docType.createdAt,
-      updatedAt: docType.updatedAt,
-    }));
+    return (await this.documentTypeModel.find().lean()).map((docType) =>
+      this.toPublicDocumentTypeResponseDto(docType),
+    );
   }
 
   async findById(id: string): Promise<PublicDocumentTypeResponseDto> {
-    const docType = await this.documentTypeModel.findById(id).exec();
+    const docType = await this.documentTypeModel.findById(id).lean();
 
     if (!docType) {
       throw new NotFoundException(`DocumentType with id ${id} not found`);
     }
 
-    return {
-      id: docType._id,
-      name: docType.name,
-      createdAt: docType.createdAt,
-      updatedAt: docType.updatedAt,
-    };
+    return this.toPublicDocumentTypeResponseDto(docType);
   }
 
   async create(
@@ -49,12 +52,7 @@ export class DocumentTypesService {
 
     const createdDocumentType = await newDocumentType.save();
 
-    return {
-      id: createdDocumentType._id,
-      name: createdDocumentType.name,
-      createdAt: createdDocumentType.createdAt,
-      updatedAt: createdDocumentType.updatedAt,
-    };
+    return this.toPublicDocumentTypeResponseDto(createdDocumentType);
   }
 
   async update(
@@ -63,27 +61,21 @@ export class DocumentTypesService {
   ): Promise<PublicDocumentTypeResponseDto> {
     const { name } = updateDocumentTypeDto;
 
-    const updatedDocumentType = await this.documentTypeModel.findByIdAndUpdate(
-      id,
-      { name },
-      { new: true, runValidators: true },
-    );
+    const updatedDocumentType = await this.documentTypeModel
+      .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
+      .lean();
 
     if (!updatedDocumentType) {
       throw new NotFoundException(`DocumentType with id ${id} not found`);
     }
 
-    return {
-      id: updatedDocumentType._id,
-      name: updatedDocumentType.name,
-      createdAt: updatedDocumentType.createdAt,
-      updatedAt: updatedDocumentType.updatedAt,
-    };
+    return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
   }
 
   async delete(id: string): Promise<void> {
-    const deletedDocumentType =
-      await this.documentTypeModel.findByIdAndDelete(id);
+    const deletedDocumentType = await this.documentTypeModel
+      .findByIdAndDelete(id)
+      .lean();
 
     if (!deletedDocumentType) {
       throw new NotFoundException(`DocumentType with id ${id} not found`);
