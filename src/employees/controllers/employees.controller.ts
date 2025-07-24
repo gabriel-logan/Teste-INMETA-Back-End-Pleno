@@ -7,19 +7,18 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiInternalServerErrorResponse, ApiResponse } from "@nestjs/swagger";
-import { ApiStandardResponses } from "src/common/decorators/routes/docs";
+import { ApiResponse } from "@nestjs/swagger";
+import {
+  ApiInternalServerResponse,
+  ApiStandardResponses,
+} from "src/common/decorators/routes/docs";
 
-import { InternalServerErrorDto } from "../../common/dto/exception/internal-server-error.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 
-@ApiInternalServerErrorResponse({
-  description: "Internal server error",
-  type: InternalServerErrorDto,
-})
+@ApiInternalServerResponse()
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
