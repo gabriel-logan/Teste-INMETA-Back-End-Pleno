@@ -1,5 +1,7 @@
 import { PartialType } from "@nestjs/swagger";
 
-import { CreateDocumentDto } from "./create-document.dto";
+import { CreateDocumentRequestDto } from "./create-document.dto";
 
-export class UpdateDocumentDto extends PartialType(CreateDocumentDto) {}
+export class UpdateDocumentRequestDto extends PartialType(
+  CreateDocumentRequestDto,
+) {}

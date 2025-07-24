@@ -8,16 +8,16 @@ import {
   Post,
 } from "@nestjs/common";
 
+import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
+import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { DocumentsService } from "../providers/documents.service";
-import { CreateDocumentDto } from "./dto/create-document.dto";
-import { UpdateDocumentDto } from "./dto/update-document.dto";
 
 @Controller("documents")
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post()
-  create(@Body() createDocumentDto: CreateDocumentDto) {
+  create(@Body() createDocumentDto: CreateDocumentRequestDto) {
     return this.documentsService.create(createDocumentDto);
   }
 
@@ -28,19 +28,19 @@ export class DocumentsController {
 
   @Get(":id")
   findOne(@Param("id") id: string) {
-    return this.documentsService.findOne(+id);
+    return this.documentsService.findOne(id);
   }
 
   @Patch(":id")
   update(
     @Param("id") id: string,
-    @Body() updateDocumentDto: UpdateDocumentDto,
+    @Body() updateDocumentDto: UpdateDocumentRequestDto,
   ) {
-    return this.documentsService.update(+id, updateDocumentDto);
+    return this.documentsService.update(id, updateDocumentDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.documentsService.remove(+id);
+  delete(@Param("id") id: string) {
+    return this.documentsService.delete(id);
   }
 }

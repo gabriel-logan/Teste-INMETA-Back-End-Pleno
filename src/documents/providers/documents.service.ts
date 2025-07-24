@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
-import { CreateDocumentDto } from "./dto/create-document.dto";
-import { UpdateDocumentDto } from "./dto/update-document.dto";
+import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
+import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 
 @Injectable()
 export class DocumentsService {
-  create(createDocumentDto: CreateDocumentDto) {
+  create(createDocumentDto: CreateDocumentRequestDto) {
     return "This action adds a new document";
   }
 
@@ -13,15 +13,15 @@ export class DocumentsService {
     return `This action returns all documents`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} document`;
   }
 
-  update(id: number, updateDocumentDto: UpdateDocumentDto) {
+  update(id: string, updateDocumentDto: UpdateDocumentRequestDto) {
     return `This action updates a #${id} document`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} document`;
+  delete(id: string) {
+    return `This action deletes a #${id} document`;
   }
 }
