@@ -7,8 +7,15 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOkResponse } from "@nestjs/swagger";
+import {
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiResponse,
+} from "@nestjs/swagger";
 
+import { InternalServerErrorDto } from "../dto/exception/internal-server-error.dto";
+import { NotFoundExceptionDto } from "../dto/exception/not-found.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
@@ -18,9 +25,13 @@ import { EmployeesService } from "../providers/employees.service";
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
-  @ApiOkResponse({
+  @ApiResponse({
     description: "List of all employees",
     type: [PublicEmployeeResponseDto],
+  })
+  @ApiInternalServerErrorResponse({
+    description: "Internal server error",
+    type: InternalServerErrorDto,
   })
   @Get()
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
@@ -30,6 +41,10 @@ export class EmployeesController {
   @ApiOkResponse({
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: "Employee not found",
+    type: NotFoundExceptionDto,
   })
   @Get(":id")
   async findById(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
