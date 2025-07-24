@@ -25,6 +25,8 @@ export type ResponseOptions = {
   };
   badRequest?: boolean;
   notFound?: boolean;
+  unauthorized?: boolean;
+  forbidden?: boolean;
 };
 
 export function ApiStandardResponses(
@@ -51,6 +53,24 @@ export function ApiStandardResponses(
       ApiNotFoundResponse({
         description: "Not found",
         type: NotFoundExceptionDto,
+      }),
+    );
+  }
+
+  if (options.unauthorized) {
+    decorators.push(
+      ApiBadRequestResponse({
+        description: "Unauthorized",
+        type: BadRequestExceptionDto,
+      }),
+    );
+  }
+
+  if (options.forbidden) {
+    decorators.push(
+      ApiBadRequestResponse({
+        description: "Forbidden",
+        type: BadRequestExceptionDto,
       }),
     );
   }
