@@ -47,9 +47,11 @@ export class EmployeesService {
   ): Promise<PublicEmployeeResponseDto> {
     const { name, cpf } = createEmployeeDto;
 
+    const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
+
     const createdEmployee = new this.employeeModel({
       name,
-      cpf,
+      cpf: parsedCpf,
     });
 
     const savedEmployee = await createdEmployee.save();
@@ -63,8 +65,14 @@ export class EmployeesService {
   ): Promise<PublicEmployeeResponseDto> {
     const { name, cpf } = updateEmployeeDto;
 
+    const parsedCpf = cpf?.replace(/\D/g, ""); // Remove non-numeric characters from CPF
+
     const updatedEmployee = await this.employeeModel
-      .findByIdAndUpdate(id, { name, cpf }, { new: true, runValidators: true })
+      .findByIdAndUpdate(
+        id,
+        { name, cpf: parsedCpf },
+        { new: true, runValidators: true },
+      )
       .lean();
 
     if (!updatedEmployee) {
