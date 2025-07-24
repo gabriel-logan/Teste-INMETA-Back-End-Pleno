@@ -17,8 +17,8 @@ function operationsSorter(
 }
 
 const config = new DocumentBuilder()
-  .setTitle("API V1 Gateway")
-  .setDescription("The API V1 Gateway description")
+  .setTitle("API V1 Server")
+  .setDescription("The API V1 Server description")
   .setVersion("1.0.0")
   .addBearerAuth()
   .addSecurityRequirements("bearer")
@@ -33,7 +33,7 @@ export default function swaggerInitializer(
   }
 
   SwaggerModule.setup(`${configs.globalPrefix}/docs`, app, documentFactory, {
-    customSiteTitle: "API V1 Gateway Documentation",
+    customSiteTitle: "API V1 Server Documentation",
     customCss: `.swagger-ui .opblock.opblock-patch .opblock-summary-method { background:#d1bd21; }`,
     swaggerOptions: {
       operationsSorter,
