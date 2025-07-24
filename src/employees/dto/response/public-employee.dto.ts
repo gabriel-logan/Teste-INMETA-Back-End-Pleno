@@ -19,7 +19,21 @@ export class PublicEmployeeResponseDto implements Employee {
     type: Document,
     description: "List of documents associated with the employee",
     isArray: true,
-    default: null,
+    example: [
+      {
+        id: "688208436df1ac7fbf95320e",
+        documentType: {
+          _id: "688205905a14025cdfb57ae5",
+          name: "CPF",
+          createdAt: "2025-07-24T10:06:08.724Z",
+          updatedAt: "2025-07-24T10:06:08.724Z",
+          __v: 0,
+        },
+        status: "missing",
+        createdAt: "2025-07-24T10:17:39.376Z",
+        updatedAt: "2025-07-24T10:24:43.801Z",
+      },
+    ],
   })
   public documents: Document[] | null;
 
