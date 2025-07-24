@@ -36,7 +36,7 @@ export type ResponseOptions = {
 export function ApiStandardResponses(
   options: ResponseOptions,
 ): MethodDecorator & ClassDecorator {
-  const decorators = new Array<MethodDecorator | ClassDecorator>(6);
+  const decorators: (MethodDecorator | ClassDecorator)[] = [];
 
   if (options.ok.statusCode === HttpStatus.CREATED) {
     decorators.push(
