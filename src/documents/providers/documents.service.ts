@@ -18,7 +18,6 @@ export class DocumentsService {
       await this.documentModel.find().populate("documentType").exec()
     ).map((doc) => ({
       id: doc._id,
-      name: doc.name,
       documentType: doc.documentType,
       status: doc.status,
       createdAt: doc.createdAt,
@@ -38,7 +37,6 @@ export class DocumentsService {
 
     return {
       id: document._id,
-      name: document.name,
       documentType: document.documentType,
       status: document.status,
       createdAt: document.createdAt,
@@ -49,10 +47,9 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { name, documentTypeId, status } = createDocumentDto;
+    const { documentTypeId, status } = createDocumentDto;
 
     const newDocument = new this.documentModel({
-      name,
       documentType: documentTypeId,
       status,
     });
@@ -61,7 +58,6 @@ export class DocumentsService {
 
     return {
       id: savedDocument._id,
-      name: savedDocument.name,
       documentType: savedDocument.documentType,
       status: savedDocument.status,
       createdAt: savedDocument.createdAt,
@@ -73,12 +69,12 @@ export class DocumentsService {
     id: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { name, documentTypeId, status } = updateDocumentDto;
+    const { documentTypeId, status } = updateDocumentDto;
 
     const updatedDocument = await this.documentModel
       .findByIdAndUpdate(
         id,
-        { name, documentType: documentTypeId, status },
+        { documentType: documentTypeId, status },
         { new: true, runValidators: true },
       )
       .exec();
@@ -89,7 +85,6 @@ export class DocumentsService {
 
     return {
       id: updatedDocument._id,
-      name: updatedDocument.name,
       documentType: updatedDocument.documentType,
       status: updatedDocument.status,
       createdAt: updatedDocument.createdAt,
@@ -108,7 +103,6 @@ export class DocumentsService {
 
     return {
       id: deletedDocument._id,
-      name: deletedDocument.name,
       documentType: deletedDocument.documentType,
       status: deletedDocument.status,
       createdAt: deletedDocument.createdAt,

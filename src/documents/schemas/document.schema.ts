@@ -14,12 +14,13 @@ export enum DocumentStatus {
 @Schema({ timestamps: true })
 export class Document {
   @Prop({ required: true })
-  public name: string;
-
-  @Prop({ required: true })
   public status: DocumentStatus;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DocumentType.name })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: DocumentType.name,
+    required: true,
+  })
   public documentType: DocumentType;
 
   public createdAt: Date;

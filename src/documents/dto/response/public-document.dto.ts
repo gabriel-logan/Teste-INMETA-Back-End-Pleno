@@ -15,9 +15,6 @@ export class PublicDocumentResponseDto implements Document {
   })
   public id: Types.ObjectId;
 
-  @ApiProperty()
-  public name: string;
-
   @ApiProperty({
     type: String,
     format: "ObjectId",
