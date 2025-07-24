@@ -19,7 +19,7 @@ export interface EnvDatabaseConfig {
 
 export interface EnvGlobalConfig {
   server: {
-    nodeEnv: string;
+    nodeEnv: "production" | "development" | "test";
 
     baseUrl: string;
 

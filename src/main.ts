@@ -2,6 +2,7 @@ import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
+import helmet from "helmet";
 
 import { AppModule } from "./app.module";
 import swaggerInitializer from "./configs/swagger";
@@ -20,6 +21,10 @@ async function bootstrap(): Promise<void> {
 
   const { nodeEnv, baseUrl, port } =
     configService.get<EnvGlobalConfig["server"]>("server");
+
+  if (nodeEnv === "production") {
+    app.use(helmet());
+  }
 
   // Initialize Swagger
   swaggerInitializer(app, { globalPrefix });
