@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -11,6 +12,8 @@ import { Document } from "../schemas/document.schema";
 export class DocumentsService {
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
+    @InjectModel(DocumentType.name)
+    private readonly documentTypeModel: Model<DocumentType>,
   ) {}
 
   async findAll(): Promise<PublicDocumentResponseDto[]> {
@@ -49,8 +52,18 @@ export class DocumentsService {
   ): Promise<PublicDocumentResponseDto> {
     const { documentTypeId, status } = createDocumentDto;
 
+    const documentType = await this.documentTypeModel
+      .findById(documentTypeId)
+      .exec();
+
+    if (!documentType) {
+      throw new NotFoundException(
+        `DocumentType with id ${documentTypeId.toString()} not found`,
+      );
+    }
+
     const newDocument = new this.documentModel({
-      documentType: documentTypeId,
+      documentType: documentType,
       status,
     });
 
