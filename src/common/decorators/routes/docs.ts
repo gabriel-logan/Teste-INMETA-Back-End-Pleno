@@ -58,7 +58,7 @@ export function ApiStandardResponses(
   return applyDecorators(...decorators);
 }
 
-export function ApiInternalServerResponse(): MethodDecorator & ClassDecorator {
+export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
   return applyDecorators(
     ApiInternalServerErrorResponse({
       description: "Internal server error",

@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 import {
-  ApiInternalServerResponse,
+  ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs";
 
@@ -18,7 +18,7 @@ import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 
-@ApiInternalServerResponse()
+@ApiGlobalErrorResponses()
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
