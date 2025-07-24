@@ -17,6 +17,8 @@ export class DocumentsService {
     return (await this.documentModel.find().exec()).map((doc) => ({
       id: doc._id,
       name: doc.name,
+      documentsType: doc.documentsType,
+      status: doc.status,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     }));
@@ -32,6 +34,8 @@ export class DocumentsService {
     return {
       id: document._id,
       name: document.name,
+      documentsType: document.documentsType,
+      status: document.status,
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     };
@@ -51,6 +55,8 @@ export class DocumentsService {
     return {
       id: savedDocument._id,
       name: savedDocument.name,
+      documentsType: savedDocument.documentsType,
+      status: savedDocument.status,
       createdAt: savedDocument.createdAt,
       updatedAt: savedDocument.updatedAt,
     };
@@ -73,6 +79,8 @@ export class DocumentsService {
     return {
       id: updatedDocument._id,
       name: updatedDocument.name,
+      documentsType: updatedDocument.documentsType,
+      status: updatedDocument.status,
       createdAt: updatedDocument.createdAt,
       updatedAt: updatedDocument.updatedAt,
     };
@@ -90,6 +98,8 @@ export class DocumentsService {
     return {
       id: deletedDocument._id,
       name: deletedDocument.name,
+      documentsType: deletedDocument.documentsType,
+      status: deletedDocument.status,
       createdAt: deletedDocument.createdAt,
       updatedAt: deletedDocument.updatedAt,
     };

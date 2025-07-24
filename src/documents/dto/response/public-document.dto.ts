@@ -1,6 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { Document } from "src/documents/schemas/document.schema";
+import {
+  Document,
+  DocumentStatus,
+} from "src/documents/schemas/document.schema";
+import { DocumentsType } from "src/documents-types/schemas/documents-type.schema";
 
 export class PublicDocumentResponseDto implements Document {
   @ApiProperty({
@@ -13,6 +17,24 @@ export class PublicDocumentResponseDto implements Document {
 
   @ApiProperty()
   public name: string;
+
+  @ApiProperty({
+    type: String,
+    format: "ObjectId",
+    description:
+      "Unique identifier for the employee associated with the document",
+    example: "60c72b2f9b1e8c001c8f8e1e",
+  })
+  public documentsType: DocumentsType;
+
+  @ApiProperty({
+    type: DocumentStatus,
+    description: "The status of the document",
+    example: DocumentStatus.MISSING,
+    enum: DocumentStatus,
+    enumName: "DocumentStatus",
+  })
+  public status: DocumentStatus;
 
   @ApiProperty({
     type: Date,
