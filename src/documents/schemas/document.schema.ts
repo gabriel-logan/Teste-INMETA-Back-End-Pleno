@@ -6,9 +6,7 @@ export type DocumentDocument = HydratedDocument<Document>;
 
 export enum DocumentStatus {
   MISSING = "missing",
-  PUBLISHED = "published",
-  ARCHIVED = "archived",
-  DELETED = "deleted",
+  AVAILABLE = "available",
 }
 
 @Schema({ timestamps: true })
@@ -22,6 +20,9 @@ export class Document {
     required: true,
   })
   public documentType: DocumentType;
+
+  @Prop({ required: false })
+  public url?: string;
 
   public createdAt: Date;
   public updatedAt: Date;

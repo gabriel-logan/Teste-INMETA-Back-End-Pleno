@@ -22,6 +22,7 @@ export class DocumentsService {
       id: doc._id,
       documentType: doc.documentType,
       status: doc.status,
+      url: doc.url,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     }));
@@ -41,6 +42,7 @@ export class DocumentsService {
       id: document._id,
       documentType: document.documentType,
       status: document.status,
+      url: document.url,
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     };
@@ -66,6 +68,7 @@ export class DocumentsService {
       id: savedDocument._id,
       documentType: savedDocument.documentType,
       status: savedDocument.status,
+      url: savedDocument.url,
       createdAt: savedDocument.createdAt,
       updatedAt: savedDocument.updatedAt,
     };
@@ -101,6 +104,7 @@ export class DocumentsService {
       id: updatedDocument._id,
       documentType: updatedDocument.documentType,
       status: updatedDocument.status,
+      url: updatedDocument.url,
       createdAt: updatedDocument.createdAt,
       updatedAt: updatedDocument.updatedAt,
     };
@@ -119,6 +123,7 @@ export class DocumentsService {
       id: deletedDocument._id,
       documentType: deletedDocument.documentType,
       status: deletedDocument.status,
+      url: deletedDocument.url,
       createdAt: deletedDocument.createdAt,
       updatedAt: deletedDocument.updatedAt,
     };

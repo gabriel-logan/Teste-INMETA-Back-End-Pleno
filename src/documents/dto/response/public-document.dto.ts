@@ -34,6 +34,13 @@ export class PublicDocumentResponseDto implements Document {
   public status: DocumentStatus;
 
   @ApiProperty({
+    type: String,
+    description: "The URL of the document",
+    example: "https://example.com/document.pdf",
+  })
+  public url?: string;
+
+  @ApiProperty({
     type: Date,
     description: "The date and time when the employee was created",
     example: "2021-06-14T10:00:00Z",
