@@ -16,11 +16,8 @@ export class PublicDocumentResponseDto implements Document {
   public id: Types.ObjectId;
 
   @ApiProperty({
-    type: String,
-    format: "ObjectId",
-    description:
-      "Unique identifier for the employee associated with the document",
-    example: "60c72b2f9b1e8c001c8f8e1e",
+    type: DocumentType,
+    description: "The type of the document",
   })
   public documentType: DocumentType;
 
