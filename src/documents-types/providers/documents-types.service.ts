@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
@@ -15,27 +15,86 @@ export class DocumentsTypesService {
   ) {}
 
   async findAll(): Promise<PublicDocumentsTypeResponseDto[]> {
-    return `This action returns all documentsTypes`;
+    return (await this.documentsTypeModel.find().exec()).map((docType) => ({
+      id: docType._id,
+      name: docType.name,
+      createdAt: docType.createdAt,
+      updatedAt: docType.updatedAt,
+    }));
   }
 
   async findById(id: string): Promise<PublicDocumentsTypeResponseDto> {
-    return `This action returns a #${id} documentsType`;
+    const docType = await this.documentsTypeModel.findById(id).exec();
+
+    if (!docType) {
+      throw new NotFoundException(`DocumentsType with id ${id} not found`);
+    }
+
+    return {
+      id: docType._id,
+      name: docType.name,
+      createdAt: docType.createdAt,
+      updatedAt: docType.updatedAt,
+    };
   }
 
   async create(
     createDocumentsTypeDto: CreateDocumentsTypeRequestDto,
   ): Promise<PublicDocumentsTypeResponseDto> {
-    return "This action adds a new documentsType";
+    const { name } = createDocumentsTypeDto;
+
+    const newDocumentsType = new this.documentsTypeModel({
+      name,
+    });
+
+    const createdDocumentsType = await newDocumentsType.save();
+
+    return {
+      id: createdDocumentsType._id,
+      name: createdDocumentsType.name,
+      createdAt: createdDocumentsType.createdAt,
+      updatedAt: createdDocumentsType.updatedAt,
+    };
   }
 
   async update(
     id: string,
     updateDocumentsTypeDto: UpdateDocumentsTypeRequestDto,
   ): Promise<PublicDocumentsTypeResponseDto> {
-    return `This action updates a #${id} documentsType`;
+    const { name } = updateDocumentsTypeDto;
+
+    const updatedDocumentsType =
+      await this.documentsTypeModel.findByIdAndUpdate(
+        id,
+        { name },
+        { new: true, runValidators: true },
+      );
+
+    if (!updatedDocumentsType) {
+      throw new NotFoundException(`DocumentsType with id ${id} not found`);
+    }
+
+    return {
+      id: updatedDocumentsType._id,
+      name: updatedDocumentsType.name,
+      createdAt: updatedDocumentsType.createdAt,
+      updatedAt: updatedDocumentsType.updatedAt,
+    };
   }
 
   async delete(id: string): Promise<PublicDocumentsTypeResponseDto> {
-    return `This action removes a #${id} documentsType`;
+    const deletedDocumentsType =
+      await this.documentsTypeModel.findByIdAndDelete(id);
+
+    if (!deletedDocumentsType) {
+      throw new NotFoundException(`DocumentsType with id ${id} not found`);
+    }
+
+    return {
+      id: deletedDocumentsType._id,
+      name: deletedDocumentsType.name,
+      createdAt: deletedDocumentsType.createdAt,
+      updatedAt: deletedDocumentsType.updatedAt,
+    };
   }
 }
