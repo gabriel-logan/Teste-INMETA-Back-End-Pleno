@@ -37,8 +37,9 @@ export class PublicDocumentResponseDto implements Document {
     type: String,
     description: "The URL of the document",
     example: "https://example.com/document.pdf",
+    nullable: true,
   })
-  public url?: string;
+  public url: string | null;
 
   @ApiProperty({
     type: Date,

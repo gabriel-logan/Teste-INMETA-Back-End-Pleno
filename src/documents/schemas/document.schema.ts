@@ -21,8 +21,8 @@ export class Document {
   })
   public documentType: DocumentType;
 
-  @Prop({ required: false })
-  public url?: string;
+  @Prop({ type: String })
+  public url: string | null;
 
   public createdAt: Date;
   public updatedAt: Date;
