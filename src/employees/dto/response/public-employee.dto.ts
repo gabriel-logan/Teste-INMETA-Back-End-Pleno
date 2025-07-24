@@ -1,7 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { Document } from "src/documents/schemas/document.schema";
-import type { Employee } from "src/employees/schemas/employee.schema";
+import {
+  ContractStatus,
+  type Employee,
+} from "src/employees/schemas/employee.schema";
 
 export class PublicEmployeeResponseDto implements Employee {
   @ApiProperty({
@@ -16,12 +19,11 @@ export class PublicEmployeeResponseDto implements Employee {
   public name: string;
 
   @ApiProperty({
-    type: Date,
-    description: "The date and time when the employee was hired",
-    example: "2021-06-14T10:00:00Z",
-    nullable: true,
+    enum: ContractStatus,
+    description: "The current status of the employee's contract",
+    example: ContractStatus.ACTIVE,
   })
-  public hiredAt: Date | null;
+  public contractStatus: ContractStatus;
 
   @ApiProperty({
     type: Document,
