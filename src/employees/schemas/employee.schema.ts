@@ -18,7 +18,7 @@ export class Employee {
   public contractStatus: ContractStatus;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Document.name }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
   })
   public documents: Document[];
 

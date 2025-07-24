@@ -20,6 +20,7 @@ export class DocumentsService {
       await this.documentModel.find().populate("documentType").exec()
     ).map((doc) => ({
       id: doc._id,
+      employee: doc.employee,
       documentType: doc.documentType,
       status: doc.status,
       url: doc.url,
@@ -40,6 +41,7 @@ export class DocumentsService {
 
     return {
       id: document._id,
+      employee: document.employee,
       documentType: document.documentType,
       status: document.status,
       url: document.url,
@@ -66,6 +68,7 @@ export class DocumentsService {
 
     return {
       id: savedDocument._id,
+      employee: savedDocument.employee,
       documentType: savedDocument.documentType,
       status: savedDocument.status,
       url: savedDocument.url,
@@ -102,6 +105,7 @@ export class DocumentsService {
 
     return {
       id: updatedDocument._id,
+      employee: updatedDocument.employee,
       documentType: updatedDocument.documentType,
       status: updatedDocument.status,
       url: updatedDocument.url,
@@ -121,6 +125,7 @@ export class DocumentsService {
 
     return {
       id: deletedDocument._id,
+      employee: deletedDocument.employee,
       documentType: deletedDocument.documentType,
       status: deletedDocument.status,
       url: deletedDocument.url,

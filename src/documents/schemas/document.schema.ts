@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
+import { Employee } from "src/employees/schemas/employee.schema";
 
 export type DocumentDocument = HydratedDocument<Document>;
 
@@ -13,6 +14,13 @@ export enum DocumentStatus {
 export class Document {
   @Prop({ required: true, default: DocumentStatus.MISSING })
   public status: DocumentStatus;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Employee.name,
+    required: true,
+  })
+  public employee: Employee;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
