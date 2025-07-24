@@ -17,14 +17,14 @@ export class Document {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Employee.name,
+    ref: "Employee",
     required: true,
   })
   public employee: Employee;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: DocumentType.name,
+    ref: "DocumentType",
     required: true,
   })
   public documentType: DocumentType;
