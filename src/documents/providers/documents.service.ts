@@ -7,7 +7,7 @@ import { EmployeesService } from "src/employees/providers/employees.service";
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
-import { Document } from "../schemas/document.schema";
+import { Document, DocumentDocument } from "../schemas/document.schema";
 
 @Injectable()
 export class DocumentsService {
@@ -17,6 +17,20 @@ export class DocumentsService {
     private readonly employeesService: EmployeesService,
   ) {}
 
+  private toPublicDocumentResponseDto(
+    document: DocumentDocument,
+  ): PublicDocumentResponseDto {
+    return {
+      id: document._id,
+      employee: document.employee,
+      documentType: document.documentType,
+      status: document.status,
+      documentUrl: document.documentUrl,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
+    };
+  }
+
   async findAll(): Promise<PublicDocumentResponseDto[]> {
     return (
       await this.documentModel
@@ -24,15 +38,7 @@ export class DocumentsService {
         .populate("documentType")
         .populate("employee")
         .exec()
-    ).map((doc) => ({
-      id: doc._id,
-      employee: doc.employee,
-      documentType: doc.documentType,
-      status: doc.status,
-      documentUrl: doc.documentUrl,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    }));
+    ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
 
   async findById(id: string): Promise<PublicDocumentResponseDto> {
@@ -46,15 +52,7 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${id} not found`);
     }
 
-    return {
-      id: document._id,
-      employee: document.employee,
-      documentType: document.documentType,
-      status: document.status,
-      documentUrl: document.documentUrl,
-      createdAt: document.createdAt,
-      updatedAt: document.updatedAt,
-    };
+    return this.toPublicDocumentResponseDto(document);
   }
 
   async create(
@@ -78,15 +76,7 @@ export class DocumentsService {
 
     const savedDocument = await newDocument.save();
 
-    return {
-      id: savedDocument._id,
-      employee: savedDocument.employee,
-      documentType: savedDocument.documentType,
-      status: savedDocument.status,
-      documentUrl: savedDocument.documentUrl,
-      createdAt: savedDocument.createdAt,
-      updatedAt: savedDocument.updatedAt,
-    };
+    return this.toPublicDocumentResponseDto(savedDocument);
   }
 
   async update(
@@ -120,15 +110,7 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${id} not found`);
     }
 
-    return {
-      id: updatedDocument._id,
-      employee: updatedDocument.employee,
-      documentType: updatedDocument.documentType,
-      status: updatedDocument.status,
-      documentUrl: updatedDocument.documentUrl,
-      createdAt: updatedDocument.createdAt,
-      updatedAt: updatedDocument.updatedAt,
-    };
+    return this.toPublicDocumentResponseDto(updatedDocument);
   }
 
   async delete(id: string): Promise<void> {
