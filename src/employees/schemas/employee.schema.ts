@@ -7,6 +7,9 @@ export type EmployeeDocument = HydratedDocument<Employee>;
 export class Employee {
   @Prop({ unique: true, required: true })
   public name: string;
+
+  public createdAt: Date;
+  public updatedAt: Date;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);

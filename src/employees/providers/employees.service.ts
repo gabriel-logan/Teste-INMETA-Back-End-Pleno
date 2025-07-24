@@ -17,6 +17,8 @@ export class EmployeesService {
     return (await this.userModel.find().exec()).map((employee) => ({
       id: employee._id,
       name: employee.name,
+      createdAt: employee.createdAt,
+      updatedAt: employee.updatedAt,
     }));
   }
 
@@ -30,6 +32,8 @@ export class EmployeesService {
     return {
       id: employee._id,
       name: employee.name,
+      createdAt: employee.createdAt,
+      updatedAt: employee.updatedAt,
     };
   }
 
@@ -47,6 +51,8 @@ export class EmployeesService {
     return {
       id: savedEmployee._id,
       name: savedEmployee.name,
+      createdAt: savedEmployee.createdAt,
+      updatedAt: savedEmployee.updatedAt,
     };
   }
 
@@ -67,6 +73,8 @@ export class EmployeesService {
     return {
       id: updatedEmployee._id,
       name: updatedEmployee.name,
+      createdAt: updatedEmployee.createdAt,
+      updatedAt: updatedEmployee.updatedAt,
     };
   }
 
@@ -80,6 +88,8 @@ export class EmployeesService {
     return {
       id: deletedEmployee._id,
       name: deletedEmployee.name,
+      createdAt: deletedEmployee.createdAt,
+      updatedAt: deletedEmployee.updatedAt,
     };
   }
 }

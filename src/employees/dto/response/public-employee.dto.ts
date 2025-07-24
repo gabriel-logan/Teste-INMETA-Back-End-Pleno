@@ -13,4 +13,18 @@ export class PublicEmployeeResponseDto implements Employee {
 
   @ApiProperty()
   public name: string;
+
+  @ApiProperty({
+    type: Date,
+    description: "The date and time when the employee was created",
+    example: "2021-06-14T10:00:00Z",
+  })
+  public createdAt: Date;
+
+  @ApiProperty({
+    type: Date,
+    description: "The date and time when the employee was last updated",
+    example: "2021-06-14T10:00:00Z",
+  })
+  public updatedAt: Date;
 }
