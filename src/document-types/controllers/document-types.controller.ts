@@ -83,14 +83,12 @@ export class DocumentTypesController {
   @ApiStandardResponses({
     ok: {
       description: "Deletes a document type by ID.",
-      type: PublicDocumentTypeResponseDto,
+      type: void 0,
     },
     notFound: true,
   })
   @Delete(":id")
-  async delete(
-    @Param("id") id: string,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  async delete(@Param("id") id: string): Promise<void> {
     return await this.documentTypesService.delete(id);
   }
 }

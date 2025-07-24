@@ -81,7 +81,7 @@ export class DocumentTypesService {
     };
   }
 
-  async delete(id: string): Promise<PublicDocumentTypeResponseDto> {
+  async delete(id: string): Promise<void> {
     const deletedDocumentType =
       await this.documentTypeModel.findByIdAndDelete(id);
 
@@ -89,11 +89,6 @@ export class DocumentTypesService {
       throw new NotFoundException(`DocumentType with id ${id} not found`);
     }
 
-    return {
-      id: deletedDocumentType._id,
-      name: deletedDocumentType.name,
-      createdAt: deletedDocumentType.createdAt,
-      updatedAt: deletedDocumentType.updatedAt,
-    };
+    return void 0;
   }
 }
