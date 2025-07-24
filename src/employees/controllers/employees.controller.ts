@@ -42,6 +42,10 @@ export class EmployeesController {
     description: "Employee details by ID",
     type: PublicEmployeeResponseDto,
   })
+  @ApiInternalServerErrorResponse({
+    description: "Internal server error",
+    type: InternalServerErrorDto,
+  })
   @ApiNotFoundResponse({
     description: "Employee not found",
     type: NotFoundExceptionDto,
