@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { DocumentType } from "src/documents-types/schemas/document-type.schema";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 export type DocumentDocument = HydratedDocument<Document>;
 

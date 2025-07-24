@@ -7,7 +7,6 @@ import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
-import { DocumentsTypesModule } from "./documents-types/documents-types.module";
 import { EmployeesModule } from "./employees/employees.module";
 
 @Module({
@@ -24,7 +23,6 @@ import { EmployeesModule } from "./employees/employees.module";
     }),
     EmployeesModule,
     DocumentsModule,
-    DocumentsTypesModule,
     DocumentTypesModule,
   ],
   controllers: [AppController],
