@@ -10,37 +10,40 @@ import {
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { DocumentsService } from "../providers/documents.service";
 
 @Controller("documents")
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
-  @Post()
-  create(@Body() createDocumentDto: CreateDocumentRequestDto) {
-    return this.documentsService.create(createDocumentDto);
-  }
-
   @Get()
-  findAll() {
-    return this.documentsService.findAll();
+  async findAll(): Promise<PublicDocumentResponseDto[]> {
+    return await this.documentsService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.documentsService.findOne(id);
+  async findOne(@Param("id") id: string): Promise<PublicDocumentResponseDto> {
+    return await this.documentsService.findOne(id);
+  }
+
+  @Post()
+  async create(
+    @Body() createDocumentDto: CreateDocumentRequestDto,
+  ): Promise<PublicDocumentResponseDto> {
+    return await this.documentsService.create(createDocumentDto);
   }
 
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
-  ) {
-    return this.documentsService.update(id, updateDocumentDto);
+  ): Promise<PublicDocumentResponseDto> {
+    return await this.documentsService.update(id, updateDocumentDto);
   }
 
   @Delete(":id")
-  delete(@Param("id") id: string) {
-    return this.documentsService.delete(id);
+  async delete(@Param("id") id: string): Promise<PublicDocumentResponseDto> {
+    return await this.documentsService.delete(id);
   }
 }

@@ -1,27 +1,34 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { Document } from "../schemas/document.schema";
 
 @Injectable()
 export class DocumentsService {
-  create(createDocumentDto: CreateDocumentRequestDto) {
+  constructor(
+    @InjectModel(Document.name) private readonly documentModel: Model<Document>,
+  ) {}
+
+  async create(createDocumentDto: CreateDocumentRequestDto) {
     return "This action adds a new document";
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all documents`;
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return `This action returns a #${id} document`;
   }
 
-  update(id: string, updateDocumentDto: UpdateDocumentRequestDto) {
+  async update(id: string, updateDocumentDto: UpdateDocumentRequestDto) {
     return `This action updates a #${id} document`;
   }
 
-  delete(id: string) {
+  async delete(id: string) {
     return `This action deletes a #${id} document`;
   }
 }
