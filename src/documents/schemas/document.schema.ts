@@ -20,7 +20,7 @@ export class Document {
   public status: DocumentStatus;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DocumentType.name })
-  public documentsType: DocumentType;
+  public documentType: DocumentType;
 
   public createdAt: Date;
   public updatedAt: Date;

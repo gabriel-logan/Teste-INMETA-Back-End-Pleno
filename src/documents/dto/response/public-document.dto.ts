@@ -25,7 +25,7 @@ export class PublicDocumentResponseDto implements Document {
       "Unique identifier for the employee associated with the document",
     example: "60c72b2f9b1e8c001c8f8e1e",
   })
-  public documentsType: DocumentType;
+  public documentType: DocumentType;
 
   @ApiProperty({
     type: DocumentStatus,

@@ -14,10 +14,12 @@ export class DocumentsService {
   ) {}
 
   async findAll(): Promise<PublicDocumentResponseDto[]> {
-    return (await this.documentModel.find().exec()).map((doc) => ({
+    return (
+      await this.documentModel.find().populate("documentType").exec()
+    ).map((doc) => ({
       id: doc._id,
       name: doc.name,
-      documentsType: doc.documentsType,
+      documentType: doc.documentType,
       status: doc.status,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
@@ -25,7 +27,10 @@ export class DocumentsService {
   }
 
   async findById(id: string): Promise<PublicDocumentResponseDto> {
-    const document = await this.documentModel.findById(id).exec();
+    const document = await this.documentModel
+      .findById(id)
+      .populate("documentType")
+      .exec();
 
     if (!document) {
       throw new NotFoundException(`Document with id ${id} not found`);
@@ -34,7 +39,7 @@ export class DocumentsService {
     return {
       id: document._id,
       name: document.name,
-      documentsType: document.documentsType,
+      documentType: document.documentType,
       status: document.status,
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
@@ -44,10 +49,12 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { name } = createDocumentDto;
+    const { name, documentTypeId, status } = createDocumentDto;
 
     const newDocument = new this.documentModel({
       name,
+      documentType: documentTypeId,
+      status,
     });
 
     const savedDocument = await newDocument.save();
@@ -55,7 +62,7 @@ export class DocumentsService {
     return {
       id: savedDocument._id,
       name: savedDocument.name,
-      documentsType: savedDocument.documentsType,
+      documentType: savedDocument.documentType,
       status: savedDocument.status,
       createdAt: savedDocument.createdAt,
       updatedAt: savedDocument.updatedAt,
@@ -79,7 +86,7 @@ export class DocumentsService {
     return {
       id: updatedDocument._id,
       name: updatedDocument.name,
-      documentsType: updatedDocument.documentsType,
+      documentType: updatedDocument.documentType,
       status: updatedDocument.status,
       createdAt: updatedDocument.createdAt,
       updatedAt: updatedDocument.updatedAt,
@@ -98,7 +105,7 @@ export class DocumentsService {
     return {
       id: deletedDocument._id,
       name: deletedDocument.name,
-      documentsType: deletedDocument.documentsType,
+      documentType: deletedDocument.documentType,
       status: deletedDocument.status,
       createdAt: deletedDocument.createdAt,
       updatedAt: deletedDocument.updatedAt,
