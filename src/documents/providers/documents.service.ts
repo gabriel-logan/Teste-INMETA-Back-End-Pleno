@@ -96,6 +96,7 @@ export class DocumentsService {
     const { documentTypeId, status, employeeId } = updateDocumentDto;
 
     let documentType = { id: documentTypeId };
+    let employee = { id: employeeId };
 
     if (documentTypeId) {
       documentType = await this.documentTypesService.findById(
@@ -103,10 +104,14 @@ export class DocumentsService {
       );
     }
 
+    if (employeeId) {
+      employee = await this.employeesService.findById(employeeId.toString());
+    }
+
     const updatedDocument = await this.documentModel
       .findByIdAndUpdate(
         id,
-        { documentType: documentType.id, status, employee: employeeId },
+        { documentType: documentType.id, status, employee: employee.id },
         { new: true, runValidators: true },
       )
       .exec();
