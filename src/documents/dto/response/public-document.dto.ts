@@ -18,6 +18,13 @@ export class PublicDocumentResponseDto implements Document {
   @ApiProperty({
     type: DocumentType,
     description: "The type of the document",
+    example: {
+      _id: "688205905a14025cdfb57ae5",
+      name: "CPF",
+      createdAt: "2025-07-24T10:06:08.724Z",
+      updatedAt: "2025-07-24T10:06:08.724Z",
+      __v: 0,
+    },
   })
   public documentType: DocumentType;
 
