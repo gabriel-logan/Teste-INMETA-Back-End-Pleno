@@ -57,9 +57,9 @@ export class EmployeesController {
   })
   @Post()
   async create(
-    @Body() createEmployeeRequestDto: CreateEmployeeRequestDto,
+    @Body() createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    return await this.employeesService.create(createEmployeeRequestDto);
+    return await this.employeesService.create(createEmployeeDto);
   }
 
   @ApiStandardResponses({
@@ -73,9 +73,9 @@ export class EmployeesController {
   @Patch(":id")
   async update(
     @Param("id") id: string,
-    @Body() updateEmployeeRequestDto: UpdateEmployeeRequestDto,
+    @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    return await this.employeesService.update(id, updateEmployeeRequestDto);
+    return await this.employeesService.update(id, updateEmployeeDto);
   }
 
   @ApiStandardResponses({

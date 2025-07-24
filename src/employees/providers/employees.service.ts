@@ -38,9 +38,9 @@ export class EmployeesService {
   }
 
   async create(
-    createEmployeeRequestDto: CreateEmployeeRequestDto,
+    createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name } = createEmployeeRequestDto;
+    const { name } = createEmployeeDto;
 
     const createdEmployee = new this.employeeModel({
       name,
@@ -58,9 +58,9 @@ export class EmployeesService {
 
   async update(
     id: string,
-    updateEmployeeRequestDto: UpdateEmployeeRequestDto,
+    updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name } = updateEmployeeRequestDto;
+    const { name } = updateEmployeeDto;
 
     const updatedEmployee = await this.employeeModel
       .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
