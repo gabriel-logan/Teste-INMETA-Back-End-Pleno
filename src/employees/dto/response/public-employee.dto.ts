@@ -1,11 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import {
-  ContractStatus,
-  type Employee,
-} from "src/employees/schemas/employee.schema";
+import { ContractStatus } from "src/employees/schemas/employee.schema";
 
-export class PublicEmployeeResponseDto implements Employee {
+export class PublicEmployeeResponseDto {
   @ApiProperty({
     type: String,
     format: "ObjectId",
