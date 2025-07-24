@@ -14,16 +14,11 @@ export class EmployeesService {
   ) {}
 
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return (
-      await this.employeeModel
-        .find()
-        .populate({ path: "documents", populate: { path: "documentType" } })
-        .exec()
-    ).map((employee) => ({
+    return (await this.employeeModel.find().exec()).map((employee) => ({
       id: employee._id,
       name: employee.name,
       contractStatus: employee.contractStatus,
-      documents: employee.documents,
+      cpf: employee.cpf,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
     }));
@@ -40,7 +35,7 @@ export class EmployeesService {
       id: employee._id,
       name: employee.name,
       contractStatus: employee.contractStatus,
-      documents: employee.documents,
+      cpf: employee.cpf,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
     };
@@ -49,10 +44,11 @@ export class EmployeesService {
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name } = createEmployeeDto;
+    const { name, cpf } = createEmployeeDto;
 
     const createdEmployee = new this.employeeModel({
       name,
+      cpf,
     });
 
     const savedEmployee = await createdEmployee.save();
@@ -61,7 +57,7 @@ export class EmployeesService {
       id: savedEmployee._id,
       name: savedEmployee.name,
       contractStatus: savedEmployee.contractStatus,
-      documents: savedEmployee.documents,
+      cpf: savedEmployee.cpf,
       createdAt: savedEmployee.createdAt,
       updatedAt: savedEmployee.updatedAt,
     };
@@ -71,10 +67,10 @@ export class EmployeesService {
     id: string,
     updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name } = updateEmployeeDto;
+    const { name, cpf } = updateEmployeeDto;
 
     const updatedEmployee = await this.employeeModel
-      .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
+      .findByIdAndUpdate(id, { name, cpf }, { new: true, runValidators: true })
       .exec();
 
     if (!updatedEmployee) {
@@ -85,13 +81,13 @@ export class EmployeesService {
       id: updatedEmployee._id,
       name: updatedEmployee.name,
       contractStatus: updatedEmployee.contractStatus,
-      documents: updatedEmployee.documents,
+      cpf: updatedEmployee.cpf,
       createdAt: updatedEmployee.createdAt,
       updatedAt: updatedEmployee.updatedAt,
     };
   }
 
-  async delete(id: string): Promise<PublicEmployeeResponseDto> {
+  async delete(id: string): Promise<void> {
     const deletedEmployee = await this.employeeModel
       .findByIdAndDelete(id)
       .exec();
@@ -100,13 +96,6 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${id} not found`);
     }
 
-    return {
-      id: deletedEmployee._id,
-      name: deletedEmployee.name,
-      contractStatus: deletedEmployee.contractStatus,
-      documents: deletedEmployee.documents,
-      createdAt: deletedEmployee.createdAt,
-      updatedAt: deletedEmployee.updatedAt,
-    };
+    return void 0;
   }
 }

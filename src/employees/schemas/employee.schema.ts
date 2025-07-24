@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument } from "mongoose";
-import { Document } from "src/documents/schemas/document.schema";
+import { HydratedDocument } from "mongoose";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
@@ -17,10 +16,8 @@ export class Employee {
   @Prop({ default: ContractStatus.ACTIVE })
   public contractStatus: ContractStatus;
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
-  })
-  public documents: Document[];
+  @Prop({ required: true, unique: true })
+  public cpf: string;
 
   public createdAt: Date;
   public updatedAt: Date;

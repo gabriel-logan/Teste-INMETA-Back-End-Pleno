@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { Document } from "src/documents/schemas/document.schema";
 import {
   ContractStatus,
   type Employee,
@@ -26,26 +25,11 @@ export class PublicEmployeeResponseDto implements Employee {
   public contractStatus: ContractStatus;
 
   @ApiProperty({
-    type: Document,
-    description: "List of documents associated with the employee",
-    isArray: true,
-    example: [
-      {
-        id: "688208436df1ac7fbf95320e",
-        documentType: {
-          _id: "688205905a14025cdfb57ae5",
-          name: "CPF",
-          createdAt: "2025-07-24T10:06:08.724Z",
-          updatedAt: "2025-07-24T10:06:08.724Z",
-          __v: 0,
-        },
-        status: "missing",
-        createdAt: "2025-07-24T10:17:39.376Z",
-        updatedAt: "2025-07-24T10:24:43.801Z",
-      },
-    ],
+    type: String,
+    description: "The CPF (Cadastro de Pessoas Físicas) of the employee",
+    example: "123.456.789-09",
   })
-  public documents: Document[];
+  public cpf: string;
 
   @ApiProperty({
     type: Date,

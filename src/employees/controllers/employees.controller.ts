@@ -81,12 +81,12 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Delete an employee",
-      type: PublicEmployeeResponseDto,
+      type: void 0,
     },
     notFound: true,
   })
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
+  async delete(@Param("id") id: string): Promise<void> {
     return await this.employeesService.delete(id);
   }
 }
