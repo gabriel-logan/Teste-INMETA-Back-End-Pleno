@@ -22,6 +22,7 @@ export class EmployeesService {
     ).map((employee) => ({
       id: employee._id,
       name: employee.name,
+      hiredAt: employee.hiredAt,
       documents: employee.documents,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
@@ -38,6 +39,7 @@ export class EmployeesService {
     return {
       id: employee._id,
       name: employee.name,
+      hiredAt: employee.hiredAt,
       documents: employee.documents,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
@@ -58,6 +60,7 @@ export class EmployeesService {
     return {
       id: savedEmployee._id,
       name: savedEmployee.name,
+      hiredAt: savedEmployee.hiredAt,
       documents: savedEmployee.documents,
       createdAt: savedEmployee.createdAt,
       updatedAt: savedEmployee.updatedAt,
@@ -81,6 +84,7 @@ export class EmployeesService {
     return {
       id: updatedEmployee._id,
       name: updatedEmployee.name,
+      hiredAt: updatedEmployee.hiredAt,
       documents: updatedEmployee.documents,
       createdAt: updatedEmployee.createdAt,
       updatedAt: updatedEmployee.updatedAt,
@@ -99,6 +103,7 @@ export class EmployeesService {
     return {
       id: deletedEmployee._id,
       name: deletedEmployee.name,
+      hiredAt: deletedEmployee.hiredAt,
       documents: deletedEmployee.documents,
       createdAt: deletedEmployee.createdAt,
       updatedAt: deletedEmployee.updatedAt,

@@ -9,6 +9,9 @@ export class Employee {
   @Prop({ required: true })
   public name: string;
 
+  @Prop({ default: null, type: Date })
+  public hiredAt: Date | null;
+
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: Document.name }],
   })

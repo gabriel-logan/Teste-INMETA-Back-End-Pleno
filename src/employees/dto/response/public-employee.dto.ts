@@ -16,6 +16,14 @@ export class PublicEmployeeResponseDto implements Employee {
   public name: string;
 
   @ApiProperty({
+    type: Date,
+    description: "The date and time when the employee was hired",
+    example: "2021-06-14T10:00:00Z",
+    nullable: true,
+  })
+  public hiredAt: Date | null;
+
+  @ApiProperty({
     type: Document,
     description: "List of documents associated with the employee",
     isArray: true,
