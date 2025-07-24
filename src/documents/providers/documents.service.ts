@@ -73,10 +73,14 @@ export class DocumentsService {
     id: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { name } = updateDocumentDto;
+    const { name, documentTypeId, status } = updateDocumentDto;
 
     const updatedDocument = await this.documentModel
-      .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
+      .findByIdAndUpdate(
+        id,
+        { name, documentType: documentTypeId, status },
+        { new: true, runValidators: true },
+      )
       .exec();
 
     if (!updatedDocument) {
