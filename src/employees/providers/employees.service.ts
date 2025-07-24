@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -13,24 +13,9 @@ export class EmployeesService {
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
   ) {}
 
-  async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return (await this.employeeModel.find().exec()).map((employee) => ({
-      id: employee._id,
-      name: employee.name,
-      contractStatus: employee.contractStatus,
-      cpf: employee.cpf,
-      createdAt: employee.createdAt,
-      updatedAt: employee.updatedAt,
-    }));
-  }
-
-  async findById(id: string): Promise<PublicEmployeeResponseDto> {
-    const employee = await this.employeeModel.findById(id).exec();
-
-    if (!employee) {
-      throw new NotFoundException(`Employee with id ${id} not found`);
-    }
-
+  private toPublicEmployeeResponseDto(
+    employee: Employee & { _id: Types.ObjectId },
+  ): PublicEmployeeResponseDto {
     return {
       id: employee._id,
       name: employee.name,
@@ -39,6 +24,22 @@ export class EmployeesService {
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
     };
+  }
+
+  async findAll(): Promise<PublicEmployeeResponseDto[]> {
+    return (await this.employeeModel.find().lean()).map((employee) =>
+      this.toPublicEmployeeResponseDto(employee),
+    );
+  }
+
+  async findById(id: string): Promise<PublicEmployeeResponseDto> {
+    const employee = await this.employeeModel.findById(id).lean();
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${id} not found`);
+    }
+
+    return this.toPublicEmployeeResponseDto(employee);
   }
 
   async create(
@@ -53,14 +54,7 @@ export class EmployeesService {
 
     const savedEmployee = await createdEmployee.save();
 
-    return {
-      id: savedEmployee._id,
-      name: savedEmployee.name,
-      contractStatus: savedEmployee.contractStatus,
-      cpf: savedEmployee.cpf,
-      createdAt: savedEmployee.createdAt,
-      updatedAt: savedEmployee.updatedAt,
-    };
+    return this.toPublicEmployeeResponseDto(savedEmployee);
   }
 
   async update(
@@ -71,26 +65,19 @@ export class EmployeesService {
 
     const updatedEmployee = await this.employeeModel
       .findByIdAndUpdate(id, { name, cpf }, { new: true, runValidators: true })
-      .exec();
+      .lean();
 
     if (!updatedEmployee) {
       throw new NotFoundException(`Employee with id ${id} not found`);
     }
 
-    return {
-      id: updatedEmployee._id,
-      name: updatedEmployee.name,
-      contractStatus: updatedEmployee.contractStatus,
-      cpf: updatedEmployee.cpf,
-      createdAt: updatedEmployee.createdAt,
-      updatedAt: updatedEmployee.updatedAt,
-    };
+    return this.toPublicEmployeeResponseDto(updatedEmployee);
   }
 
   async delete(id: string): Promise<void> {
     const deletedEmployee = await this.employeeModel
       .findByIdAndDelete(id)
-      .exec();
+      .lean();
 
     if (!deletedEmployee) {
       throw new NotFoundException(`Employee with id ${id} not found`);
