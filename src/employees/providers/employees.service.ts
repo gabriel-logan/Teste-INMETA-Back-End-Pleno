@@ -14,7 +14,12 @@ export class EmployeesService {
   ) {}
 
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return (await this.employeeModel.find().exec()).map((employee) => ({
+    return (
+      await this.employeeModel
+        .find()
+        .populate({ path: "documents", populate: { path: "documentType" } })
+        .exec()
+    ).map((employee) => ({
       id: employee._id,
       name: employee.name,
       documents: employee.documents,
