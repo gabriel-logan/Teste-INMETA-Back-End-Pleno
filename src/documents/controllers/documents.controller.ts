@@ -86,7 +86,7 @@ export class DocumentsController {
     notFound: true,
   })
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<PublicDocumentResponseDto> {
+  async delete(@Param("id") id: string): Promise<void> {
     return await this.documentsService.delete(id);
   }
 }

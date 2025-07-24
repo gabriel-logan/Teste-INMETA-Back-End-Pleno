@@ -115,7 +115,7 @@ export class DocumentsService {
     };
   }
 
-  async delete(id: string): Promise<PublicDocumentResponseDto> {
+  async delete(id: string): Promise<void> {
     const deletedDocument = await this.documentModel
       .findByIdAndDelete(id)
       .exec();
@@ -124,14 +124,6 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${id} not found`);
     }
 
-    return {
-      id: deletedDocument._id,
-      employee: deletedDocument.employee,
-      documentType: deletedDocument.documentType,
-      status: deletedDocument.status,
-      url: deletedDocument.url,
-      createdAt: deletedDocument.createdAt,
-      updatedAt: deletedDocument.updatedAt,
-    };
+    return void 0;
   }
 }
