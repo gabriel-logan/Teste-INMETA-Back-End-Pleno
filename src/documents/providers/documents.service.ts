@@ -100,11 +100,9 @@ export class DocumentsService {
       updateData.status = status;
     }
 
-    const updatedDocument = await this.documentModel.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true },
-    );
+    const updatedDocument = await this.documentModel
+      .findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
+      .lean();
 
     if (!updatedDocument) {
       throw new NotFoundException(`Document with id ${id} not found`);
@@ -114,7 +112,9 @@ export class DocumentsService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedDocument = await this.documentModel.findByIdAndDelete(id);
+    const deletedDocument = await this.documentModel
+      .findByIdAndDelete(id)
+      .lean();
 
     if (!deletedDocument) {
       throw new NotFoundException(`Document with id ${id} not found`);
