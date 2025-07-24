@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiResponse } from "@nestjs/swagger";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -23,9 +22,12 @@ import { EmployeesService } from "../providers/employees.service";
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
-  @ApiResponse({
-    description: "List of employees",
-    type: [PublicEmployeeResponseDto],
+  @ApiStandardResponses({
+    ok: {
+      description: "List of all employees",
+      type: PublicEmployeeResponseDto,
+      isArray: true,
+    },
   })
   @Get()
   async findAll(): Promise<PublicEmployeeResponseDto[]> {

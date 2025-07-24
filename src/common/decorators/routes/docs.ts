@@ -22,6 +22,7 @@ export type ResponseOptions = {
   ok: {
     description: string;
     type: typeOkResponse;
+    isArray?: boolean;
   };
   badRequest?: boolean;
   notFound?: boolean;
@@ -36,6 +37,7 @@ export function ApiStandardResponses(
     ApiOkResponse({
       description: options.ok.description,
       type: options.ok.type,
+      isArray: options.ok.isArray,
     }),
   ];
 
