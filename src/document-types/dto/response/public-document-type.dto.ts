@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { DocumentType } from "src/document-types/schemas/document-type.schema";
+import {
+  DocumentType,
+  DocumentTypeAllowedValues,
+} from "src/document-types/schemas/document-type.schema";
 
 export class PublicDocumentTypeResponseDto implements DocumentType {
   @ApiProperty({
@@ -11,8 +14,12 @@ export class PublicDocumentTypeResponseDto implements DocumentType {
   })
   public id: Types.ObjectId;
 
-  @ApiProperty()
-  public name: string;
+  @ApiProperty({
+    enum: DocumentTypeAllowedValues,
+    description: "The name of the document type",
+    example: DocumentTypeAllowedValues.CPF,
+  })
+  public name: DocumentTypeAllowedValues;
 
   @ApiProperty({
     type: Date,

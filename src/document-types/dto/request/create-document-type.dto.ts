@@ -1,13 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
-
-export enum DocumentTypeAllowedValues {
-  CPF = "CPF",
-  CNPJ = "CNPJ",
-  CTPS = "CTPS",
-  RG = "RG",
-  CNH = "CNH",
-}
+import { DocumentTypeAllowedValues } from "src/document-types/schemas/document-type.schema";
 
 export class CreateDocumentTypeRequestDto {
   @ApiProperty({
