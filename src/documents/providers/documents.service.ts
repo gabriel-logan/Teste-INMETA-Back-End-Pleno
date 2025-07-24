@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { EmployeesService } from "src/employees/providers/employees.service";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
-import { Document, DocumentDocument } from "../schemas/document.schema";
+import { Document } from "../schemas/document.schema";
 
 @Injectable()
 export class DocumentsService {
@@ -18,7 +18,7 @@ export class DocumentsService {
   ) {}
 
   private toPublicDocumentResponseDto(
-    document: DocumentDocument,
+    document: Document & { _id: Types.ObjectId },
   ): PublicDocumentResponseDto {
     return {
       id: document._id,
@@ -35,6 +35,7 @@ export class DocumentsService {
     return (
       await this.documentModel
         .find()
+        .lean()
         .populate("documentType")
         .populate("employee")
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
@@ -43,6 +44,7 @@ export class DocumentsService {
   async findById(id: string): Promise<PublicDocumentResponseDto> {
     const document = await this.documentModel
       .findById(id)
+      .lean()
       .populate("documentType")
       .populate("employee");
 
