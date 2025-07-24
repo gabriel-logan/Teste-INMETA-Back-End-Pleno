@@ -12,7 +12,7 @@ export class Employee {
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: Document.name }],
   })
-  public documents: Document[] | null;
+  public documents: Document[];
 
   public createdAt: Date;
   public updatedAt: Date;

@@ -35,7 +35,7 @@ export class PublicEmployeeResponseDto implements Employee {
       },
     ],
   })
-  public documents: Document[] | null;
+  public documents: Document[];
 
   @ApiProperty({
     type: Date,
