@@ -12,16 +12,16 @@ export class DocumentsService {
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
   ) {}
 
-  async create(createDocumentDto: CreateDocumentRequestDto) {
-    return "This action adds a new document";
-  }
-
   async findAll() {
     return `This action returns all documents`;
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     return `This action returns a #${id} document`;
+  }
+
+  async create(createDocumentDto: CreateDocumentRequestDto) {
+    return "This action adds a new document";
   }
 
   async update(id: string, updateDocumentDto: UpdateDocumentRequestDto) {

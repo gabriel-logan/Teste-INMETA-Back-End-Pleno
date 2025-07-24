@@ -23,8 +23,8 @@ export class DocumentsController {
   }
 
   @Get(":id")
-  async findOne(@Param("id") id: string): Promise<PublicDocumentResponseDto> {
-    return await this.documentsService.findOne(id);
+  async findById(@Param("id") id: string): Promise<PublicDocumentResponseDto> {
+    return await this.documentsService.findById(id);
   }
 
   @Post()
