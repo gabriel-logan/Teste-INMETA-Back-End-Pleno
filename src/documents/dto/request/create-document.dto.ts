@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
 import { Types } from "mongoose";
-import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
+import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
 import { DocumentStatus } from "src/documents/schemas/document.schema";
 
 export class CreateDocumentRequestDto {
@@ -11,7 +11,7 @@ export class CreateDocumentRequestDto {
     description: "The ID of the employee to whom the document belongs",
     example: "1234567890abcdef12345678",
   })
-  @IsNotBlankString()
+  @IsObjectIdString()
   public documentTypeId: Types.ObjectId;
 
   @ApiProperty({
@@ -28,6 +28,6 @@ export class CreateDocumentRequestDto {
     description: "The ID of the employee to whom the document belongs",
     example: "1234567890abcdef12345678",
   })
-  @IsNotBlankString()
+  @IsObjectIdString()
   public employeeId: Types.ObjectId;
 }
