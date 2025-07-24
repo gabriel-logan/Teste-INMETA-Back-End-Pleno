@@ -63,7 +63,7 @@ export class EmployeesService {
     const { name } = updateEmployeeRequestDto;
 
     const updatedEmployee = await this.employeeModel
-      .findByIdAndUpdate(id, { name }, { new: true })
+      .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
       .exec();
 
     if (!updatedEmployee) {
