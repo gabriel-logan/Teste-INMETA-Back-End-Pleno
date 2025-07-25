@@ -67,6 +67,29 @@ export class DocumentsService {
 
     const employee = await this.employeesService.findById(employeeId);
 
+    // Check if the document type is linked to the employee
+    const isLinkedDocumentType = employee.documentTypes
+      .map((docType) => docType.name)
+      .includes(documentType.name);
+
+    if (!isLinkedDocumentType) {
+      throw new NotFoundException(
+        `Document type id ${documentTypeId} is not linked to employee ${employeeId}`,
+      );
+    }
+
+    // Check if the employee already has a document of this type
+    const existingDocument = await this.documentModel.findOne({
+      employee: employee.id,
+      documentType: documentType.id,
+    });
+
+    if (existingDocument) {
+      throw new NotFoundException(
+        `Employee ${employeeId} already has a document of type ${documentTypeId}`,
+      );
+    }
+
     const newDocument = new this.documentModel({
       documentType: documentType.id,
       status,
