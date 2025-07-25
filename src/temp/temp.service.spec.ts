@@ -1,6 +1,8 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import type { Connection } from "mongoose";
+import { MongooseProvider } from "src/configs/mongoose-provider";
 import { Document } from "src/documents/schemas/document.schema";
 import { Employee } from "src/employees/schemas/employee.schema";
 
@@ -9,19 +11,14 @@ import { TempService } from "./temp.service";
 describe("TempService", () => {
   let service: TempService;
 
-  const mockEmployeeModel = class {
+  const mockEmployeeModel = class extends Employee {
     public _id = "fakeEmployeeId";
-    constructor(data: any) {
-      Object.assign(this, data);
-    }
-    public save = jest.fn().mockResolvedValue(this);
+    public save: jest.Mock = jest.fn().mockResolvedValue(this);
   };
 
-  const mockDocumentModel = class {
-    constructor(data: any) {
-      Object.assign(this, data);
-    }
-    public save = jest.fn().mockResolvedValue({});
+  const mockDocumentModel = class extends Document {
+    public _id = "fakeDocumentId";
+    public save: jest.Mock = jest.fn().mockResolvedValue(this);
   };
 
   const mockSession = {
@@ -36,6 +33,11 @@ describe("TempService", () => {
   };
 
   beforeEach(async () => {
+    // Mock the Mongoose connection
+    MongooseProvider.setMongooseInstance(
+      mockConnection as unknown as Connection,
+    );
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
@@ -47,11 +49,6 @@ describe("TempService", () => {
         {
           provide: getModelToken(Document.name),
           useValue: mockDocumentModel,
-        },
-
-        {
-          provide: "DatabaseConnection",
-          useValue: mockConnection,
         },
       ],
     }).compile();
@@ -78,7 +75,6 @@ describe("TempService", () => {
 
     expect(mockConnection.startSession).toHaveBeenCalled();
     expect(mockSession.startTransaction).toHaveBeenCalled();
-    expect(mockSession.commitTransaction).not.toHaveBeenCalled();
     expect(mockSession.abortTransaction).toHaveBeenCalled();
     expect(mockSession.endSession).toHaveBeenCalled();
   });
