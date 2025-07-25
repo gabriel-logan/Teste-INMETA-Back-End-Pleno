@@ -17,4 +17,8 @@ export class MongooseProvider {
 
     return MongooseProvider.instance;
   }
+
+  static clearMongooseInstance(): void {
+    MongooseProvider.instance = undefined;
+  }
 }

@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from "@nestjs/common";
+import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
 import mongoose, { Connection } from "mongoose";
@@ -30,7 +30,7 @@ import { EmployeesModule } from "./employees/employees.module";
   controllers: [AppController],
   providers: [],
 })
-export class AppModule implements OnModuleInit {
+export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(@InjectConnection() private readonly connection: Connection) {}
 
   onModuleInit(): void {
@@ -38,5 +38,9 @@ export class AppModule implements OnModuleInit {
     mongoose.set("transactionAsyncLocalStorage", true);
 
     MongooseProvider.setMongooseInstance(this.connection);
+  }
+
+  onModuleDestroy(): void {
+    MongooseProvider.clearMongooseInstance();
   }
 }
