@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
@@ -15,6 +16,7 @@ import { Employee } from "../schemas/employee.schema";
 export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
+    private readonly documentTypesService: DocumentTypesService,
   ) {}
 
   private toPublicEmployeeResponseDto(
@@ -108,6 +110,10 @@ export class EmployeesService {
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const { documentTypeIds } = linkDocumentTypesDto;
 
+    const documentTypes = await Promise.all(
+      documentTypeIds.map((id) => this.documentTypesService.findById(id)),
+    );
+
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
@@ -118,7 +124,9 @@ export class EmployeesService {
       employee.documentTypes.map((doc) => doc.toString()),
     );
 
-    for (const docId of documentTypeIds) {
+    for (const docId of documentTypes.map(
+      (doc) => doc.id as unknown as string,
+    )) {
       if (!existing.has(docId)) {
         employee.documentTypes.push(new Types.ObjectId(docId));
       }
@@ -139,6 +147,10 @@ export class EmployeesService {
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const { documentTypeIds } = unlinkDocumentTypesDto;
 
+    const documentTypes = await Promise.all(
+      documentTypeIds.map((id) => this.documentTypesService.findById(id)),
+    );
+
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
@@ -146,7 +158,7 @@ export class EmployeesService {
     }
 
     employee.documentTypes = employee.documentTypes.filter(
-      (id) => !documentTypeIds.includes(id.toString()),
+      (id) => !documentTypes.map((doc) => doc.id).includes(id),
     );
 
     await employee.save();

@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { DocumentTypesModule } from "src/document-types/document-types.module";
 
 import { EmployeesController } from "./controllers/employees.controller";
 import { EmployeesService } from "./providers/employees.service";
@@ -13,6 +14,7 @@ import { Employee, EmployeeSchema } from "./schemas/employee.schema";
         schema: EmployeeSchema,
       },
     ]),
+    DocumentTypesModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],
