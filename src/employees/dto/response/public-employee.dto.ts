@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { ContractStatus } from "src/employees/schemas/employee.schema";
 
 export class PublicEmployeeResponseDto {
@@ -20,6 +21,9 @@ export class PublicEmployeeResponseDto {
     example: ContractStatus.ACTIVE,
   })
   public contractStatus: ContractStatus;
+
+  @ApiProperty()
+  public documentTypes: DocumentType[];
 
   @ApiProperty({
     type: String,
