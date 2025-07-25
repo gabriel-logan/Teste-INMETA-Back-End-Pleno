@@ -13,7 +13,6 @@ import {
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
-import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiQuery } from "@nestjs/swagger";
 import {
@@ -22,6 +21,7 @@ import {
   ApiStandardResponses,
   ApiTypeFormData,
 } from "src/common/decorators/routes/docs";
+import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -56,7 +56,7 @@ export class DocumentsController {
   })
   @Get(":documentId")
   async findById(
-    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
   ): Promise<PublicDocumentResponseDto> {
     return await this.documentsService.findById(documentId);
   }
@@ -86,7 +86,7 @@ export class DocumentsController {
   })
   @Patch(":documentId")
   async update(
-    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
     return await this.documentsService.update(documentId, updateDocumentDto);
@@ -101,7 +101,7 @@ export class DocumentsController {
   })
   @Delete(":documentId")
   async delete(
-    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
   ): Promise<void> {
     return await this.documentsService.delete(documentId);
   }
@@ -119,7 +119,7 @@ export class DocumentsController {
   @Post(":documentId/send-file")
   @UseInterceptors(FileInterceptor("documentFile"))
   async sendDocumentFile(
-    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
@@ -148,7 +148,7 @@ export class DocumentsController {
   })
   @Delete(":documentId/delete-file")
   async deleteDocumentFile(
-    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
     return await this.documentsService.deleteDocumentFile(documentId);
   }
@@ -163,7 +163,7 @@ export class DocumentsController {
   @ApiQuery({ required: false, name: "status", enum: DocumentStatus })
   @Get("employee/:employeeId/statuses")
   async getDocumentStatusesByEmployeeId(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal()) employeeId: string,
     @Query("status") status?: DocumentStatus,
   ): Promise<
     Record<
@@ -187,13 +187,15 @@ export class DocumentsController {
       isArray: true,
     },
   })
-  @Get("missing")
+  @Get("missing-documents/get-all")
   @ApiGetAllMissingDocumentsQueries()
   async getAllMissingDocuments(
-    @Query("page", ParseIntPipe) page: number = 1,
-    @Query("limit", ParseIntPipe) limit: number = 10,
-    @Query("employeeId", ParseObjectIdPipe) employeeId?: string,
-    @Query("documentTypeId", ParseObjectIdPipe) documentTypeId?: string,
+    @Query("page", new ParseIntPipe({ optional: true })) page: number = 1,
+    @Query("limit", new ParseIntPipe({ optional: true })) limit: number = 10,
+    @Query("employeeId", new ParseObjectIdPipeLocal({ optional: true }))
+    employeeId?: string,
+    @Query("documentTypeId", new ParseObjectIdPipeLocal({ optional: true }))
+    documentTypeId?: string,
   ): Promise<{
     documents: PublicDocumentResponseDto[];
     total: number;

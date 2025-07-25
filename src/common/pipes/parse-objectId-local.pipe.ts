@@ -18,7 +18,7 @@ export class ParseObjectIdPipeLocal
     }
 
     if (typeof value !== "string") {
-      throw new BadRequestException("Value must be a string.");
+      throw new BadRequestException("Value is required and must be a string.");
     }
 
     return new ParseObjectIdPipe().transform(value);
