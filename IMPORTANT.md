@@ -25,6 +25,14 @@ mkdir -p ~/mongo-data
 
 ### 2. Inicie o MongoDB com replica set
 
+#### Pare o serviço MongoDB se estiver rodando:
+
+```bash
+sudo systemctl stop mongod
+```
+
+#### Inicie o MongoDB manualmente com replica set:
+
 ```bash
 mongod --dbpath ~/mongo-data --replSet rs0
 ```
