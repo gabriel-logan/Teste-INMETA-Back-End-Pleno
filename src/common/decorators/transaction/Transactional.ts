@@ -21,7 +21,7 @@ export function Transactional() {
       );
     }
 
-    desctriptor.value = async function (...args: any[]): Promise<unknown> {
+    desctriptor.value = async function (...args: unknown[]): Promise<unknown> {
       const connection = MongooseProvider.getMongooseInstance(
         `Mongoose instance is not available in the context of this method. Method: ${_methodName}.`,
       );
@@ -31,16 +31,22 @@ export function Transactional() {
       session.startTransaction();
 
       try {
+        logger.debug(`Starting transaction for method: ${_methodName}.`);
+
         const result = (await originalMethod.apply(
           this,
-          args,
+          [...args, session], // Pass the session
         )) as Promise<unknown>;
 
         await session.commitTransaction();
+
+        logger.debug(
+          `Transaction committed successfully. Method: ${_methodName}.`,
+        );
         return result;
       } catch (error) {
         await session.abortTransaction();
-        logger.error(`Transaction failed. Method: ${_methodName}.`);
+        logger.debug(`Transaction failed. Method: ${_methodName}.`);
         throw error;
       } finally {
         await session.endSession();

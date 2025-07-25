@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { ClientSession, Model } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { Document } from "src/documents/schemas/document.schema";
 import { Employee } from "src/employees/schemas/employee.schema";
@@ -13,13 +13,13 @@ export class TempService {
   ) {}
 
   @Transactional()
-  async getTemporary(param: number): Promise<any> {
+  async getTemporary(param: number, session?: ClientSession): Promise<any> {
     const createEmployee = new this.employeeModel({
       name: "Temporary Employee",
       cpf: "12345678901",
     });
 
-    await createEmployee.save();
+    await createEmployee.save({ session });
 
     if (param > 2) {
       throw new BadRequestException(
@@ -32,7 +32,7 @@ export class TempService {
       employee: createEmployee._id,
     });
 
-    await createDocument.save();
+    await createDocument.save({ session });
 
     return {
       message: "Temporary endpoint response",
