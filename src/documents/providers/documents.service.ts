@@ -171,7 +171,7 @@ export class DocumentsService {
   private generateDocumentUrl(mimeType: string): string {
     const parsedMimeType = mimeType.split("/")[1];
 
-    const newFileName = uuidv4() + parsedMimeType;
+    const newFileName = uuidv4() + "." + parsedMimeType;
 
     return `${this.baseUrl}/${newFileName}`;
   }
