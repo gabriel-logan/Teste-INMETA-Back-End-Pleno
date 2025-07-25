@@ -9,12 +9,14 @@ SE O MONGO NÃO ESTIVER RODANDO COMO REPLICA SET, AS TRANSAÇÕES NÃO FUNCIONAR
 
 ESSAS CONFIGURAÇÕES SÃO NECESSÁRIAS ABAIXO SÃO PARA AMBIENTE LOCAL.
 
+DOC OFICIAL: [MongoDB Transactions](https://www.mongodb.com/docs/manual/core/transactions/)
+
 ---
 
 ## ⚙️ Pré-requisitos
 
 - Node.js `18+`
-- MongoDB instalado (`mongod`)
+- MongoDB instalado (`mongod`) - **Versão 4 ou superior** (para suporte a transações)
 - Mongosh (para interagir com o MongoDB)
 
 ---
