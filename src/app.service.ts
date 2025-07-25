@@ -1,0 +1,17 @@
+import { BadRequestException, Injectable } from "@nestjs/common";
+
+@Injectable()
+export class AppService {
+  getTemporary(param: number): any {
+    if (param > 2) {
+      throw new BadRequestException(
+        "This endpoint is temporary and only accepts param values less than or equal to 2.",
+      );
+    }
+
+    return {
+      message: "Temporary endpoint response",
+      paramValue: param,
+    };
+  }
+}

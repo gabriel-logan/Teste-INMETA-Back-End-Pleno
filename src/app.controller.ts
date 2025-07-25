@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   HttpStatus,
@@ -8,11 +7,14 @@ import {
 } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 
+import { AppService } from "./app.service";
 import { ApiGlobalErrorResponses } from "./common/decorators/routes/docs";
 
 @ApiGlobalErrorResponses()
 @Controller()
 export class AppController {
+  constructor(private readonly appService: AppService) {}
+
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Successful response",
@@ -29,15 +31,6 @@ export class AppController {
 
   @Get("temp/a/b/c/:param")
   getTemporary(@Param("param", ParseIntPipe) param: number): any {
-    if (param > 2) {
-      throw new BadRequestException(
-        "This endpoint is temporary and only accepts param values less than or equal to 2.",
-      );
-    }
-
-    return {
-      message: "Temporary endpoint response",
-      paramValue: param,
-    };
+    return this.appService.getTemporary(param);
   }
 }
