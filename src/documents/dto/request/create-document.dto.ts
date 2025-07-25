@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum } from "class-validator";
 import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
-import { DocumentStatus } from "src/documents/schemas/document.schema";
 
 export class CreateDocumentRequestDto {
   @ApiProperty({
@@ -12,14 +10,6 @@ export class CreateDocumentRequestDto {
   })
   @IsObjectIdString()
   public documentTypeId: string;
-
-  @ApiProperty({
-    enum: DocumentStatus,
-    description: "The status of the document",
-    example: DocumentStatus.MISSING,
-  })
-  @IsEnum(DocumentStatus)
-  public status: DocumentStatus;
 
   @ApiProperty({
     type: String,

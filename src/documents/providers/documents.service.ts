@@ -79,7 +79,7 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status, employeeId } = createDocumentDto;
+    const { documentTypeId, employeeId } = createDocumentDto;
 
     const documentType =
       await this.documentTypesService.findById(documentTypeId);
@@ -111,7 +111,7 @@ export class DocumentsService {
 
     const newDocument = new this.documentModel({
       documentType: documentType.id,
-      status,
+      status: DocumentStatus.MISSING,
       employee: employee.id,
     });
 
