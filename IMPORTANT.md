@@ -1,4 +1,3 @@
-````markdown
 # 🧾 Projeto com Transações MongoDB (Replica Set) – Instruções de Setup
 
 Este projeto utiliza **transações do MongoDB**, que **exigem que o banco esteja rodando como um _replica set_** (mesmo em ambiente local).
@@ -22,7 +21,7 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 
 ```bash
 mkdir -p ~/mongo-data
-````
+```
 
 ### 2. Inicie o MongoDB com replica set
 
@@ -111,5 +110,3 @@ rs.initiate()
 Este projeto **exige o MongoDB rodando como Replica Set para funcionar corretamente**.
 
 Configure o ambiente corretamente para evitar falhas nas transações, e sinta-se à vontade para adaptar o setup com Docker, scripts ou ferramentas de sua preferência.
-
-```
