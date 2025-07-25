@@ -139,9 +139,7 @@ export class DocumentsController {
     notFound: true,
     badRequest: true,
   })
-  @ApiTypeFormData()
   @Delete(":documentId/delete-file")
-  @UseInterceptors(FileInterceptor("documentFile"))
   async deleteDocumentFile(
     @Param("documentId", ParseObjectIdPipe) documentId: string,
   ): Promise<void> {
