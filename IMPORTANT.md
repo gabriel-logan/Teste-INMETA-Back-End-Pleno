@@ -8,6 +8,8 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 
 ---
 
+---
+
 ## ⚙️ Pré-requisitos
 
 - Node.js `18+`
@@ -95,7 +97,7 @@ rs.initiate()
 Você pode rodar o projeto normalmente:
 
 ```bash
-npm run start:dev
+yarn dev
 ```
 
 Se o Mongo estiver corretamente rodando como replica set, as transações funcionarão normalmente.
@@ -152,6 +154,6 @@ rs.initiate()
 
 Este projeto **exige o MongoDB rodando como Replica Set para funcionar corretamente**.
 
-Configure o ambiente corretamente para evitar falhas nas transações, e sinta-se à vontade para adaptar o setup com Docker, scripts ou ferramentas de sua preferência.
+Configure o ambiente corretamente para evitar falhas nas transações.
 
 ```
