@@ -2,7 +2,9 @@ import type { Type } from "@nestjs/common";
 import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -110,6 +112,24 @@ export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
     ApiInternalServerErrorResponse({
       description: "Internal server error",
       type: InternalServerErrorDto,
+    }),
+  );
+}
+
+export function ApiTypeFormData(): MethodDecorator & ClassDecorator {
+  return applyDecorators(
+    ApiConsumes("multipart/form-data"),
+    ApiBody({
+      description: "Document file to be sent",
+      schema: {
+        type: "object",
+        properties: {
+          documentFile: {
+            type: "string",
+            format: "binary",
+          },
+        },
+      },
     }),
   );
 }

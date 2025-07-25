@@ -180,14 +180,6 @@ export class DocumentsService {
     documentId: string,
     documentFile: Express.Multer.File,
   ): Promise<void> {
-    const fileSize = documentFile.size;
-
-    if (fileSize > 5 * 1024 * 1024) {
-      throw new BadRequestException(
-        `File size exceeds the limit of 5MB. Current size: ${fileSize} bytes.`,
-      );
-    }
-
     const document = (await this.documentModel
       .findById(documentId)
       .populate("employee")) as

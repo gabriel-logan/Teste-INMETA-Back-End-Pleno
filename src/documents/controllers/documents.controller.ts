@@ -5,13 +5,18 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
+  ApiTypeFormData,
 } from "src/common/decorators/routes/docs";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
@@ -93,5 +98,36 @@ export class DocumentsController {
     @Param("documentId", ParseObjectIdPipe) documentId: string,
   ): Promise<void> {
     return await this.documentsService.delete(documentId);
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Sends a document file",
+      type: void 0,
+    },
+    notFound: true,
+    badRequest: true,
+  })
+  @ApiTypeFormData()
+  @Post(":documentId/send-file")
+  @UseInterceptors(FileInterceptor("documentFile"))
+  async sendFile(
+    @Param("documentId", ParseObjectIdPipe) documentId: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({
+          maxSize: 5 * 1024 * 1024, // 5 MB
+          message(maxSize) {
+            return `File size should not exceed ${maxSize / 1024 / 1024} MB`;
+          },
+        })
+        .build(),
+    )
+    documentFile: Express.Multer.File,
+  ): Promise<void> {
+    return await this.documentsService.sendDocumentFile(
+      documentId,
+      documentFile,
+    );
   }
 }
