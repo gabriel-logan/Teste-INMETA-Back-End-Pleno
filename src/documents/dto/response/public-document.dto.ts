@@ -17,7 +17,7 @@ export class PublicDocumentResponseDto {
   public employee: Employee;
 
   @ApiProperty()
-  public documentTypes: DocumentType[];
+  public documentType: DocumentType;
 
   @ApiProperty({
     type: DocumentStatus,

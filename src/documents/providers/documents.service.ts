@@ -25,7 +25,7 @@ export class DocumentsService {
     return {
       id: document._id,
       employee: document.employee as Employee,
-      documentTypes: document.documentTypes as DocumentType[],
+      documentType: document.documentType as DocumentType,
       status: document.status,
       documentUrl: document.documentUrl,
       createdAt: document.createdAt,
@@ -38,7 +38,7 @@ export class DocumentsService {
       await this.documentModel
         .find()
         .lean()
-        .populate("documentTypes")
+        .populate("documentType")
         .populate("employee")
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
@@ -47,7 +47,7 @@ export class DocumentsService {
     const document = await this.documentModel
       .findById(documentId)
       .lean()
-      .populate("documentTypes")
+      .populate("documentType")
       .populate("employee");
 
     if (!document) {
@@ -60,16 +60,15 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeIds, status, employeeId } = createDocumentDto;
+    const { documentTypeId, status, employeeId } = createDocumentDto;
 
-    const documentTypes = await Promise.all(
-      documentTypeIds.map((id) => this.documentTypesService.findById(id)),
-    );
+    const documentType =
+      await this.documentTypesService.findById(documentTypeId);
 
     const employee = await this.employeesService.findById(employeeId);
 
     const newDocument = new this.documentModel({
-      documentTypes: documentTypes.map((docType) => docType.id),
+      documentType: documentType.id,
       status,
       employee: employee.id,
     });
@@ -83,15 +82,14 @@ export class DocumentsService {
     documentId: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeIds, status, employeeId } = updateDocumentDto;
+    const { documentTypeId, status, employeeId } = updateDocumentDto;
 
     const updateData: Partial<Document> = {};
 
-    if (documentTypeIds && documentTypeIds.length > 0) {
-      const docTypes = await Promise.all(
-        documentTypeIds.map((id) => this.documentTypesService.findById(id)),
-      );
-      updateData.documentTypes = docTypes.map((docType) => docType.id);
+    if (documentTypeId) {
+      const documentType =
+        await this.documentTypesService.findById(documentTypeId);
+      updateData.documentType = documentType.id;
     }
 
     if (employeeId) {

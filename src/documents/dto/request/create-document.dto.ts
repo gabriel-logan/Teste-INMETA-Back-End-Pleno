@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
-import { IsObjectIdArrayString } from "src/common/decorators/validation/IsObjectIdArrayString";
 import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
 import { DocumentStatus } from "src/documents/schemas/document.schema";
 
@@ -9,11 +8,10 @@ export class CreateDocumentRequestDto {
     type: String,
     format: "ObjectId",
     description: "The ID of the employee to whom the document belongs",
-    example: ["1234567890abcdef12345678", "abcdef1234567890abcdef12"],
-    isArray: true,
+    example: "60c72b2f9b1e8c001c8f8e1d",
   })
-  @IsObjectIdArrayString()
-  public documentTypeIds: string[];
+  @IsObjectIdString()
+  public documentTypeId: string;
 
   @ApiProperty({
     enum: DocumentStatus,
