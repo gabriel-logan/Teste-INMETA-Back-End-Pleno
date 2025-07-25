@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
+import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import {
   Document,
   DocumentDocument,
@@ -181,7 +182,7 @@ export class DocumentsService {
   async sendDocumentFile(
     documentId: string,
     documentFile: Express.Multer.File,
-  ): Promise<void> {
+  ): Promise<SendDeleteDocumentFileResponseDto> {
     const document = (await this.documentModel
       .findById(documentId)
       .populate("employee")) as
@@ -212,9 +213,16 @@ export class DocumentsService {
     document.status = DocumentStatus.AVAILABLE;
 
     await document.save();
+
+    return {
+      message: "Document file sent successfully",
+      documentUrl,
+    };
   }
 
-  async deleteDocumentFile(documentId: string): Promise<void> {
+  async deleteDocumentFile(
+    documentId: string,
+  ): Promise<SendDeleteDocumentFileResponseDto> {
     const document = (await this.documentModel
       .findById(documentId)
       .populate("employee")) as
@@ -236,9 +244,16 @@ export class DocumentsService {
       `Deleting document file for employee ${document.employee.name}`,
     );
 
+    const documentUrlBeforeDelete = document.documentUrl;
+
     document.documentUrl = null;
     document.status = DocumentStatus.MISSING;
 
     await document.save();
+
+    return {
+      message: "Document file deleted successfully",
+      documentUrl: documentUrlBeforeDelete,
+    };
   }
 }

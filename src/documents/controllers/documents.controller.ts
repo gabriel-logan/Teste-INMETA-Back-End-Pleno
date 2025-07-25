@@ -22,6 +22,7 @@ import {
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
+import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import { DocumentsService } from "../providers/documents.service";
 
 @ApiGlobalErrorResponses()
@@ -124,7 +125,7 @@ export class DocumentsController {
         .build(),
     )
     documentFile: Express.Multer.File,
-  ): Promise<void> {
+  ): Promise<SendDeleteDocumentFileResponseDto> {
     return await this.documentsService.sendDocumentFile(
       documentId,
       documentFile,
@@ -142,7 +143,7 @@ export class DocumentsController {
   @Delete(":documentId/delete-file")
   async deleteDocumentFile(
     @Param("documentId", ParseObjectIdPipe) documentId: string,
-  ): Promise<void> {
+  ): Promise<SendDeleteDocumentFileResponseDto> {
     return await this.documentsService.deleteDocumentFile(documentId);
   }
 }
