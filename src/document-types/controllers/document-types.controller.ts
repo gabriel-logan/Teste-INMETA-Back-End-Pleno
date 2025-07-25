@@ -13,6 +13,7 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs";
+import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -45,7 +46,8 @@ export class DocumentTypesController {
   })
   @Get(":documentTypeId")
   async findById(
-    @Param("documentTypeId", ParseObjectIdPipe) documentTypeId: string,
+    @Param("documentTypeId", new ParseObjectIdPipeLocal())
+    documentTypeId: string,
   ): Promise<PublicDocumentTypeResponseDto> {
     return await this.documentTypesService.findById(documentTypeId);
   }

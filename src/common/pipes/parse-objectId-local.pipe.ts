@@ -20,11 +20,16 @@ export class ParseObjectIdPipeLocal
     }
 
     if (typeof value !== "string" || !Types.ObjectId.isValid(value)) {
-      throw new BadRequestException(
-        `Invalid ObjectId: '${JSON.stringify(value)}' is not a valid MongoDB ObjectId`,
-      );
+      throw new BadRequestException(this.generateErrorMessage(value));
     }
 
     return new Types.ObjectId(value);
+  }
+
+  private generateErrorMessage(value: unknown): string {
+    const valueString =
+      typeof value === "string" ? value : JSON.stringify(value);
+
+    return `Invalid ObjectId: '${valueString}' is not a valid MongoDB ObjectId`;
   }
 }
