@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { DocumentTypesModule } from "src/document-types/document-types.module";
 import { EmployeesModule } from "src/employees/employees.module";
@@ -9,6 +10,7 @@ import { Document, DocumentSchema } from "./schemas/document.schema";
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       {
         name: Document.name,
