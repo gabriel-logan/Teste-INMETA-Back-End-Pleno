@@ -31,4 +31,12 @@ describe("TempController", () => {
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
+
+  it("should return temporary data", async () => {
+    const result: unknown = await controller.getTemporary(1);
+
+    expect(result).toEqual(mockGetTemporary);
+
+    expect(mockTempService.getTemporary).toHaveBeenCalledWith(1);
+  });
 });
