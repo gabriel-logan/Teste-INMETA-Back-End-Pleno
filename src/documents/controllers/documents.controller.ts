@@ -8,11 +8,13 @@ import {
   ParseFilePipeBuilder,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiQuery } from "@nestjs/swagger";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -24,6 +26,7 @@ import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import { DocumentsService } from "../providers/documents.service";
+import { DocumentStatus } from "../schemas/document.schema";
 
 @ApiGlobalErrorResponses()
 @Controller("documents")
@@ -146,5 +149,32 @@ export class DocumentsController {
     @Param("documentId", ParseObjectIdPipe) documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
     return await this.documentsService.deleteDocumentFile(documentId);
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Returns document statuses by employee ID",
+      type: Object,
+    },
+    notFound: true,
+  })
+  @ApiQuery({ required: false, name: "status", enum: DocumentStatus })
+  @Get("employee/:employeeId/statuses")
+  async getDocumentStatusesByEmployeeId(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Query("status") status?: DocumentStatus,
+  ): Promise<
+    Record<
+      string,
+      {
+        documentId: string;
+        status: DocumentStatus;
+      }
+    >
+  > {
+    return await this.documentsService.getDocumentStatusesByEmployeeId(
+      employeeId,
+      status,
+    );
   }
 }

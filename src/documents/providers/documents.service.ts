@@ -256,4 +256,60 @@ export class DocumentsService {
       documentUrl: documentUrlBeforeDelete,
     };
   }
+
+  async getDocumentStatusesByEmployeeId(
+    employeeId: string,
+    status?: DocumentStatus,
+  ): Promise<
+    Record<
+      string,
+      {
+        documentId: string;
+        status: DocumentStatus;
+      }
+    >
+  > {
+    const employee = await this.employeesService.findById(employeeId);
+
+    const documents = (await this.documentModel
+      .find({ employee: employee.id })
+      .populate("documentType")
+      .lean()) as (DocumentDocument & { documentType: DocumentType })[];
+
+    if (documents.length === 0) {
+      throw new NotFoundException(
+        `No documents found for employee with id ${employeeId}`,
+      );
+    }
+
+    const documentStatuses: Record<
+      string,
+      { documentId: string; status: DocumentStatus }
+    > = {};
+
+    documents.forEach((doc) => {
+      documentStatuses[doc.documentType.name] = {
+        documentId: doc._id.toString(),
+        status: doc.status,
+      };
+    });
+
+    // If a specific status is requested, filter the results
+    if (status) {
+      for (const key in documentStatuses) {
+        if (documentStatuses[key].status !== status) {
+          delete documentStatuses[key];
+        }
+      }
+    }
+
+    // If no documents match the requested status, throw an error
+    if (Object.keys(documentStatuses).length === 0) {
+      throw new NotFoundException(
+        `No documents found for employee with id ${employeeId} with status ${status}`,
+      );
+    }
+
+    return documentStatuses;
+  }
 }
