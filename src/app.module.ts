@@ -1,7 +1,7 @@
 import { Module, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
-import { Connection } from "mongoose";
+import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
 import envDatabase from "./configs/env.database";
@@ -34,6 +34,9 @@ export class AppModule implements OnModuleInit {
   constructor(@InjectConnection() private readonly connection: Connection) {}
 
   onModuleInit(): void {
+    // Enable transaction support for Mongoose
+    mongoose.set("transactionAsyncLocalStorage", true);
+
     MongooseProvider.setMongooseInstance(this.connection);
   }
 }

@@ -26,31 +26,22 @@ export function Transactional() {
         `Mongoose instance is not available in the context of this method. Method: ${_methodName}.`,
       );
 
-      const session = await connection.startSession();
+      logger.debug(`Starting transaction for method: ${_methodName}.`);
 
-      session.startTransaction();
-
-      try {
-        logger.debug(`Starting transaction for method: ${_methodName}.`);
-
+      const result = await connection.transaction(async () => {
         const result = (await originalMethod.apply(
           this,
-          [...args, session], // Pass the session
+          args,
         )) as Promise<unknown>;
 
-        await session.commitTransaction();
-
-        logger.debug(
-          `Transaction committed successfully. Method: ${_methodName}.`,
-        );
         return result;
-      } catch (error) {
-        await session.abortTransaction();
-        logger.debug(`Transaction failed. Method: ${_methodName}.`);
-        throw error;
-      } finally {
-        await session.endSession();
-      }
+      });
+
+      logger.debug(
+        `Transaction successfully completed for method: ${_methodName}.`,
+      );
+
+      return result;
     };
 
     return desctriptor;
