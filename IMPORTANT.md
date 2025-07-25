@@ -1,12 +1,9 @@
-```markdown
 # 🧾 Projeto com Transações MongoDB (Replica Set) – Instruções de Setup
 
 Este projeto utiliza **transações do MongoDB**, que **exigem que o banco esteja rodando como um _replica set_** (mesmo em ambiente local).
 
 > ⚠️ **Se você rodar o MongoDB no modo padrão (standalone), transações vão falhar com o erro:**  
 > `MongoServerError: Transaction numbers are only allowed on a replica set member or mongos`
-
----
 
 ---
 
@@ -155,5 +152,3 @@ rs.initiate()
 Este projeto **exige o MongoDB rodando como Replica Set para funcionar corretamente**.
 
 Configure o ambiente corretamente para evitar falhas nas transações.
-
-```
