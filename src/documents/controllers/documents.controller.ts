@@ -111,7 +111,7 @@ export class DocumentsController {
   @ApiTypeFormData()
   @Post(":documentId/send-file")
   @UseInterceptors(FileInterceptor("documentFile"))
-  async sendFile(
+  async sendDocumentFile(
     @Param("documentId", ParseObjectIdPipe) documentId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -129,5 +129,22 @@ export class DocumentsController {
       documentId,
       documentFile,
     );
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Deletes a document file",
+      type: void 0,
+    },
+    notFound: true,
+    badRequest: true,
+  })
+  @ApiTypeFormData()
+  @Delete(":documentId/delete-file")
+  @UseInterceptors(FileInterceptor("documentFile"))
+  async deleteDocumentFile(
+    @Param("documentId", ParseObjectIdPipe) documentId: string,
+  ): Promise<void> {
+    return await this.documentsService.deleteDocumentFile(documentId);
   }
 }
