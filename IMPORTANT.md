@@ -9,7 +9,7 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 
 ## ⚙️ Pré-requisitos
 
-- Node.js `vXX+`
+- Node.js `18+`
 - MongoDB instalado (`mongod`)
 - **Recomendado:** `mongosh` instalado (`npm i -g mongosh`)
 
