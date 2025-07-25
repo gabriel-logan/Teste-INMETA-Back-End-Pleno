@@ -4,13 +4,11 @@ import { Types } from "mongoose";
 
 @Injectable()
 export class ParseObjectIdPipeLocal
-  extends ParseObjectIdPipe
   implements PipeTransform<unknown, Types.ObjectId>
 {
   private readonly optional: boolean;
 
   constructor({ optional = false }: { optional?: boolean } = {}) {
-    super();
     this.optional = optional;
   }
 
@@ -19,17 +17,10 @@ export class ParseObjectIdPipeLocal
       return undefined as unknown as Types.ObjectId;
     }
 
-    if (typeof value !== "string" || !Types.ObjectId.isValid(value)) {
-      throw new BadRequestException(this.generateErrorMessage(value));
+    if (typeof value !== "string") {
+      throw new BadRequestException("Value must be a string.");
     }
 
-    return new Types.ObjectId(value);
-  }
-
-  private generateErrorMessage(value: unknown): string {
-    const valueString =
-      typeof value === "string" ? value : JSON.stringify(value);
-
-    return `Invalid ObjectId: '${valueString}' is not a valid MongoDB ObjectId`;
+    return new ParseObjectIdPipe().transform(value);
   }
 }
