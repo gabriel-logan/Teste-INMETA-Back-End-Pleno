@@ -187,7 +187,7 @@ export class DocumentsController {
       isArray: true,
     },
   })
-  @Get("missing-documents/get-all")
+  @Get("missing/all")
   @ApiGetAllMissingDocumentsQueries()
   async getAllMissingDocuments(
     @Query("page", new ParseIntPipe({ optional: true })) page: number = 1,
