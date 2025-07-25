@@ -1,3 +1,4 @@
+```markdown
 # 🧾 Projeto com Transações MongoDB (Replica Set) – Instruções de Setup
 
 Este projeto utiliza **transações do MongoDB**, que **exigem que o banco esteja rodando como um _replica set_** (mesmo em ambiente local).
@@ -52,6 +53,40 @@ rs.initiate()
 ```
 
 > Isso só precisa ser feito uma vez, enquanto o diretório `~/mongo-data` não for apagado.
+
+---
+
+## 💡 Alternativa: Rodar MongoDB como serviço com Replica Set (sem deixar terminal aberto)
+
+Você pode configurar o MongoDB como **serviço permanente com replica set**, evitando deixar o terminal aberto toda vez:
+
+### 1. Edite o arquivo de configuração do MongoDB:
+
+```bash
+sudo nano /etc/mongod.conf
+```
+
+### 2. Adicione (ou descomente) as linhas:
+
+```yaml
+replication:
+  replSetName: rs0
+```
+
+### 3. Reinicie o serviço:
+
+```bash
+sudo systemctl restart mongod
+```
+
+### 4. Inicialize o replica set uma única vez:
+
+```bash
+mongosh
+rs.initiate()
+```
+
+> A partir daí, o Mongo já estará sempre pronto para transações sem necessidade de comandos manuais.
 
 ---
 
@@ -118,3 +153,5 @@ rs.initiate()
 Este projeto **exige o MongoDB rodando como Replica Set para funcionar corretamente**.
 
 Configure o ambiente corretamente para evitar falhas nas transações, e sinta-se à vontade para adaptar o setup com Docker, scripts ou ferramentas de sua preferência.
+
+```
