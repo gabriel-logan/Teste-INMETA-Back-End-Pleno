@@ -10,7 +10,6 @@ import { MongooseProvider } from "./configs/mongoose-provider";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
-import { TempModule } from "./temp/temp.module";
 
 @Module({
   imports: [
@@ -27,7 +26,6 @@ import { TempModule } from "./temp/temp.module";
     EmployeesModule,
     DocumentsModule,
     DocumentTypesModule,
-    TempModule,
   ],
   controllers: [AppController],
   providers: [],
