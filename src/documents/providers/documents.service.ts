@@ -342,6 +342,7 @@ export class DocumentsService {
         .skip((page - 1) * limit)
         .limit(limit)
         .populate("employee")
+        .populate("documentType")
         .lean(),
       this.documentModel.countDocuments(filters).lean(),
     ]);
