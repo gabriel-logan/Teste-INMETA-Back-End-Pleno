@@ -93,4 +93,44 @@ export class EmployeesService {
 
     return void 0;
   }
+
+  async linkDocumentTypes(
+    employeeId: string,
+    documentTypeIds: string[],
+  ): Promise<void> {
+    const employee = await this.employeeModel.findById(employeeId);
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
+
+    const existing = new Set(
+      employee.documentTypes.map((doc) => doc.toString()),
+    );
+
+    for (const docId of documentTypeIds) {
+      if (!existing.has(docId)) {
+        employee.documentTypes.push(new Types.ObjectId(docId));
+      }
+    }
+
+    await employee.save();
+  }
+
+  async unlinkDocumentTypes(
+    employeeId: string,
+    documentTypeIds: string[],
+  ): Promise<void> {
+    const employee = await this.employeeModel.findById(employeeId);
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
+
+    employee.documentTypes = employee.documentTypes.filter(
+      (id) => !documentTypeIds.includes(id.toString()),
+    );
+
+    await employee.save();
+  }
 }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
@@ -18,6 +18,12 @@ export class Employee {
 
   @Prop({ required: true, unique: true })
   public cpf: string;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "DocumentType" }],
+    default: [],
+  })
+  public documentTypes: mongoose.Types.ObjectId[];
 
   public createdAt: Date;
   public updatedAt: Date;
