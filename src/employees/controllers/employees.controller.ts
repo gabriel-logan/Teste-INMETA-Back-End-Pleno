@@ -43,11 +43,11 @@ export class EmployeesController {
     },
     notFound: true,
   })
-  @Get(":id")
+  @Get(":employeeId")
   async findById(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
   ): Promise<PublicEmployeeResponseDto> {
-    return await this.employeesService.findById(id);
+    return await this.employeesService.findById(employeeId);
   }
 
   @ApiStandardResponses({
@@ -73,12 +73,12 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
-  @Patch(":id")
+  @Patch(":employeeId")
   async update(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    return await this.employeesService.update(id, updateEmployeeDto);
+    return await this.employeesService.update(employeeId, updateEmployeeDto);
   }
 
   @ApiStandardResponses({
@@ -88,8 +88,10 @@ export class EmployeesController {
     },
     notFound: true,
   })
-  @Delete(":id")
-  async delete(@Param("id", ParseObjectIdPipe) id: string): Promise<void> {
-    return await this.employeesService.delete(id);
+  @Delete(":employeeId")
+  async delete(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+  ): Promise<void> {
+    return await this.employeesService.delete(employeeId);
   }
 }

@@ -32,11 +32,11 @@ export class EmployeesService {
     );
   }
 
-  async findById(id: string): Promise<PublicEmployeeResponseDto> {
-    const employee = await this.employeeModel.findById(id).lean();
+  async findById(employeeId: string): Promise<PublicEmployeeResponseDto> {
+    const employee = await this.employeeModel.findById(employeeId).lean();
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${id} not found`);
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
     return this.toPublicEmployeeResponseDto(employee);
@@ -60,7 +60,7 @@ export class EmployeesService {
   }
 
   async update(
-    id: string,
+    employeeId: string,
     updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
     const { name, cpf } = updateEmployeeDto;
@@ -69,26 +69,26 @@ export class EmployeesService {
 
     const updatedEmployee = await this.employeeModel
       .findByIdAndUpdate(
-        id,
+        employeeId,
         { name, cpf: parsedCpf },
         { new: true, runValidators: true },
       )
       .lean();
 
     if (!updatedEmployee) {
-      throw new NotFoundException(`Employee with id ${id} not found`);
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
     return this.toPublicEmployeeResponseDto(updatedEmployee);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(employeeId: string): Promise<void> {
     const deletedEmployee = await this.employeeModel
-      .findByIdAndDelete(id)
+      .findByIdAndDelete(employeeId)
       .lean();
 
     if (!deletedEmployee) {
-      throw new NotFoundException(`Employee with id ${id} not found`);
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
     return void 0;
