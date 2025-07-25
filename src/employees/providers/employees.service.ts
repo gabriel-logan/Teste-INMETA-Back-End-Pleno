@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
@@ -53,7 +52,6 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(employee);
   }
 
-  @Transactional()
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
@@ -67,10 +65,6 @@ export class EmployeesService {
     });
 
     const savedEmployee = await createdEmployee.save();
-
-    if (savedEmployee.name === "error") {
-      throw new Error("Simulated error during employee creation");
-    }
 
     return this.toPublicEmployeeResponseDto(savedEmployee);
   }
