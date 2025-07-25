@@ -104,7 +104,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Sends a document file",
-      type: void 0,
+      type: SendDeleteDocumentFileResponseDto,
     },
     notFound: true,
     badRequest: true,
@@ -135,7 +135,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Deletes a document file",
-      type: void 0,
+      type: SendDeleteDocumentFileResponseDto,
     },
     notFound: true,
     badRequest: true,
