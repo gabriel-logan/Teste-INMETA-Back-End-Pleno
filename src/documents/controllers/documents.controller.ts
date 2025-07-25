@@ -116,7 +116,7 @@ export class DocumentsController {
     badRequest: true,
   })
   @ApiTypeFormData()
-  @Post(":documentId/send-file")
+  @Post(":documentId/file/send")
   @UseInterceptors(FileInterceptor("documentFile"))
   async sendDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
@@ -146,7 +146,7 @@ export class DocumentsController {
     notFound: true,
     badRequest: true,
   })
-  @Delete(":documentId/delete-file")
+  @Delete(":documentId/file/delete")
   async deleteDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
