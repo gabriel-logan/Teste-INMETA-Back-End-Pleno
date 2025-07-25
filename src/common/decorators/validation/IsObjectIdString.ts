@@ -1,5 +1,6 @@
 import type { ValidationOptions } from "class-validator";
 import { buildMessage, ValidateBy } from "class-validator";
+import { isValidObjectId } from "mongoose";
 
 export const IS_OBJECT_ID_STRING = "isObjectIdString";
 
@@ -8,10 +9,7 @@ export function isObjectIdString(value: unknown): boolean {
     return false; // Ensure the value is a string
   }
 
-  // Regular expression to validate MongoDB ObjectId format
-  const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-
-  return objectIdRegex.test(value);
+  return isValidObjectId(value);
 }
 
 export function IsObjectIdString(
