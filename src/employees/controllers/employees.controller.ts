@@ -16,6 +16,8 @@ import {
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
+import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 
@@ -93,5 +95,41 @@ export class EmployeesController {
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
   ): Promise<void> {
     return await this.employeesService.delete(employeeId);
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Link document types to an employee",
+      type: DocumentTypeEmployeeLinkedResponseDto,
+    },
+    notFound: true,
+  })
+  @Post(":employeeId/link-document-types")
+  async linkDocumentTypes(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Body("documentTypeIds") documentTypeIds: string[],
+  ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
+    return await this.employeesService.linkDocumentTypes(
+      employeeId,
+      documentTypeIds,
+    );
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Unlink document types from an employee",
+      type: DocumentTypeEmployeeUnlinkedResponseDto,
+    },
+    notFound: true,
+  })
+  @Post(":employeeId/unlink-document-types")
+  async unlinkDocumentTypes(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Body("documentTypeIds") documentTypeIds: string[],
+  ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
+    return await this.employeesService.unlinkDocumentTypes(
+      employeeId,
+      documentTypeIds,
+    );
   }
 }

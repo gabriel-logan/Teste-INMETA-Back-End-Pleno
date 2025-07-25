@@ -4,6 +4,8 @@ import { Model, Types } from "mongoose";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
+import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { Employee } from "../schemas/employee.schema";
 
@@ -27,13 +29,16 @@ export class EmployeesService {
   }
 
   async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return (await this.employeeModel.find().lean()).map((employee) =>
-      this.toPublicEmployeeResponseDto(employee),
-    );
+    return (
+      await this.employeeModel.find().lean().populate("documentTypes")
+    ).map((employee) => this.toPublicEmployeeResponseDto(employee));
   }
 
   async findById(employeeId: string): Promise<PublicEmployeeResponseDto> {
-    const employee = await this.employeeModel.findById(employeeId).lean();
+    const employee = await this.employeeModel
+      .findById(employeeId)
+      .lean()
+      .populate("documentTypes");
 
     if (!employee) {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
@@ -97,7 +102,7 @@ export class EmployeesService {
   async linkDocumentTypes(
     employeeId: string,
     documentTypeIds: string[],
-  ): Promise<void> {
+  ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
@@ -115,12 +120,18 @@ export class EmployeesService {
     }
 
     await employee.save();
+
+    return {
+      documentTypeIdsLinked: employee.documentTypes.map((doc) =>
+        doc.toString(),
+      ),
+    };
   }
 
   async unlinkDocumentTypes(
     employeeId: string,
     documentTypeIds: string[],
-  ): Promise<void> {
+  ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
@@ -132,5 +143,11 @@ export class EmployeesService {
     );
 
     await employee.save();
+
+    return {
+      documentTypeIdsUnlinked: employee.documentTypes.map((doc) =>
+        doc.toString(),
+      ),
+    };
   }
 }
