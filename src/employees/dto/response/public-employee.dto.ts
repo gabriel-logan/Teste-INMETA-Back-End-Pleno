@@ -22,7 +22,11 @@ export class PublicEmployeeResponseDto {
   })
   public contractStatus: ContractStatus;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: DocumentType,
+    isArray: true,
+    description: "List of document types associated with the employee",
+  })
   public documentTypes: DocumentType[];
 
   @ApiProperty({

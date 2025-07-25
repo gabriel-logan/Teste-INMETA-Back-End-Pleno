@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -22,6 +23,7 @@ export class EmployeesService {
       id: employee._id,
       name: employee.name,
       contractStatus: employee.contractStatus,
+      documentTypes: employee.documentTypes as unknown as DocumentType[],
       cpf: employee.cpf,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
