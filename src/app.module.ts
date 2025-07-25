@@ -1,11 +1,13 @@
-import { Module } from "@nestjs/common";
+import { Module, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
+import { MongooseProvider } from "./configs/mongoose-provider";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
@@ -29,4 +31,10 @@ import { EmployeesModule } from "./employees/employees.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly connection: Connection) {}
+
+  onModuleInit(): void {
+    MongooseProvider.setMongooseInstance(this.connection);
+  }
+}
