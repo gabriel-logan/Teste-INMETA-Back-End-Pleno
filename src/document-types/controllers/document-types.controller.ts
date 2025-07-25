@@ -8,6 +8,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
+import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -44,7 +45,7 @@ export class DocumentTypesController {
   })
   @Get(":id")
   async findById(
-    @Param("id") id: string,
+    @Param("id", ParseObjectIdPipe) id: string,
   ): Promise<PublicDocumentTypeResponseDto> {
     return await this.documentTypesService.findById(id);
   }
@@ -74,7 +75,7 @@ export class DocumentTypesController {
   })
   @Put(":id")
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseObjectIdPipe) id: string,
     @Body() updateDocumentsTypeDto: UpdateDocumentTypeRequestDto,
   ): Promise<PublicDocumentTypeResponseDto> {
     return await this.documentTypesService.update(id, updateDocumentsTypeDto);
@@ -88,7 +89,7 @@ export class DocumentTypesController {
     notFound: true,
   })
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<void> {
+  async delete(@Param("id", ParseObjectIdPipe) id: string): Promise<void> {
     return await this.documentTypesService.delete(id);
   }
 }

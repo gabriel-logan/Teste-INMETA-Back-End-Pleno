@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
+import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -43,7 +44,9 @@ export class EmployeesController {
     notFound: true,
   })
   @Get(":id")
-  async findById(@Param("id") id: string): Promise<PublicEmployeeResponseDto> {
+  async findById(
+    @Param("id", ParseObjectIdPipe) id: string,
+  ): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.findById(id);
   }
 
@@ -72,7 +75,7 @@ export class EmployeesController {
   })
   @Patch(":id")
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseObjectIdPipe) id: string,
     @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
     return await this.employeesService.update(id, updateEmployeeDto);
@@ -86,7 +89,7 @@ export class EmployeesController {
     notFound: true,
   })
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<void> {
+  async delete(@Param("id", ParseObjectIdPipe) id: string): Promise<void> {
     return await this.employeesService.delete(id);
   }
 }
