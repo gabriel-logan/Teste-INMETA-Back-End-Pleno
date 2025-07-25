@@ -43,11 +43,11 @@ export class DocumentsController {
     },
     notFound: true,
   })
-  @Get(":id")
+  @Get(":documentId")
   async findById(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("documentId", ParseObjectIdPipe) documentId: string,
   ): Promise<PublicDocumentResponseDto> {
-    return await this.documentsService.findById(id);
+    return await this.documentsService.findById(documentId);
   }
 
   @ApiStandardResponses({
@@ -73,12 +73,12 @@ export class DocumentsController {
     notFound: true,
     badRequest: true,
   })
-  @Patch(":id")
+  @Patch(":documentId")
   async update(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("documentId", ParseObjectIdPipe) documentId: string,
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    return await this.documentsService.update(id, updateDocumentDto);
+    return await this.documentsService.update(documentId, updateDocumentDto);
   }
 
   @ApiStandardResponses({
@@ -88,8 +88,10 @@ export class DocumentsController {
     },
     notFound: true,
   })
-  @Delete(":id")
-  async delete(@Param("id", ParseObjectIdPipe) id: string): Promise<void> {
-    return await this.documentsService.delete(id);
+  @Delete(":documentId")
+  async delete(
+    @Param("documentId", ParseObjectIdPipe) documentId: string,
+  ): Promise<void> {
+    return await this.documentsService.delete(documentId);
   }
 }
