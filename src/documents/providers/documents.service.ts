@@ -1,23 +1,32 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import type { EnvGlobalConfig } from "src/configs/types";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { Employee } from "src/employees/schemas/employee.schema";
+import { v4 as uuidv4 } from "uuid";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
-import { Document } from "../schemas/document.schema";
-
+import { Document, DocumentDocument } from "../schemas/document.schema";
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger(DocumentsService.name);
+  private readonly baseUrl: string;
+
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
     private readonly documentTypesService: DocumentTypesService,
     private readonly employeesService: EmployeesService,
-  ) {}
+    private readonly configService: ConfigService<EnvGlobalConfig, true>,
+  ) {
+    this.baseUrl =
+      this.configService.get<EnvGlobalConfig["server"]>("server").baseUrl;
+  }
 
   private toPublicDocumentResponseDto(
     document: Document & { _id: Types.ObjectId },
@@ -148,5 +157,38 @@ export class DocumentsService {
     }
 
     return void 0;
+  }
+
+  private generateDocumentUrl(mimeType: string): string {
+    const newFileName = uuidv4() + "." + mimeType;
+
+    return `${this.baseUrl}/${newFileName}`;
+  }
+
+  // DocumentFile is a placeholder for the actual file type
+  // Replace it with the actual type used for document files
+  async sendDocument(documentId: string, documentFile: string): Promise<void> {
+    const document = (await this.documentModel
+      .findById(documentId)
+      .populate("employee")) as
+      | (DocumentDocument & { employee: Employee })
+      | null;
+
+    if (!document) {
+      throw new NotFoundException(`Document with id ${documentId} not found`);
+    }
+
+    // Logic to send the document (e.g., via email)
+    // This is a placeholder for the actual implementation
+    this.logger.log(`Sending document to employee ${document.employee.name}`);
+    // Implement the actual
+
+    const mimeType = documentFile.split(".").pop()!;
+
+    const documentUrl = this.generateDocumentUrl(mimeType);
+
+    document.documentUrl = documentUrl;
+
+    await document.save();
   }
 }
