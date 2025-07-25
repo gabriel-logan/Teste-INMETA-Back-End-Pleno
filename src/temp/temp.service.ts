@@ -1,4 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { Document } from "src/documents/schemas/document.schema";
+import { Employee } from "src/employees/schemas/employee.schema";
 
 @Injectable()
 export class TempService {
@@ -11,6 +16,7 @@ export class TempService {
   async getTemporary(param: number): Promise<any> {
     const createEmployee = new this.employeeModel({
       name: "Temporary Employee",
+      cpf: "12345678901",
     });
 
     await createEmployee.save();

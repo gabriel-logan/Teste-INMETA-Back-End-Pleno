@@ -1,8 +1,11 @@
+import { Logger } from "@nestjs/common";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 
 type DesctriptorType = TypedPropertyDescriptor<
   (...args: any[]) => Promise<any>
 >;
+
+const logger = new Logger("Transaction");
 
 export function Transactional() {
   return (
@@ -23,11 +26,25 @@ export function Transactional() {
         `Mongoose instance is not available in the context of this method. Method: ${_methodName}.`,
       );
 
-      const transaction = await connection.transaction(async () => {
-        return (await originalMethod.apply(this, args)) as Promise<unknown>;
-      });
+      const session = await connection.startSession();
 
-      return transaction;
+      session.startTransaction();
+
+      try {
+        const result = (await originalMethod.apply(
+          this,
+          args,
+        )) as Promise<unknown>;
+
+        await session.commitTransaction();
+        return result;
+      } catch (error) {
+        await session.abortTransaction();
+        logger.error(`Transaction failed. Method: ${_methodName}.`);
+        throw error;
+      } finally {
+        await session.endSession();
+      }
     };
 
     return desctriptor;
