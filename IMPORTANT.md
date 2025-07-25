@@ -11,7 +11,7 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 
 - Node.js `18+`
 - MongoDB instalado (`mongod`)
-- **Recomendado:** `mongosh` instalado (`npm i -g mongosh`)
+- Mongosh (para interagir com o MongoDB)
 
 ---
 
