@@ -5,6 +5,10 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 > ⚠️ **Se você rodar o MongoDB no modo padrão (standalone), transações vão falhar com o erro:**  
 > `MongoServerError: Transaction numbers are only allowed on a replica set member or mongos`
 
+SE O MONGO NÃO ESTIVER RODANDO COMO REPLICA SET, AS TRANSAÇÕES NÃO FUNCIONARÃO!
+
+ESSAS CONFIGURAÇÕES SÃO NECESSÁRIAS ABAIXO SÃO PARA AMBIENTE LOCAL.
+
 ---
 
 ## ⚙️ Pré-requisitos
