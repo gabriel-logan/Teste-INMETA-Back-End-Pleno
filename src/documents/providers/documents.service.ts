@@ -343,7 +343,7 @@ export class DocumentsService {
         .limit(limit)
         .populate("employee")
         .lean(),
-      this.documentModel.countDocuments(filters),
+      this.documentModel.countDocuments(filters).lean(),
     ]);
 
     return {
