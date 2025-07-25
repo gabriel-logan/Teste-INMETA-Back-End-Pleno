@@ -15,6 +15,7 @@ import {
 } from "src/common/decorators/routes/docs";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
+import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
@@ -107,11 +108,11 @@ export class EmployeesController {
   @Post(":employeeId/link-document-types")
   async linkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-    @Body("documentTypeIds") documentTypeIds: string[],
+    @Body() linkDocumentTypesDto: LinkDocumentTypesDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     return await this.employeesService.linkDocumentTypes(
       employeeId,
-      documentTypeIds,
+      linkDocumentTypesDto,
     );
   }
 
@@ -125,11 +126,11 @@ export class EmployeesController {
   @Post(":employeeId/unlink-document-types")
   async unlinkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-    @Body("documentTypeIds") documentTypeIds: string[],
+    @Body() unlinkDocumentTypesDto: LinkDocumentTypesDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     return await this.employeesService.unlinkDocumentTypes(
       employeeId,
-      documentTypeIds,
+      unlinkDocumentTypesDto,
     );
   }
 }

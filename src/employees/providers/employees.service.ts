@@ -4,6 +4,7 @@ import { Model, Types } from "mongoose";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
+import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
@@ -103,8 +104,10 @@ export class EmployeesService {
 
   async linkDocumentTypes(
     employeeId: string,
-    documentTypeIds: string[],
+    linkDocumentTypesDto: LinkDocumentTypesDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
+    const { documentTypeIds } = linkDocumentTypesDto;
+
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
@@ -132,8 +135,10 @@ export class EmployeesService {
 
   async unlinkDocumentTypes(
     employeeId: string,
-    documentTypeIds: string[],
+    unlinkDocumentTypesDto: LinkDocumentTypesDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
+    const { documentTypeIds } = unlinkDocumentTypesDto;
+
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
