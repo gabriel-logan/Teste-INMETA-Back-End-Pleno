@@ -225,6 +225,12 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${documentId} not found`);
     }
 
+    if (!document.documentUrl) {
+      throw new BadRequestException(
+        `Document with id ${documentId} does not have a file to delete.`,
+      );
+    }
+
     // Logic to delete the document file (e.g., from cloud storage)
     this.logger.log(
       `Deleting document file for employee ${document.employee.name}`,
