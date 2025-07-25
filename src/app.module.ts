@@ -1,6 +1,6 @@
 import { Module, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { MongooseModule } from "@nestjs/mongoose";
+import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
 import { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
@@ -32,7 +32,7 @@ import { EmployeesModule } from "./employees/employees.module";
   providers: [AppService],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly connection: Connection) {}
+  constructor(@InjectConnection() private readonly connection: Connection) {}
 
   onModuleInit(): void {
     MongooseProvider.setMongooseInstance(this.connection);
