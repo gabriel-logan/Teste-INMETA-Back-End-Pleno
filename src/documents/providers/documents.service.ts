@@ -176,7 +176,7 @@ export class DocumentsService {
 
   // DocumentFile is a placeholder for the actual file type
   // Replace it with the actual type used for document files
-  async sendDocument(
+  async sendDocumentFile(
     documentId: string,
     documentFile: Express.Multer.File,
   ): Promise<void> {
