@@ -219,4 +219,26 @@ export class DocumentsService {
 
     await document.save();
   }
+
+  async deleteDocumentFile(documentId: string): Promise<void> {
+    const document = (await this.documentModel
+      .findById(documentId)
+      .populate("employee")) as
+      | (DocumentDocument & { employee: Employee })
+      | null;
+
+    if (!document) {
+      throw new NotFoundException(`Document with id ${documentId} not found`);
+    }
+
+    // Logic to delete the document file (e.g., from cloud storage)
+    this.logger.log(
+      `Deleting document file for employee ${document.employee.name}`,
+    );
+
+    document.documentUrl = null;
+    document.status = DocumentStatus.MISSING;
+
+    await document.save();
+  }
 }
