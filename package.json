@@ -81,7 +81,13 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
+    "coveragePathIgnorePatterns": [
+      "src/main.ts"
+    ]
   },
   "packageManager": "yarn@4.9.2"
 }
