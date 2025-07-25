@@ -31,11 +31,17 @@ export class DocumentTypesService {
     );
   }
 
-  async findById(id: string): Promise<PublicDocumentTypeResponseDto> {
-    const docType = await this.documentTypeModel.findById(id).lean();
+  async findById(
+    documentTypeId: string,
+  ): Promise<PublicDocumentTypeResponseDto> {
+    const docType = await this.documentTypeModel
+      .findById(documentTypeId)
+      .lean();
 
     if (!docType) {
-      throw new NotFoundException(`DocumentType with id ${id} not found`);
+      throw new NotFoundException(
+        `DocumentType with id ${documentTypeId} not found`,
+      );
     }
 
     return this.toPublicDocumentTypeResponseDto(docType);
@@ -56,29 +62,37 @@ export class DocumentTypesService {
   }
 
   async update(
-    id: string,
+    documentTypeId: string,
     updateDocumentTypeDto: UpdateDocumentTypeRequestDto,
   ): Promise<PublicDocumentTypeResponseDto> {
     const { name } = updateDocumentTypeDto;
 
     const updatedDocumentType = await this.documentTypeModel
-      .findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
+      .findByIdAndUpdate(
+        documentTypeId,
+        { name },
+        { new: true, runValidators: true },
+      )
       .lean();
 
     if (!updatedDocumentType) {
-      throw new NotFoundException(`DocumentType with id ${id} not found`);
+      throw new NotFoundException(
+        `DocumentType with id ${documentTypeId} not found`,
+      );
     }
 
     return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(documentTypeId: string): Promise<void> {
     const deletedDocumentType = await this.documentTypeModel
-      .findByIdAndDelete(id)
+      .findByIdAndDelete(documentTypeId)
       .lean();
 
     if (!deletedDocumentType) {
-      throw new NotFoundException(`DocumentType with id ${id} not found`);
+      throw new NotFoundException(
+        `DocumentType with id ${documentTypeId} not found`,
+      );
     }
 
     return void 0;

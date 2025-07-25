@@ -43,11 +43,11 @@ export class DocumentTypesController {
     },
     notFound: true,
   })
-  @Get(":id")
+  @Get(":documentTypeId")
   async findById(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("documentTypeId", ParseObjectIdPipe) documentTypeId: string,
   ): Promise<PublicDocumentTypeResponseDto> {
-    return await this.documentTypesService.findById(id);
+    return await this.documentTypesService.findById(documentTypeId);
   }
 
   @ApiStandardResponses({
@@ -73,12 +73,15 @@ export class DocumentTypesController {
     notFound: true,
     badRequest: true,
   })
-  @Put(":id")
+  @Put(":documentTypeId")
   async update(
-    @Param("id", ParseObjectIdPipe) id: string,
+    @Param("documentTypeId", ParseObjectIdPipe) documentTypeId: string,
     @Body() updateDocumentsTypeDto: UpdateDocumentTypeRequestDto,
   ): Promise<PublicDocumentTypeResponseDto> {
-    return await this.documentTypesService.update(id, updateDocumentsTypeDto);
+    return await this.documentTypesService.update(
+      documentTypeId,
+      updateDocumentsTypeDto,
+    );
   }
 
   @ApiStandardResponses({
@@ -88,8 +91,10 @@ export class DocumentTypesController {
     },
     notFound: true,
   })
-  @Delete(":id")
-  async delete(@Param("id", ParseObjectIdPipe) id: string): Promise<void> {
-    return await this.documentTypesService.delete(id);
+  @Delete(":documentTypeId")
+  async delete(
+    @Param("documentTypeId", ParseObjectIdPipe) documentTypeId: string,
+  ): Promise<void> {
+    return await this.documentTypesService.delete(documentTypeId);
   }
 }
