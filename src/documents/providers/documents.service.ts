@@ -173,7 +173,7 @@ export class DocumentsService {
 
     const newFileName = uuidv4() + "." + parsedMimeType;
 
-    return `${this.baseUrl}/${newFileName}`;
+    return `${this.baseUrl}/files/${newFileName}`;
   }
 
   // DocumentFile is a placeholder for the actual file type
