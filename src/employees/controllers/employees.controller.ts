@@ -105,7 +105,7 @@ export class EmployeesController {
     },
     notFound: true,
   })
-  @Post(":employeeId/link-document-types")
+  @Post(":employeeId/document-types/link")
   async linkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() linkDocumentTypesDto: LinkDocumentTypesDto,
@@ -123,7 +123,7 @@ export class EmployeesController {
     },
     notFound: true,
   })
-  @Post(":employeeId/unlink-document-types")
+  @Post(":employeeId/document-types/unlink")
   async unlinkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() unlinkDocumentTypesDto: LinkDocumentTypesDto,
