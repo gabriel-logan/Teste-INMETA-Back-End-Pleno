@@ -38,7 +38,7 @@ export class DocumentsService {
       await this.documentModel
         .find()
         .lean()
-        .populate("documentType")
+        .populate("documentTypes")
         .populate("employee")
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
@@ -47,7 +47,7 @@ export class DocumentsService {
     const document = await this.documentModel
       .findById(documentId)
       .lean()
-      .populate("documentType")
+      .populate("documentTypes")
       .populate("employee");
 
     if (!document) {
