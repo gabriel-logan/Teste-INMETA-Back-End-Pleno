@@ -312,4 +312,45 @@ export class DocumentsService {
 
     return documentStatuses;
   }
+
+  async getAllMissingDocuments(
+    page = 1,
+    limit = 10,
+    employeeId?: string,
+    documentTypeId?: string,
+  ): Promise<{
+    documents: PublicDocumentResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const filters: Record<string, any> = {
+      status: DocumentStatus.MISSING,
+    };
+
+    if (employeeId) {
+      filters["employee"] = employeeId;
+    }
+
+    if (documentTypeId) {
+      filters["documentType"] = documentTypeId;
+    }
+
+    const [documents, total] = await Promise.all([
+      this.documentModel
+        .find(filters)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate("employee")
+        .lean(),
+      this.documentModel.countDocuments(filters),
+    ]);
+
+    return {
+      documents: documents.map((doc) => this.toPublicDocumentResponseDto(doc)),
+      total,
+      page,
+      limit,
+    };
+  }
 }

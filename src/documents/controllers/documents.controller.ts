@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   ParseFilePipeBuilder,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -16,6 +17,7 @@ import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiQuery } from "@nestjs/swagger";
 import {
+  ApiGetAllMissingDocumentsQueries,
   ApiGlobalErrorResponses,
   ApiStandardResponses,
   ApiTypeFormData,
@@ -175,6 +177,34 @@ export class DocumentsController {
     return await this.documentsService.getDocumentStatusesByEmployeeId(
       employeeId,
       status,
+    );
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Returns all missing documents",
+      type: PublicDocumentResponseDto,
+      isArray: true,
+    },
+  })
+  @Get("missing")
+  @ApiGetAllMissingDocumentsQueries()
+  async getAllMissingDocuments(
+    @Query("page", ParseIntPipe) page: number = 1,
+    @Query("limit", ParseIntPipe) limit: number = 10,
+    @Query("employeeId", ParseObjectIdPipe) employeeId?: string,
+    @Query("documentTypeId", ParseObjectIdPipe) documentTypeId?: string,
+  ): Promise<{
+    documents: PublicDocumentResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    return await this.documentsService.getAllMissingDocuments(
+      page,
+      limit,
+      employeeId,
+      documentTypeId,
     );
   }
 }

@@ -9,6 +9,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
 } from "@nestjs/swagger";
 import { BadRequestExceptionDto } from "src/common/dto/exception/bad-request.dto";
 import { ConflictExceptionDto } from "src/common/dto/exception/conflict.dto";
@@ -130,6 +131,38 @@ export function ApiTypeFormData(): MethodDecorator & ClassDecorator {
           },
         },
       },
+    }),
+  );
+}
+
+export function ApiGetAllMissingDocumentsQueries(): MethodDecorator &
+  ClassDecorator {
+  return applyDecorators(
+    ApiQuery({
+      name: "page",
+      required: false,
+      type: Number,
+      description: "Page number for pagination",
+    }),
+    ApiQuery({
+      name: "limit",
+      required: false,
+      type: Number,
+      description: "Number of documents per page",
+    }),
+    ApiQuery({
+      name: "employeeId",
+      required: false,
+      type: String,
+      format: "ObjectId",
+      description: "Filter by employee ID",
+    }),
+    ApiQuery({
+      name: "documentTypeId",
+      required: false,
+      type: String,
+      format: "ObjectId",
+      description: "Filter by document type ID",
     }),
   );
 }
