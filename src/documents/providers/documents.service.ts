@@ -25,7 +25,7 @@ export class DocumentsService {
     return {
       id: document._id,
       employee: document.employee as Employee,
-      documentType: document.documentType as DocumentType,
+      documentTypes: document.documentTypes as DocumentType[],
       status: document.status,
       documentUrl: document.documentUrl,
       createdAt: document.createdAt,
