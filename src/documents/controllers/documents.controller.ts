@@ -105,6 +105,7 @@ export class DocumentsController {
     ok: {
       description: "Sends a document file",
       type: SendDeleteDocumentFileResponseDto,
+      statusCode: HttpStatus.CREATED,
     },
     notFound: true,
     badRequest: true,
