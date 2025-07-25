@@ -60,15 +60,16 @@ export class DocumentsService {
   async create(
     createDocumentDto: CreateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status, employeeId } = createDocumentDto;
+    const { documentTypeIds, status, employeeId } = createDocumentDto;
 
-    const documentType =
-      await this.documentTypesService.findById(documentTypeId);
+    const documentTypes = await Promise.all(
+      documentTypeIds.map((id) => this.documentTypesService.findById(id)),
+    );
 
     const employee = await this.employeesService.findById(employeeId);
 
     const newDocument = new this.documentModel({
-      documentType: documentType.id,
+      documentTypes: documentTypes.map((docType) => docType.id),
       status,
       employee: employee.id,
     });
@@ -82,13 +83,15 @@ export class DocumentsService {
     id: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status, employeeId } = updateDocumentDto;
+    const { documentTypeIds, status, employeeId } = updateDocumentDto;
 
     const updateData: Partial<Document> = {};
 
-    if (documentTypeId) {
-      const docType = await this.documentTypesService.findById(documentTypeId);
-      updateData.documentType = docType.id;
+    if (documentTypeIds && documentTypeIds.length > 0) {
+      const docTypes = await Promise.all(
+        documentTypeIds.map((id) => this.documentTypesService.findById(id)),
+      );
+      updateData.documentTypes = docTypes.map((docType) => docType.id);
     }
 
     if (employeeId) {
