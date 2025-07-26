@@ -343,7 +343,10 @@ export class EmployeesService {
     const { username, password, cpf, firstName, lastName } =
       createAdminEmployeeDto;
 
-    const existingEmployee = await this.findByUsername(username);
+    // FindByUsername or CPF to ensure uniqueness
+    const existingEmployee = await this.employeeModel.findOne({
+      $or: [{ username }, { cpf }],
+    });
 
     if (
       existingEmployee?.username === username ||
