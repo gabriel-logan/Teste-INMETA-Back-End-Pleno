@@ -36,7 +36,7 @@ export class EmployeeDocumentService {
 
     if (!deletedDocument) {
       throw new NotFoundException(
-        `Document with id ${documentId.toString()} not found`,
+        `Document with id ${documentId as string} not found`,
       );
     }
 
