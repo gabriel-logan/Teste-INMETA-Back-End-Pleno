@@ -40,6 +40,7 @@ export type ResponseOptions = {
   notFound?: boolean;
   unauthorized?: boolean;
   forbidden?: boolean;
+  isPublic?: boolean;
 };
 
 export function ApiStandardResponses(
@@ -92,7 +93,7 @@ export function ApiStandardResponses(
     );
   }
 
-  if (options.unauthorized) {
+  if (options.unauthorized || !options.isPublic) {
     decorators.push(
       ApiUnauthorizedResponse({
         description: "Unauthorized",
@@ -101,7 +102,7 @@ export function ApiStandardResponses(
     );
   }
 
-  if (options.forbidden) {
+  if (options.forbidden || !options.isPublic) {
     decorators.push(
       ApiForbiddenResponse({
         description: "Forbidden",
@@ -113,32 +114,11 @@ export function ApiStandardResponses(
   return applyDecorators(...decorators);
 }
 
-export function ApiGlobalErrorResponses({
-  isPublic = false,
-}: {
-  isPublic?: boolean;
-} = {}): MethodDecorator & ClassDecorator {
-  if (isPublic) {
-    return applyDecorators(
-      ApiInternalServerErrorResponse({
-        description: "Internal server error",
-        type: InternalServerErrorDto,
-      }),
-    );
-  }
-
+export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
   return applyDecorators(
     ApiInternalServerErrorResponse({
       description: "Internal server error",
       type: InternalServerErrorDto,
-    }),
-    ApiUnauthorizedResponse({
-      description: "Unauthorized",
-      type: UnauthorizedExceptionDto,
-    }),
-    ApiForbiddenResponse({
-      description: "Forbidden",
-      type: ForbiddenExceptionDto,
     }),
   );
 }

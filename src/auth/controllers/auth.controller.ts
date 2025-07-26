@@ -22,6 +22,7 @@ export class AuthController {
     },
     badRequest: true,
     unauthorized: true,
+    isPublic: true,
   })
   @Post("sign-in")
   @HttpCode(HttpStatus.OK)

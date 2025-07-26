@@ -224,6 +224,7 @@ export class EmployeesController {
       statusCode: HttpStatus.CREATED,
     },
     badRequest: true,
+    isPublic: true,
   })
   @Post("admin")
   async createAdminEmployee(
