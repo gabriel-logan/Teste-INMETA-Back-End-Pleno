@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
+import { DocumentsService } from "src/documents/providers/documents.service";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
@@ -17,6 +23,8 @@ export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
     private readonly documentTypesService: DocumentTypesService,
+    @Inject(forwardRef(() => DocumentsService))
+    private readonly documentsService: DocumentsService,
   ) {}
 
   private toPublicEmployeeResponseDto(
