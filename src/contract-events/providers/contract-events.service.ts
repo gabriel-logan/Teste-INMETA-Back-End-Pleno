@@ -5,7 +5,10 @@ import { Model } from "mongoose";
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
 import { DeleteContractEventResponseDto } from "../dto/response/delete-contract-event.dto";
-import { ContractEvent } from "../schemas/contract-event.schema";
+import {
+  ContractEvent,
+  ContractEventDocument,
+} from "../schemas/contract-event.schema";
 
 @Injectable()
 export class ContractEventsService {
@@ -28,9 +31,17 @@ export class ContractEventsService {
     return contractEvent;
   }
 
+  async findByEmployeeId(employeeId: string): Promise<ContractEvent[]> {
+    const contractEvents = await this.contractEventModel
+      .find({ employeeId })
+      .lean();
+
+    return contractEvents;
+  }
+
   async create(
     createContractEventDto: CreateContractEventRequestDto,
-  ): Promise<ContractEvent> {
+  ): Promise<ContractEventDocument> {
     const { type, date, reason } = createContractEventDto;
 
     const createdContractEvent = new this.contractEventModel({

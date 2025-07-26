@@ -6,6 +6,11 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
+import {
+  ContractEvent,
+  ContractEventType,
+} from "src/contract-events/schemas/contract-event.schema";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
@@ -32,6 +37,7 @@ export class EmployeesService {
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
     private readonly employeeDocumentService: EmployeeDocumentService,
     private readonly documentTypesService: DocumentTypesService,
+    private readonly contractEventsService: ContractEventsService,
   ) {}
 
   private toPublicEmployeeResponseDto(
@@ -69,6 +75,28 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(employee);
   }
 
+  async findByIdWithContractEvents(
+    employeeId: string,
+  ): Promise<PublicEmployeeResponseDto & { contractEvents: ContractEvent[] }> {
+    const employee = await this.employeeModel
+      .findById(employeeId)
+      .lean()
+      .populate("contractEvents");
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
+
+    const contractEvents =
+      await this.contractEventsService.findByEmployeeId(employeeId);
+
+    return {
+      ...this.toPublicEmployeeResponseDto(employee),
+      contractEvents,
+    };
+  }
+
+  @Transactional()
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
@@ -76,10 +104,18 @@ export class EmployeesService {
 
     const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
 
+    // Create contract Event for hiring
+    const contractEvent = await this.contractEventsService.create({
+      type: ContractEventType.HIRED,
+      date: new Date(),
+      reason: "New employee hired",
+    });
+
     const createdEmployee = new this.employeeModel({
       firstName,
       lastName,
       cpf: parsedCpf,
+      contractEvents: [contractEvent._id],
     });
 
     const savedEmployee = await createdEmployee.save();

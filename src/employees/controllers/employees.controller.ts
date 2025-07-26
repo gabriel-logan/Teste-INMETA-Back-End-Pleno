@@ -62,6 +62,20 @@ export class EmployeesController {
 
   @ApiStandardResponses({
     ok: {
+      description: "Employee details with contract events",
+      type: PublicEmployeeResponseDto,
+    },
+    notFound: true,
+  })
+  @Get(":employeeId/contract-events")
+  async findByIdWithContractEvents(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+  ): Promise<PublicEmployeeResponseDto> {
+    return await this.employeesService.findByIdWithContractEvents(employeeId);
+  }
+
+  @ApiStandardResponses({
+    ok: {
       description: "Create a new employee",
       type: PublicEmployeeResponseDto,
       statusCode: HttpStatus.CREATED,

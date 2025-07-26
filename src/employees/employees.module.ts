@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { ContractEventsModule } from "src/contract-events/contract-events.module";
 import { DocumentTypesModule } from "src/document-types/document-types.module";
 import { EmployeeDocumentModule } from "src/shared/employee-document/employee-document.module";
 
@@ -17,6 +18,7 @@ import { Employee, EmployeeSchema } from "./schemas/employee.schema";
     ]),
     EmployeeDocumentModule,
     DocumentTypesModule,
+    ContractEventsModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
+import { ContractEvent } from "src/contract-events/schemas/contract-event.schema";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
@@ -25,6 +26,12 @@ export class Employee {
 
   @Prop({ enum: ContractStatus, default: ContractStatus.ACTIVE })
   public contractStatus: ContractStatus;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "ContractEvent" }],
+    required: true,
+  })
+  public contractEvents: mongoose.Types.ObjectId[];
 
   @Prop({ required: true, unique: true })
   public cpf: string;
