@@ -29,6 +29,12 @@ export class Employee {
   })
   public fullName: string;
 
+  @Prop({ required: true, unique: true })
+  public username: string;
+
+  @Prop({ required: true, default: "123456" })
+  public password: string;
+
   @Prop({ enum: ContractStatus, default: ContractStatus.ACTIVE })
   public contractStatus: ContractStatus;
 

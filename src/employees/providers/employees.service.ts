@@ -140,6 +140,7 @@ export class EmployeesService {
       lastName,
       cpf: parsedCpf,
       contractEvents: [contractEvent._id],
+      username: parsedCpf,
     });
 
     const savedEmployee = await createdEmployee.save();
