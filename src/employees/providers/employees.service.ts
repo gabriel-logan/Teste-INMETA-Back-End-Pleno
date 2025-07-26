@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import {
@@ -109,6 +110,7 @@ export class EmployeesService {
     return void 0;
   }
 
+  @Transactional()
   async linkDocumentTypes(
     employeeId: string,
     linkDocumentTypesDto: LinkDocumentTypesDto,
@@ -157,6 +159,7 @@ export class EmployeesService {
     };
   }
 
+  @Transactional()
   async unlinkDocumentTypes(
     employeeId: string,
     unlinkDocumentTypesDto: LinkDocumentTypesDto,
