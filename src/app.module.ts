@@ -7,6 +7,7 @@ import { AppController } from "./app.controller";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
+import { ContractEventsModule } from "./contract-events/contract-events.module";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
@@ -28,6 +29,7 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
     EmployeesModule,
     DocumentsModule,
     DocumentTypesModule,
+    ContractEventsModule,
   ],
   controllers: [AppController],
   providers: [],

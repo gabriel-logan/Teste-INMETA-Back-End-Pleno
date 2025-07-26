@@ -23,7 +23,7 @@ export class Employee {
   })
   public fullName: string;
 
-  @Prop({ default: ContractStatus.ACTIVE })
+  @Prop({ enum: ContractStatus, default: ContractStatus.ACTIVE })
   public contractStatus: ContractStatus;
 
   @Prop({ required: true, unique: true })
