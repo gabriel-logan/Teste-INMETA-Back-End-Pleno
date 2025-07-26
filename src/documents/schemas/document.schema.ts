@@ -8,6 +8,7 @@ export type DocumentDocument = HydratedDocument<Document>;
 export enum DocumentStatus {
   MISSING = "missing",
   AVAILABLE = "available",
+  DELETED = "deleted",
 }
 
 @Schema({ timestamps: true })

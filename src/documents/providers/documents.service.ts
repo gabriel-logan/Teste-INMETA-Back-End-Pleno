@@ -15,7 +15,6 @@ import { Employee } from "src/employees/schemas/employee.schema";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 import { v4 as uuidv4 } from "uuid";
 
-import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
@@ -78,75 +77,21 @@ export class DocumentsService {
     return this.toPublicDocumentResponseDto(document);
   }
 
-  async create(
-    createDocumentDto: CreateDocumentRequestDto,
-  ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, employeeId } = createDocumentDto;
-
-    const documentType =
-      await this.documentTypesService.findById(documentTypeId);
-
-    const employee = await this.employeesService.findById(employeeId);
-
-    // Check if the document type is linked to the employee
-    const isLinkedDocumentType = employee.documentTypes
-      .map((docType) => docType.name)
-      .includes(documentType.name);
-
-    if (!isLinkedDocumentType) {
-      throw new NotFoundException(
-        `Document type id ${documentTypeId} is not linked to employee ${employeeId}`,
-      );
-    }
-
-    // Check if the employee already has a document of this type
-    const existingDocument = await this.documentModel.findOne({
-      employee: employee.id,
-      documentType: documentType.id,
-    });
-
-    if (existingDocument) {
-      throw new NotFoundException(
-        `Employee ${employeeId} already has a document of type ${documentTypeId}`,
-      );
-    }
-
-    const savedDocument = await this.employeeDocumentService.createDocument(
-      employee.id,
-      documentType.id,
-    );
-
-    return this.toPublicDocumentResponseDto(savedDocument);
-  }
-
   async update(
     documentId: string,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
-    const { documentTypeId, status, employeeId } = updateDocumentDto;
-
-    const updateData: Partial<Document> = {};
-
-    if (documentTypeId) {
-      const documentType =
-        await this.documentTypesService.findById(documentTypeId);
-      updateData.documentType = documentType.id;
-    }
-
-    if (employeeId) {
-      const emp = await this.employeesService.findById(employeeId);
-      updateData.employee = emp.id;
-    }
-
-    if (status) {
-      updateData.status = status;
-    }
+    const { status } = updateDocumentDto;
 
     const updatedDocument = await this.documentModel
-      .findByIdAndUpdate(documentId, updateData, {
-        new: true,
-        runValidators: true,
-      })
+      .findByIdAndUpdate(
+        documentId,
+        { status },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
       .lean();
 
     if (!updatedDocument) {
@@ -154,12 +99,6 @@ export class DocumentsService {
     }
 
     return this.toPublicDocumentResponseDto(updatedDocument);
-  }
-
-  async delete(documentId: string): Promise<void> {
-    await this.employeeDocumentService.deleteDocument(documentId);
-
-    return void 0;
   }
 
   private generateDocumentUrl(mimeType: string): string {

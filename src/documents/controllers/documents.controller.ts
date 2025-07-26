@@ -23,7 +23,6 @@ import {
 } from "src/common/decorators/routes/docs";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
-import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
@@ -63,21 +62,6 @@ export class DocumentsController {
 
   @ApiStandardResponses({
     ok: {
-      description: "Creates a new document",
-      type: PublicDocumentResponseDto,
-      statusCode: HttpStatus.CREATED,
-    },
-    badRequest: true,
-  })
-  @Post()
-  async create(
-    @Body() createDocumentDto: CreateDocumentRequestDto,
-  ): Promise<PublicDocumentResponseDto> {
-    return await this.documentsService.create(createDocumentDto);
-  }
-
-  @ApiStandardResponses({
-    ok: {
       description: "Updates a document by ID",
       type: PublicDocumentResponseDto,
     },
@@ -90,20 +74,6 @@ export class DocumentsController {
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<PublicDocumentResponseDto> {
     return await this.documentsService.update(documentId, updateDocumentDto);
-  }
-
-  @ApiStandardResponses({
-    ok: {
-      description: "Deletes a document by ID",
-      type: void 0,
-    },
-    notFound: true,
-  })
-  @Delete(":documentId")
-  async delete(
-    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
-  ): Promise<void> {
-    return await this.documentsService.delete(documentId);
   }
 
   @ApiStandardResponses({
