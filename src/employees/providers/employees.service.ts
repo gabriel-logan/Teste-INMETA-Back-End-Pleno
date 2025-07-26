@@ -17,14 +17,14 @@ import { EmployeeDocumentService } from "src/shared/employee-document/employee-d
 
 import {
   FireEmployeeRequestDto,
-  HireAgainEmployeeRequestDto,
+  ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import {
   FireEmployeeResponseDto,
-  HireAgainEmployeeResponseDto,
+  ReHireEmployeeResponseDto,
 } from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
@@ -181,10 +181,10 @@ export class EmployeesService {
     };
   }
 
-  async hireAgain(
+  async reHire(
     employeeId: string,
-    hireAgainEmployeeDto: HireAgainEmployeeRequestDto,
-  ): Promise<HireAgainEmployeeResponseDto> {
+    reHireEmployeeDto: ReHireEmployeeRequestDto,
+  ): Promise<ReHireEmployeeResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
       .populate("contractEvents");
@@ -202,7 +202,7 @@ export class EmployeesService {
     const contractEvent = await this.contractEventsService.create({
       type: ContractEventType.REHIRED,
       date: new Date(),
-      reason: hireAgainEmployeeDto.reason,
+      reason: reHireEmployeeDto.reason,
     });
 
     employee.contractStatus = ContractStatus.ACTIVE;
@@ -211,7 +211,7 @@ export class EmployeesService {
     await employee.save();
 
     return {
-      reason: hireAgainEmployeeDto.reason,
+      reason: reHireEmployeeDto.reason,
       message: `Successfully rehired employee with id ${employeeId}`,
     };
   }

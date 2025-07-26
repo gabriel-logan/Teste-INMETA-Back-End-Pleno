@@ -13,4 +13,4 @@ export class ActionReasonEmployeeResponseDto {
 
 export class FireEmployeeResponseDto extends ActionReasonEmployeeResponseDto {}
 
-export class HireAgainEmployeeResponseDto extends ActionReasonEmployeeResponseDto {}
+export class ReHireEmployeeResponseDto extends ActionReasonEmployeeResponseDto {}

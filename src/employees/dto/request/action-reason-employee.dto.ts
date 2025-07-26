@@ -9,4 +9,4 @@ export class ActionReasonEmployeeRequestDto {
 
 export class FireEmployeeRequestDto extends ActionReasonEmployeeRequestDto {}
 
-export class HireAgainEmployeeRequestDto extends ActionReasonEmployeeRequestDto {}
+export class ReHireEmployeeRequestDto extends ActionReasonEmployeeRequestDto {}

@@ -15,14 +15,14 @@ import {
 
 import {
   FireEmployeeRequestDto,
-  HireAgainEmployeeRequestDto,
+  ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import {
   FireEmployeeResponseDto,
-  HireAgainEmployeeResponseDto,
+  ReHireEmployeeResponseDto,
 } from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
@@ -124,20 +124,17 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Rehire an employee",
-      type: HireAgainEmployeeResponseDto,
+      type: ReHireEmployeeResponseDto,
     },
     notFound: true,
     badRequest: true,
   })
-  @Post("hire-again/:employeeId")
-  async hireAgain(
+  @Post("rehire/:employeeId")
+  async reHire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-    @Body() hireAgainEmployeeDto: HireAgainEmployeeRequestDto,
-  ): Promise<HireAgainEmployeeResponseDto> {
-    return await this.employeesService.hireAgain(
-      employeeId,
-      hireAgainEmployeeDto,
-    );
+    @Body() reHireEmployeeDto: ReHireEmployeeRequestDto,
+  ): Promise<ReHireEmployeeResponseDto> {
+    return await this.employeesService.reHire(employeeId, reHireEmployeeDto);
   }
 
   @ApiStandardResponses({
