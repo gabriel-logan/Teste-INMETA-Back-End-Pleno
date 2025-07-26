@@ -56,9 +56,32 @@ export class EmployeesService {
     };
   }
 
-  async findAll(): Promise<PublicEmployeeResponseDto[]> {
+  async findAll({
+    byFirstName,
+    byLastName,
+    byContractStatus,
+    byDocumentType,
+    byCpf,
+  }: {
+    byFirstName?: string;
+    byLastName?: string;
+    byContractStatus?: ContractStatus;
+    byDocumentType?: string;
+    byCpf?: string;
+  }): Promise<PublicEmployeeResponseDto[]> {
     return (
-      await this.employeeModel.find().lean().populate("documentTypes")
+      await this.employeeModel
+        .find({
+          ...(byFirstName && { firstName: new RegExp(byFirstName, "i") }),
+          ...(byLastName && { lastName: new RegExp(byLastName, "i") }),
+          ...(byContractStatus && { contractStatus: byContractStatus }),
+          ...(byDocumentType && {
+            documentTypes: { $in: [new Types.ObjectId(byDocumentType)] },
+          }),
+          ...(byCpf && { cpf: new RegExp(byCpf, "i") }),
+        })
+        .lean()
+        .populate("documentTypes")
     ).map((employee) => this.toPublicEmployeeResponseDto(employee));
   }
 

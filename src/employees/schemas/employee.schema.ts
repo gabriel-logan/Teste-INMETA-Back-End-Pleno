@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { ContractEvent } from "src/contract-events/schemas/contract-event.schema";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 

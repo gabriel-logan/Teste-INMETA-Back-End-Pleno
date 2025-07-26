@@ -15,6 +15,7 @@ import { BadRequestExceptionDto } from "src/common/dto/exception/bad-request.dto
 import { ConflictExceptionDto } from "src/common/dto/exception/conflict.dto";
 import { InternalServerErrorDto } from "src/common/dto/exception/internal-server-error.dto";
 import { NotFoundExceptionDto } from "src/common/dto/exception/not-found.dto";
+import { ContractStatus } from "src/employees/schemas/employee.schema";
 
 export type typeOkResponse =
   | string
@@ -163,6 +164,43 @@ export function ApiGetAllMissingDocumentsQueries(): MethodDecorator &
       type: String,
       format: "ObjectId",
       description: "Filter by document type ID",
+    }),
+  );
+}
+
+export function ApiGetAllEmployeesQueries(): MethodDecorator & ClassDecorator {
+  return applyDecorators(
+    ApiQuery({
+      name: "byFirstName",
+      required: false,
+      type: String,
+      description: "Filter by employee's first name",
+    }),
+    ApiQuery({
+      name: "byLastName",
+      required: false,
+      type: String,
+      description: "Filter by employee's last name",
+    }),
+    ApiQuery({
+      name: "byContractStatus",
+      required: false,
+      type: String,
+      enum: ContractStatus,
+      description: "Filter by employee's contract status",
+    }),
+    ApiQuery({
+      name: "byDocumentType",
+      required: false,
+      type: String,
+      format: "ObjectId",
+      description: "Filter by document type ID",
+    }),
+    ApiQuery({
+      name: "byCpf",
+      required: false,
+      type: String,
+      description: "Filter by employee's CPF (Brazilian ID)",
     }),
   );
 }

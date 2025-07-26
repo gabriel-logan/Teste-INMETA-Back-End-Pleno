@@ -6,9 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import {
+  ApiGetAllEmployeesQueries,
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs";
@@ -28,6 +30,7 @@ import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentT
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
+import { ContractStatus } from "../schemas/employee.schema";
 
 @ApiGlobalErrorResponses()
 @Controller("employees")
@@ -41,9 +44,22 @@ export class EmployeesController {
       isArray: true,
     },
   })
+  @ApiGetAllEmployeesQueries()
   @Get()
-  async findAll(): Promise<PublicEmployeeResponseDto[]> {
-    return await this.employeesService.findAll();
+  async findAll(
+    @Query("byFirstName") byFirstName?: string,
+    @Query("byLastName") byLastName?: string,
+    @Query("byContractStatus") byContractStatus?: ContractStatus,
+    @Query("byDocumentType") byDocumentType?: string,
+    @Query("byCpf") byCpf?: string,
+  ): Promise<PublicEmployeeResponseDto[]> {
+    return await this.employeesService.findAll({
+      byFirstName,
+      byLastName,
+      byContractStatus,
+      byDocumentType,
+      byCpf,
+    });
   }
 
   @ApiStandardResponses({
