@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -15,7 +15,7 @@ export class DocumentTypesService {
   ) {}
 
   private toPublicDocumentTypeResponseDto(
-    documentType: DocumentType & { _id: Types.ObjectId },
+    documentType: DocumentType,
   ): PublicDocumentTypeResponseDto {
     return {
       id: documentType._id,

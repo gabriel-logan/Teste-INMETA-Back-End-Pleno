@@ -13,6 +13,8 @@ export enum DocumentStatus {
 
 @Schema({ timestamps: true })
 export class Document {
+  public readonly _id: mongoose.Types.ObjectId;
+
   @Prop({ required: true, enum: DocumentStatus })
   public status: DocumentStatus;
 

@@ -6,13 +6,11 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 import type { EnvGlobalConfig } from "src/configs/types";
-import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { Employee } from "src/employees/schemas/employee.schema";
-import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -30,9 +28,7 @@ export class DocumentsService {
 
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
-    private readonly employeeDocumentService: EmployeeDocumentService,
     private readonly employeesService: EmployeesService,
-    private readonly documentTypesService: DocumentTypesService,
     private readonly configService: ConfigService<EnvGlobalConfig, true>,
   ) {
     this.baseUrl =
@@ -40,7 +36,7 @@ export class DocumentsService {
   }
 
   private toPublicDocumentResponseDto(
-    document: Document & { _id: Types.ObjectId },
+    document: Document,
   ): PublicDocumentResponseDto {
     return {
       id: document._id,

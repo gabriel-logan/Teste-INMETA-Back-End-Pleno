@@ -17,6 +17,8 @@ export enum EmployeeRole {
 
 @Schema({ timestamps: true })
 export class Employee {
+  public readonly _id: mongoose.Types.ObjectId;
+
   @Prop({ required: true })
   public firstName: string;
 

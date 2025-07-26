@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 
 export type ContractEventDocument = HydratedDocument<ContractEvent>;
 
@@ -11,6 +11,8 @@ export enum ContractEventType {
 
 @Schema({ timestamps: true })
 export class ContractEvent {
+  public readonly _id: Types.ObjectId;
+
   @Prop({ required: true, enum: ContractEventType })
   public type: ContractEventType;
 

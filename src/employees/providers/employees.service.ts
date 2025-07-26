@@ -51,7 +51,7 @@ export class EmployeesService {
   ) {}
 
   private toPublicEmployeeResponseDto(
-    employee: Employee & { _id: Types.ObjectId },
+    employee: Employee,
   ): PublicEmployeeResponseDto {
     return {
       id: employee._id,
@@ -108,9 +108,7 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(employee);
   }
 
-  async findByUsername(
-    username: string,
-  ): Promise<Employee & { _id: Types.ObjectId }> {
+  async findByUsername(username: string): Promise<Employee> {
     const employee = await this.employeeModel.findOne({ username }).lean();
 
     if (!employee) {

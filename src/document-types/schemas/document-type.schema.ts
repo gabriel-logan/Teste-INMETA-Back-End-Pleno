@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 
 export type DocumentTypeDocument = HydratedDocument<DocumentType>;
 
@@ -13,6 +13,8 @@ export enum DocumentTypeAllowedValues {
 
 @Schema({ timestamps: true })
 export class DocumentType {
+  public readonly _id: Types.ObjectId;
+
   @Prop({ required: true, unique: true, enum: DocumentTypeAllowedValues })
   public name: DocumentTypeAllowedValues;
 

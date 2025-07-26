@@ -15,7 +15,7 @@ export class EmployeeDocumentService {
   async createDocument(
     employeeId: string | Types.ObjectId,
     documentTypeId: string | Types.ObjectId,
-  ): Promise<Document & { _id: Types.ObjectId }> {
+  ): Promise<Document> {
     const newDocument = new this.documentModel({
       documentType: documentTypeId,
       status: DocumentStatus.MISSING,
@@ -27,9 +27,7 @@ export class EmployeeDocumentService {
     return savedDocument;
   }
 
-  async deleteDocument(
-    documentId: string | Types.ObjectId,
-  ): Promise<Document & { _id: Types.ObjectId }> {
+  async deleteDocument(documentId: string | Types.ObjectId): Promise<Document> {
     const deletedDocument = await this.documentModel
       .findByIdAndDelete(documentId)
       .lean();
