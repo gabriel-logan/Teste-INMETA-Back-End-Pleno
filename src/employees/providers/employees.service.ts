@@ -27,7 +27,9 @@ export class EmployeesService {
   ): PublicEmployeeResponseDto {
     return {
       id: employee._id,
-      name: employee.name,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      fullName: employee.fullName,
       contractStatus: employee.contractStatus,
       documentTypes: employee.documentTypes as unknown as DocumentType[],
       cpf: employee.cpf,
@@ -58,12 +60,13 @@ export class EmployeesService {
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name, cpf } = createEmployeeDto;
+    const { firstName, lastName, cpf } = createEmployeeDto;
 
     const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
 
     const createdEmployee = new this.employeeModel({
-      name,
+      firstName,
+      lastName,
       cpf: parsedCpf,
     });
 
@@ -76,14 +79,14 @@ export class EmployeesService {
     employeeId: string,
     updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<PublicEmployeeResponseDto> {
-    const { name, cpf } = updateEmployeeDto;
+    const { firstName, lastName, cpf } = updateEmployeeDto;
 
     const parsedCpf = cpf?.replace(/\D/g, ""); // Remove non-numeric characters from CPF
 
     const updatedEmployee = await this.employeeModel
       .findByIdAndUpdate(
         employeeId,
-        { name, cpf: parsedCpf },
+        { firstName, lastName, cpf: parsedCpf },
         { new: true, runValidators: true },
       )
       .lean();

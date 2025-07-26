@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
@@ -11,7 +11,17 @@ export enum ContractStatus {
 @Schema({ timestamps: true })
 export class Employee {
   @Prop({ required: true })
-  public name: string;
+  public firstName: string;
+
+  @Prop({ required: true })
+  public lastName: string;
+
+  @Virtual({
+    get: function (this: Employee) {
+      return `${this.firstName} ${this.lastName}`;
+    },
+  })
+  public fullName: string;
 
   @Prop({ default: ContractStatus.ACTIVE })
   public contractStatus: ContractStatus;

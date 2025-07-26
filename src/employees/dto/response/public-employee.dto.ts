@@ -13,7 +13,13 @@ export class PublicEmployeeResponseDto {
   public id: Types.ObjectId;
 
   @ApiProperty()
-  public name: string;
+  public firstName: string;
+
+  @ApiProperty()
+  public lastName: string;
+
+  @ApiProperty()
+  public fullName: string;
 
   @ApiProperty({
     enum: ContractStatus,

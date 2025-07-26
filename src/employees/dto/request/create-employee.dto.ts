@@ -5,7 +5,11 @@ import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankStr
 export class CreateEmployeeRequestDto {
   @ApiProperty()
   @IsNotBlankString()
-  public name: string;
+  public firstName: string;
+
+  @ApiProperty()
+  @IsNotBlankString()
+  public lastName: string;
 
   @ApiProperty({
     type: String,
