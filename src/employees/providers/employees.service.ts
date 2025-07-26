@@ -19,6 +19,7 @@ import {
   FireEmployeeRequestDto,
   ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
+import { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -26,10 +27,15 @@ import {
   FireEmployeeResponseDto,
   ReHireEmployeeResponseDto,
 } from "../dto/response/action-reason-employee.dto";
+import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
-import { ContractStatus, Employee } from "../schemas/employee.schema";
+import {
+  ContractStatus,
+  Employee,
+  EmployeeRole,
+} from "../schemas/employee.schema";
 
 @Injectable()
 export class EmployeesService {
@@ -328,6 +334,54 @@ export class EmployeesService {
       documentTypeIdsUnlinked: employee.documentTypes.map((doc) =>
         doc.toString(),
       ),
+    };
+  }
+
+  async createAdminEmployee(
+    createAdminEmployeeDto: CreateAdminEmployeeRequestDto,
+  ): Promise<CreateAdminEmployeeResponseDto> {
+    const { username, password, cpf, firstName, lastName } =
+      createAdminEmployeeDto;
+
+    const existingEmployee = await this.findByUsername(username);
+
+    if (
+      existingEmployee?.username === username ||
+      existingEmployee?.cpf === cpf
+    ) {
+      throw new BadRequestException(
+        `An employee with username ${username} or CPF ${cpf} already exists`,
+      );
+    }
+
+    const contractEvent = await this.contractEventsService.create({
+      type: ContractEventType.HIRED,
+      date: new Date(),
+      reason: "New admin employee hired successfully cpf: " + cpf,
+    });
+
+    const newEmployee = new this.employeeModel({
+      firstName,
+      lastName,
+      cpf: cpf,
+      contractEvents: [contractEvent._id],
+      username: username,
+      password: password,
+      role: EmployeeRole.ADMIN,
+    });
+
+    const createdEmployee = await newEmployee.save();
+
+    return {
+      id: createdEmployee._id,
+      firstName: createdEmployee.firstName,
+      lastName: createdEmployee.lastName,
+      fullName: createdEmployee.fullName,
+      contractStatus: createdEmployee.contractStatus,
+      documentTypes: createdEmployee.documentTypes,
+      cpf: createdEmployee.cpf,
+      createdAt: createdEmployee.createdAt,
+      updatedAt: createdEmployee.updatedAt,
     };
   }
 }

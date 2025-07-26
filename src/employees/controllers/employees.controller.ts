@@ -19,6 +19,7 @@ import {
   FireEmployeeRequestDto,
   ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
+import { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -26,6 +27,7 @@ import {
   FireEmployeeResponseDto,
   ReHireEmployeeResponseDto,
 } from "../dto/response/action-reason-employee.dto";
+import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
@@ -186,6 +188,23 @@ export class EmployeesController {
     return await this.employeesService.unlinkDocumentTypes(
       employeeId,
       unlinkDocumentTypesDto,
+    );
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Create a new admin employee",
+      type: CreateAdminEmployeeResponseDto,
+      statusCode: HttpStatus.CREATED,
+    },
+    badRequest: true,
+  })
+  @Post("admin")
+  async createAdminEmployee(
+    @Body() createAdminEmployeeDto: CreateAdminEmployeeRequestDto,
+  ): Promise<CreateAdminEmployeeResponseDto> {
+    return await this.employeesService.createAdminEmployee(
+      createAdminEmployeeDto,
     );
   }
 }
