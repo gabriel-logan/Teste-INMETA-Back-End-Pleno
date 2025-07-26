@@ -10,11 +10,17 @@ import { DocumentTypesService } from "src/document-types/providers/document-type
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
-import { FireEmployeeRequestDto } from "../dto/request/action-reason-employee.dto";
+import {
+  FireEmployeeRequestDto,
+  HireAgainEmployeeRequestDto,
+} from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
-import { FireEmployeeResponseDto } from "../dto/response/action-reason-employee.dto";
+import {
+  FireEmployeeResponseDto,
+  HireAgainEmployeeResponseDto,
+} from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
@@ -125,6 +131,30 @@ export class EmployeesService {
     return {
       reason: fireEmployeeDto.reason,
       message: `Successfully terminated contract for employee with id ${employeeId}`,
+    };
+  }
+
+  async hireAgain(
+    employeeId: string,
+    hireAgainEmployeeDto: HireAgainEmployeeRequestDto,
+  ): Promise<HireAgainEmployeeResponseDto> {
+    const employee = await this.findById(employeeId);
+
+    if (employee.contractStatus === ContractStatus.ACTIVE) {
+      throw new BadRequestException(
+        `Employee with id ${employeeId} is already active`,
+      );
+    }
+
+    await this.employeeModel.findByIdAndUpdate(
+      employeeId,
+      { contractStatus: ContractStatus.ACTIVE },
+      { new: true, runValidators: true },
+    );
+
+    return {
+      reason: hireAgainEmployeeDto.reason,
+      message: `Successfully rehired employee with id ${employeeId}`,
     };
   }
 

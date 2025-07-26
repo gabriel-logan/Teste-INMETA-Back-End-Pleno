@@ -13,11 +13,17 @@ import {
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs";
 
-import { FireEmployeeRequestDto } from "../dto/request/action-reason-employee.dto";
+import {
+  FireEmployeeRequestDto,
+  HireAgainEmployeeRequestDto,
+} from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
-import { FireEmployeeResponseDto } from "../dto/response/action-reason-employee.dto";
+import {
+  FireEmployeeResponseDto,
+  HireAgainEmployeeResponseDto,
+} from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
@@ -87,10 +93,11 @@ export class EmployeesController {
 
   @ApiStandardResponses({
     ok: {
-      description: "Delete an employee",
-      type: void 0,
+      description: "Fire an employee",
+      type: FireEmployeeRequestDto,
     },
     notFound: true,
+    badRequest: true,
   })
   @Post("fire/:employeeId")
   async fire(
@@ -98,6 +105,25 @@ export class EmployeesController {
     @Body() fireEmployeeDto: FireEmployeeRequestDto,
   ): Promise<FireEmployeeResponseDto> {
     return await this.employeesService.fire(employeeId, fireEmployeeDto);
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Rehire an employee",
+      type: HireAgainEmployeeResponseDto,
+    },
+    notFound: true,
+    badRequest: true,
+  })
+  @Post("hire-again/:employeeId")
+  async hireAgain(
+    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Body() hireAgainEmployeeDto: HireAgainEmployeeRequestDto,
+  ): Promise<HireAgainEmployeeResponseDto> {
+    return await this.employeesService.hireAgain(
+      employeeId,
+      hireAgainEmployeeDto,
+    );
   }
 
   @ApiStandardResponses({
