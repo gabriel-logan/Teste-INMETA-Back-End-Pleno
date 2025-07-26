@@ -1,11 +1,13 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import {
   ContractEvent,
@@ -39,6 +41,8 @@ import {
 
 @Injectable()
 export class EmployeesService {
+  private readonly logger = new Logger(EmployeesService.name);
+
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
     private readonly employeeDocumentService: EmployeeDocumentService,
@@ -189,7 +193,15 @@ export class EmployeesService {
   async fire(
     employeeId: string,
     fireEmployeeDto: FireEmployeeRequestDto,
+    employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
+    if (employeeFromReq.role !== EmployeeRole.MANAGER) {
+      // This is a placeholder for the actual role check
+      // You can replace this with your actual role checking logic
+      // For demonstration purposes, we are letting it pass
+      this.logger.warn("Only managers can fire employees");
+    }
+
     const deletedEmployee = await this.employeeModel
       .findById(employeeId)
       .populate("contractEvents");
@@ -224,7 +236,15 @@ export class EmployeesService {
   async reHire(
     employeeId: string,
     reHireEmployeeDto: ReHireEmployeeRequestDto,
+    employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
+    if (employeeFromReq.role !== EmployeeRole.MANAGER) {
+      // This is a placeholder for the actual role check
+      // You can replace this with your actual role checking logic
+      // For demonstration purposes, we are letting it pass
+      this.logger.warn("Only managers can rehire employees");
+    }
+
     const employee = await this.employeeModel
       .findById(employeeId)
       .populate("contractEvents");

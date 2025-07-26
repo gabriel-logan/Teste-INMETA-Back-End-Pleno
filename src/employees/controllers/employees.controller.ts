@@ -14,8 +14,10 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
+import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Public } from "src/common/decorators/routes/public.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
+import { AuthPayload } from "src/common/types";
 
 import {
   FireEmployeeRequestDto,
@@ -143,8 +145,13 @@ export class EmployeesController {
   async fire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() fireEmployeeDto: FireEmployeeRequestDto,
+    @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
-    return await this.employeesService.fire(employeeId, fireEmployeeDto);
+    return await this.employeesService.fire(
+      employeeId,
+      fireEmployeeDto,
+      employeeFromReq,
+    );
   }
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
@@ -160,8 +167,13 @@ export class EmployeesController {
   async reHire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() reHireEmployeeDto: ReHireEmployeeRequestDto,
+    @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
-    return await this.employeesService.reHire(employeeId, reHireEmployeeDto);
+    return await this.employeesService.reHire(
+      employeeId,
+      reHireEmployeeDto,
+      employeeFromReq,
+    );
   }
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)

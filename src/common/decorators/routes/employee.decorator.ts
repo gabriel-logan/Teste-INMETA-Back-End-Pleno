@@ -3,7 +3,7 @@ import { createParamDecorator } from "@nestjs/common";
 import type { Request } from "express";
 import type { AuthPayload } from "src/common/types";
 
-export const Employee = createParamDecorator(
+export const EmployeeFromReq = createParamDecorator(
   (data: keyof AuthPayload | undefined, ctx: ExecutionContext) => {
     const request: Request = ctx.switchToHttp().getRequest();
 
