@@ -19,11 +19,11 @@ export class AuthService {
   ): Promise<SignInAuthResponseDto> {
     const { username, password } = createAuthDto;
 
-    const employee = await this.employeesService.findByUsername(username);
-
-    if (!employee) {
-      throw new UnauthorizedException("Invalid username or password");
-    }
+    const employee = await this.employeesService
+      .findByUsername(username)
+      .catch(() => {
+        throw new UnauthorizedException("Invalid username or password");
+      });
 
     const isPasswordValid = await compare(password, employee.password);
 

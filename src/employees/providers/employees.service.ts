@@ -110,8 +110,14 @@ export class EmployeesService {
 
   async findByUsername(
     username: string,
-  ): Promise<(Employee & { _id: Types.ObjectId }) | null> {
+  ): Promise<Employee & { _id: Types.ObjectId }> {
     const employee = await this.employeeModel.findOne({ username }).lean();
+
+    if (!employee) {
+      throw new NotFoundException(
+        `Employee with username ${username} not found`,
+      );
+    }
 
     return employee;
   }
