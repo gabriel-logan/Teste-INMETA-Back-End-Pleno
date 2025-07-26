@@ -28,17 +28,24 @@ export function Transactional() {
 
       logger.debug(`Starting transaction for method: ${_methodName}.`);
 
-      const result = await connection.transaction(async () => {
-        const result = (await originalMethod.apply(
-          this,
-          args,
-        )) as Promise<unknown>;
+      const result = await connection
+        .transaction(async () => {
+          const result = (await originalMethod.apply(
+            this,
+            args,
+          )) as Promise<unknown>;
 
-        return result;
-      });
+          return result;
+        })
+        .catch((error) => {
+          logger.error(
+            `Transaction failed for method: ${_methodName}. Rolling back. \n`,
+          );
+          throw error;
+        });
 
       logger.debug(
-        `Transaction successfully completed for method: ${_methodName}.`,
+        `Transaction successfully completed for method: ${_methodName}. \n`,
       );
 
       return result;
