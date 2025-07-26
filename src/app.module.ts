@@ -10,6 +10,7 @@ import { MongooseProvider } from "./configs/mongoose-provider";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
+import { EmployeeDocumentModule } from "./shared/employee-document/employee-document.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EmployeesModule } from "./employees/employees.module";
       }),
       inject: [ConfigService],
     }),
+    EmployeeDocumentModule,
     EmployeesModule,
     DocumentsModule,
     DocumentTypesModule,

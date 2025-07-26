@@ -12,6 +12,7 @@ import { DocumentTypesService } from "src/document-types/providers/document-type
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { Employee } from "src/employees/schemas/employee.schema";
+import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 import { v4 as uuidv4 } from "uuid";
 
 import { CreateDocumentRequestDto } from "../dto/request/create-document.dto";
@@ -30,6 +31,7 @@ export class DocumentsService {
 
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
+    private readonly employeeDocumentService: EmployeeDocumentService,
     private readonly employeesService: EmployeesService,
     private readonly documentTypesService: DocumentTypesService,
     private readonly configService: ConfigService<EnvGlobalConfig, true>,
@@ -109,13 +111,10 @@ export class DocumentsService {
       );
     }
 
-    const newDocument = new this.documentModel({
-      documentType: documentType.id,
-      status: DocumentStatus.MISSING,
-      employee: employee.id,
-    });
-
-    const savedDocument = await newDocument.save();
+    const savedDocument = await this.employeeDocumentService.createDocument(
+      employee.id,
+      documentType.id,
+    );
 
     return this.toPublicDocumentResponseDto(savedDocument);
   }
@@ -158,13 +157,7 @@ export class DocumentsService {
   }
 
   async delete(documentId: string): Promise<void> {
-    const deletedDocument = await this.documentModel
-      .findByIdAndDelete(documentId)
-      .lean();
-
-    if (!deletedDocument) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
-    }
+    await this.employeeDocumentService.deleteDocument(documentId);
 
     return void 0;
   }
