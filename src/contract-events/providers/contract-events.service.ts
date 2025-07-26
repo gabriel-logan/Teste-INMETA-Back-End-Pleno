@@ -72,7 +72,7 @@ export class ContractEventsService {
     return updatedContractEvent;
   }
 
-  async remove(id: string): Promise<DeleteContractEventResponseDto> {
+  async delete(id: string): Promise<DeleteContractEventResponseDto> {
     const deletedContractEvent = await this.contractEventModel
       .findByIdAndDelete(id)
       .lean();
