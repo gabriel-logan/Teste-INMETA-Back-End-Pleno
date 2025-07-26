@@ -1,10 +1,12 @@
 import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
 import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
+import { RolesGuard } from "./common/guards/roles.guard";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
@@ -34,7 +36,12 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
     ContractEventsModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(@InjectConnection() private readonly connection: Connection) {}
