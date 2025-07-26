@@ -15,6 +15,7 @@ import {
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
 import { Public } from "src/common/decorators/routes/public.decorator";
+import { Roles } from "src/common/decorators/routes/roles.decorator";
 
 import {
   FireEmployeeRequestDto,
@@ -33,13 +34,14 @@ import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentT
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
-import { ContractStatus } from "../schemas/employee.schema";
+import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 
 @ApiGlobalErrorResponses()
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "List of all employees",

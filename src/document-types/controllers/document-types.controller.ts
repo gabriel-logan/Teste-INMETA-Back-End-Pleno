@@ -11,13 +11,16 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
+import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
+import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
 import { PublicDocumentTypeResponseDto } from "../dto/response/public-document-type.dto";
 import { DocumentTypesService } from "../providers/document-types.service";
 
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
 @Controller("document-types")
 export class DocumentTypesController {

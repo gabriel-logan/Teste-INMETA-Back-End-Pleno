@@ -21,7 +21,9 @@ import {
   ApiStandardResponses,
   ApiTypeFormData,
 } from "src/common/decorators/routes/docs.decorator";
+import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
+import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
@@ -29,6 +31,7 @@ import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-d
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
 @Controller("documents")
 export class DocumentsController {
@@ -76,6 +79,7 @@ export class DocumentsController {
     return await this.documentsService.update(documentId, updateDocumentDto);
   }
 
+  @Roles(EmployeeRole.COMMON)
   @ApiStandardResponses({
     ok: {
       description: "Sends a document file",
