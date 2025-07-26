@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
-} from "src/common/decorators/routes/docs";
+} from "src/common/decorators/routes/docs.decorator";
 
 import { CreateAuthRequestDto } from "../dto/request/create-auth.dto";
 import { SignInAuthResponseDto } from "../dto/response/sign-in-auth.dto";

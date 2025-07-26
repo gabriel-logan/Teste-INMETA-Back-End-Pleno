@@ -10,7 +10,7 @@ import {
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
-} from "src/common/decorators/routes/docs";
+} from "src/common/decorators/routes/docs.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";

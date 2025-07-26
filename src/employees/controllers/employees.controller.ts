@@ -13,7 +13,7 @@ import {
   ApiGetAllEmployeesQueries,
   ApiGlobalErrorResponses,
   ApiStandardResponses,
-} from "src/common/decorators/routes/docs";
+} from "src/common/decorators/routes/docs.decorator";
 
 import {
   FireEmployeeRequestDto,

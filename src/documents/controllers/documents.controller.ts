@@ -20,7 +20,7 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
   ApiTypeFormData,
-} from "src/common/decorators/routes/docs";
+} from "src/common/decorators/routes/docs.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
