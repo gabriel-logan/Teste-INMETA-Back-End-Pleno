@@ -7,6 +7,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { Transactional } from "src/common/decorators/transaction/Transactional";
 import type { EnvGlobalConfig } from "src/configs/types";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
@@ -107,6 +108,7 @@ export class DocumentsService {
 
   // DocumentFile is a placeholder for the actual file type
   // Replace it with the actual type used for document files
+  @Transactional()
   async sendDocumentFile(
     documentId: string,
     documentFile: Express.Multer.File,
@@ -150,6 +152,7 @@ export class DocumentsService {
     };
   }
 
+  @Transactional()
   async deleteDocumentFile(
     documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
@@ -204,7 +207,7 @@ export class DocumentsService {
     const documents = (await this.documentModel
       .find({ employee: employee.id })
       .populate("documentType")
-      .lean()) as (DocumentDocument & { documentType: DocumentType })[];
+      .lean()) as (Document & { documentType: DocumentType })[];
 
     if (documents.length === 0) {
       throw new NotFoundException(
