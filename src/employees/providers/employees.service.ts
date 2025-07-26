@@ -4,10 +4,7 @@ import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
-import {
-  Document,
-  DocumentStatus,
-} from "src/documents/schemas/document.schema";
+import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
@@ -21,7 +18,7 @@ import { Employee } from "../schemas/employee.schema";
 export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
-    @InjectModel(Document.name) private readonly documentModel: Model<Document>,
+    private readonly employeeDocumentService: EmployeeDocumentService,
     private readonly documentTypesService: DocumentTypesService,
   ) {}
 
@@ -141,13 +138,10 @@ export class EmployeesService {
 
     // Create documents for each linked document type
     for (const documentType of documentTypes) {
-      const newDocument = new this.documentModel({
-        employee: employee._id,
-        documentType: documentType.id,
-        status: DocumentStatus.MISSING,
-      });
-
-      await newDocument.save();
+      await this.employeeDocumentService.createDocument(
+        employee._id,
+        documentType.id,
+      );
     }
 
     await employee.save();
@@ -181,10 +175,9 @@ export class EmployeesService {
     );
 
     // Remove documents associated with the unlinked document types
-    await this.documentModel.deleteMany({
-      employee: employee._id,
-      documentType: { $in: documentTypes.map((doc) => doc.id) },
-    });
+    for (const documentType of documentTypes) {
+      await this.employeeDocumentService.deleteDocument(documentType.id);
+    }
 
     await employee.save();
 
