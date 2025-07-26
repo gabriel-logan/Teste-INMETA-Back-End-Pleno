@@ -194,6 +194,7 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(updatedEmployee);
   }
 
+  @Transactional()
   async fire(
     employeeId: string,
     fireEmployeeDto: FireEmployeeRequestDto,
@@ -237,6 +238,7 @@ export class EmployeesService {
     };
   }
 
+  @Transactional()
   async reHire(
     employeeId: string,
     reHireEmployeeDto: ReHireEmployeeRequestDto,
@@ -361,6 +363,7 @@ export class EmployeesService {
     };
   }
 
+  @Transactional()
   async createAdminEmployee(
     createAdminEmployeeDto: CreateAdminEmployeeRequestDto,
   ): Promise<CreateAdminEmployeeResponseDto> {

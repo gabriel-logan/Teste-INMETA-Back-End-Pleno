@@ -183,6 +183,7 @@ export class EmployeesController {
       type: DocumentTypeEmployeeLinkedResponseDto,
     },
     notFound: true,
+    badRequest: true,
   })
   @Post(":employeeId/document-types/link")
   async linkDocumentTypes(
@@ -202,6 +203,7 @@ export class EmployeesController {
       type: DocumentTypeEmployeeUnlinkedResponseDto,
     },
     notFound: true,
+    badRequest: true,
   })
   @Post(":employeeId/document-types/unlink")
   async unlinkDocumentTypes(
