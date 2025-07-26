@@ -47,6 +47,22 @@ export class DocumentTypesService {
     return this.toPublicDocumentTypeResponseDto(docType);
   }
 
+  async findOneByName(
+    documentTypeName: string,
+  ): Promise<PublicDocumentTypeResponseDto> {
+    const docType = await this.documentTypeModel
+      .findOne({ name: documentTypeName.toUpperCase() })
+      .lean();
+
+    if (!docType) {
+      throw new NotFoundException(
+        `DocumentType with name ${documentTypeName} not found`,
+      );
+    }
+
+    return this.toPublicDocumentTypeResponseDto(docType);
+  }
+
   async create(
     createDocumentTypeDto: CreateDocumentTypeRequestDto,
   ): Promise<PublicDocumentTypeResponseDto> {

@@ -42,12 +42,26 @@ export class DocumentTypesController {
     },
     notFound: true,
   })
-  @Get(":documentTypeId")
+  @Get("id/:documentTypeId")
   async findById(
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
     documentTypeId: string,
   ): Promise<PublicDocumentTypeResponseDto> {
     return await this.documentTypesService.findById(documentTypeId);
+  }
+
+  @ApiStandardResponses({
+    ok: {
+      description: "Returns a specific document type by name.",
+      type: PublicDocumentTypeResponseDto,
+    },
+    notFound: true,
+  })
+  @Get("name/:documentTypeName")
+  async findOneByName(
+    @Param("documentTypeName") documentTypeName: string,
+  ): Promise<PublicDocumentTypeResponseDto> {
+    return await this.documentTypesService.findOneByName(documentTypeName);
   }
 
   @ApiStandardResponses({
