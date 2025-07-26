@@ -219,7 +219,8 @@ export class EmployeesController {
   @Public()
   @ApiStandardResponses({
     ok: {
-      description: "Create a new admin employee",
+      description:
+        "Create a new admin employee - for internal use only - not exposed to public",
       type: CreateAdminEmployeeResponseDto,
       statusCode: HttpStatus.CREATED,
     },
