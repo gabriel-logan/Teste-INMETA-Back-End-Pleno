@@ -8,6 +8,12 @@ export enum ContractStatus {
   INACTIVE = "inactive",
 }
 
+export enum EmployeeRole {
+  MANAGER = "manager",
+  ADMIN = "admin",
+  COMMON = "common",
+}
+
 @Schema({ timestamps: true })
 export class Employee {
   @Prop({ required: true })
@@ -34,6 +40,9 @@ export class Employee {
 
   @Prop({ required: true, unique: true })
   public cpf: string;
+
+  @Prop({ enum: EmployeeRole, default: EmployeeRole.COMMON })
+  public role: EmployeeRole;
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "DocumentType" }],
