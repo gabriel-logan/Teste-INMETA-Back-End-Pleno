@@ -1,14 +1,12 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
-import { DocumentsService } from "src/documents/providers/documents.service";
+import {
+  Document,
+  DocumentStatus,
+} from "src/documents/schemas/document.schema";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
@@ -22,9 +20,8 @@ import { Employee } from "../schemas/employee.schema";
 export class EmployeesService {
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
+    @InjectModel(Document.name) private readonly documentModel: Model<Document>,
     private readonly documentTypesService: DocumentTypesService,
-    @Inject(forwardRef(() => DocumentsService))
-    private readonly documentsService: DocumentsService,
   ) {}
 
   private toPublicEmployeeResponseDto(
@@ -140,6 +137,17 @@ export class EmployeesService {
       }
     }
 
+    // Create documents for each linked document type
+    for (const documentType of documentTypes) {
+      const newDocument = new this.documentModel({
+        employee: employee._id,
+        documentType: documentType.id,
+        status: DocumentStatus.MISSING,
+      });
+
+      await newDocument.save();
+    }
+
     await employee.save();
 
     return {
@@ -168,6 +176,12 @@ export class EmployeesService {
     employee.documentTypes = employee.documentTypes.filter(
       (id) => !documentTypes.map((doc) => doc.id).includes(id),
     );
+
+    // Remove documents associated with the unlinked document types
+    await this.documentModel.deleteMany({
+      employee: employee._id,
+      documentType: { $in: documentTypes.map((doc) => doc.id) },
+    });
 
     await employee.save();
 

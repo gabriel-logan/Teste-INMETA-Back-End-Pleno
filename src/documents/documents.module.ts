@@ -22,6 +22,5 @@ import { Document, DocumentSchema } from "./schemas/document.schema";
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService],
-  exports: [DocumentsService],
 })
 export class DocumentsModule {}

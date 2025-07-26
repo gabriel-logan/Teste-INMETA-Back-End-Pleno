@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -32,7 +30,6 @@ export class DocumentsService {
 
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
-    @Inject(forwardRef(() => EmployeesService))
     private readonly employeesService: EmployeesService,
     private readonly documentTypesService: DocumentTypesService,
     private readonly configService: ConfigService<EnvGlobalConfig, true>,
