@@ -150,7 +150,13 @@ export class EmployeesService {
     employeeId: string,
     fireEmployeeDto: FireEmployeeRequestDto,
   ): Promise<FireEmployeeResponseDto> {
-    const deletedEmployee = await this.findById(employeeId);
+    const deletedEmployee = await this.employeeModel
+      .findById(employeeId)
+      .populate("contractEvents");
+
+    if (!deletedEmployee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
 
     if (deletedEmployee.contractStatus === ContractStatus.INACTIVE) {
       throw new BadRequestException(
@@ -158,11 +164,16 @@ export class EmployeesService {
       );
     }
 
-    await this.employeeModel.findByIdAndUpdate(
-      employeeId,
-      { contractStatus: ContractStatus.INACTIVE },
-      { new: true, runValidators: true },
-    );
+    const contractEvent = await this.contractEventsService.create({
+      type: ContractEventType.FIRED,
+      date: new Date(),
+      reason: fireEmployeeDto.reason,
+    });
+
+    deletedEmployee.contractStatus = ContractStatus.INACTIVE;
+    deletedEmployee.contractEvents.push(contractEvent._id);
+
+    await deletedEmployee.save();
 
     return {
       reason: fireEmployeeDto.reason,
@@ -174,7 +185,13 @@ export class EmployeesService {
     employeeId: string,
     hireAgainEmployeeDto: HireAgainEmployeeRequestDto,
   ): Promise<HireAgainEmployeeResponseDto> {
-    const employee = await this.findById(employeeId);
+    const employee = await this.employeeModel
+      .findById(employeeId)
+      .populate("contractEvents");
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
 
     if (employee.contractStatus === ContractStatus.ACTIVE) {
       throw new BadRequestException(
@@ -182,11 +199,16 @@ export class EmployeesService {
       );
     }
 
-    await this.employeeModel.findByIdAndUpdate(
-      employeeId,
-      { contractStatus: ContractStatus.ACTIVE },
-      { new: true, runValidators: true },
-    );
+    const contractEvent = await this.contractEventsService.create({
+      type: ContractEventType.REHIRED,
+      date: new Date(),
+      reason: hireAgainEmployeeDto.reason,
+    });
+
+    employee.contractStatus = ContractStatus.ACTIVE;
+    employee.contractEvents.push(contractEvent._id);
+
+    await employee.save();
 
     return {
       reason: hireAgainEmployeeDto.reason,
