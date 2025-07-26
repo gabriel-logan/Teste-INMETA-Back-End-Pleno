@@ -6,15 +6,19 @@ import {
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
+  ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { BadRequestExceptionDto } from "src/common/dto/exception/bad-request.dto";
 import { ConflictExceptionDto } from "src/common/dto/exception/conflict.dto";
+import { ForbiddenExceptionDto } from "src/common/dto/exception/forbidden.dto";
 import { InternalServerErrorDto } from "src/common/dto/exception/internal-server-error.dto";
 import { NotFoundExceptionDto } from "src/common/dto/exception/not-found.dto";
+import { UnauthorizedExceptionDto } from "src/common/dto/exception/unauthorized.dto";
 import { ContractStatus } from "src/employees/schemas/employee.schema";
 
 export type typeOkResponse =
@@ -90,18 +94,18 @@ export function ApiStandardResponses(
 
   if (options.unauthorized) {
     decorators.push(
-      ApiBadRequestResponse({
+      ApiUnauthorizedResponse({
         description: "Unauthorized",
-        type: BadRequestExceptionDto,
+        type: UnauthorizedExceptionDto,
       }),
     );
   }
 
   if (options.forbidden) {
     decorators.push(
-      ApiBadRequestResponse({
+      ApiForbiddenResponse({
         description: "Forbidden",
-        type: BadRequestExceptionDto,
+        type: ForbiddenExceptionDto,
       }),
     );
   }

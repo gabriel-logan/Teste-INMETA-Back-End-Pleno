@@ -98,6 +98,14 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(employee);
   }
 
+  async findByUsername(
+    username: string,
+  ): Promise<(Employee & { _id: Types.ObjectId }) | null> {
+    const employee = await this.employeeModel.findOne({ username }).lean();
+
+    return employee;
+  }
+
   async findByIdWithContractEvents(
     employeeId: string,
   ): Promise<PublicEmployeeResponseDto & { contractEvents: ContractEvent[] }> {
