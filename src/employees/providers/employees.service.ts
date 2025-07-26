@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
@@ -6,13 +10,15 @@ import { DocumentTypesService } from "src/document-types/providers/document-type
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
+import { FireEmployeeRequestDto } from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { FireEmployeeResponseDto } from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
-import { Employee } from "../schemas/employee.schema";
+import { ContractStatus, Employee } from "../schemas/employee.schema";
 
 @Injectable()
 export class EmployeesService {
@@ -98,16 +104,28 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(updatedEmployee);
   }
 
-  async delete(employeeId: string): Promise<void> {
-    const deletedEmployee = await this.employeeModel
-      .findByIdAndDelete(employeeId)
-      .lean();
+  async fire(
+    employeeId: string,
+    fireEmployeeDto: FireEmployeeRequestDto,
+  ): Promise<FireEmployeeResponseDto> {
+    const deletedEmployee = await this.findById(employeeId);
 
-    if (!deletedEmployee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    if (deletedEmployee.contractStatus === ContractStatus.INACTIVE) {
+      throw new BadRequestException(
+        `Employee with id ${employeeId} is already inactive`,
+      );
     }
 
-    return void 0;
+    await this.employeeModel.findByIdAndUpdate(
+      employeeId,
+      { contractStatus: ContractStatus.INACTIVE },
+      { new: true, runValidators: true },
+    );
+
+    return {
+      reason: fireEmployeeDto.reason,
+      message: `Successfully terminated contract for employee with id ${employeeId}`,
+    };
   }
 
   @Transactional()

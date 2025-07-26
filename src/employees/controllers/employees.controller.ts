@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
   Param,
@@ -14,9 +13,11 @@ import {
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs";
 
+import { FireEmployeeRequestDto } from "../dto/request/action-reason-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { FireEmployeeResponseDto } from "../dto/response/action-reason-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
@@ -91,11 +92,12 @@ export class EmployeesController {
     },
     notFound: true,
   })
-  @Delete(":employeeId")
-  async delete(
+  @Post("fire/:employeeId")
+  async fire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-  ): Promise<void> {
-    return await this.employeesService.delete(employeeId);
+    @Body() fireEmployeeDto: FireEmployeeRequestDto,
+  ): Promise<FireEmployeeResponseDto> {
+    return await this.employeesService.fire(employeeId, fireEmployeeDto);
   }
 
   @ApiStandardResponses({
