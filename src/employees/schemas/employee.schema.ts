@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
+import { hash } from "bcrypt";
 import mongoose, { HydratedDocument } from "mongoose";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
@@ -32,7 +33,7 @@ export class Employee {
   @Prop({ required: true, unique: true })
   public username: string;
 
-  @Prop({ required: true, default: "123456" })
+  @Prop({ required: true })
   public password: string;
 
   @Prop({ enum: ContractStatus, default: ContractStatus.ACTIVE })
@@ -61,3 +62,13 @@ export class Employee {
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
+
+EmployeeSchema.pre<EmployeeDocument>("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+
+  this.password = await hash(this.password, 8);
+
+  next();
+});

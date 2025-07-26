@@ -141,6 +141,7 @@ export class EmployeesService {
       cpf: parsedCpf,
       contractEvents: [contractEvent._id],
       username: parsedCpf,
+      password: "123456",
     });
 
     const savedEmployee = await createdEmployee.save();
