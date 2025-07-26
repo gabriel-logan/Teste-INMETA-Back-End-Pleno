@@ -113,11 +113,32 @@ export function ApiStandardResponses(
   return applyDecorators(...decorators);
 }
 
-export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
+export function ApiGlobalErrorResponses({
+  isPublic = false,
+}: {
+  isPublic?: boolean;
+} = {}): MethodDecorator & ClassDecorator {
+  if (isPublic) {
+    return applyDecorators(
+      ApiInternalServerErrorResponse({
+        description: "Internal server error",
+        type: InternalServerErrorDto,
+      }),
+    );
+  }
+
   return applyDecorators(
     ApiInternalServerErrorResponse({
       description: "Internal server error",
       type: InternalServerErrorDto,
+    }),
+    ApiUnauthorizedResponse({
+      description: "Unauthorized",
+      type: UnauthorizedExceptionDto,
+    }),
+    ApiForbiddenResponse({
+      description: "Forbidden",
+      type: ForbiddenExceptionDto,
     }),
   );
 }
