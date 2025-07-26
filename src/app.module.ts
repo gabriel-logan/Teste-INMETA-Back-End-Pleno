@@ -12,6 +12,7 @@ import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
 import { EmployeeDocumentModule } from "./shared/employee-document/employee-document.module";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
     DocumentsModule,
     DocumentTypesModule,
     ContractEventsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],
