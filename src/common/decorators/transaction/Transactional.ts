@@ -29,11 +29,11 @@ export function Transactional() {
       logger.debug(`Starting transaction for method: ${_methodName}.`);
 
       const result = await connection
-        .transaction(async () => {
-          const result = (await originalMethod.apply(
-            this,
-            args,
-          )) as Promise<unknown>;
+        .transaction(async (session) => {
+          const result = (await originalMethod.apply(this, [
+            ...args,
+            session, // Pass the session to the original method IF needed
+          ])) as Promise<unknown>;
 
           return result;
         })
