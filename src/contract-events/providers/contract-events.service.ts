@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
@@ -31,12 +31,10 @@ export class ContractEventsService {
     return contractEvent;
   }
 
-  async findByEmployeeId(employeeId: string): Promise<ContractEvent[]> {
-    const contractEvents = await this.contractEventModel
-      .find({ employeeId })
-      .lean();
-
-    return contractEvents;
+  async findManyByIds(
+    ids: string[] | Types.ObjectId[],
+  ): Promise<ContractEvent[]> {
+    return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
   }
 
   async create(

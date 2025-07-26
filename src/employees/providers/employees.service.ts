@@ -87,8 +87,9 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
-    const contractEvents =
-      await this.contractEventsService.findByEmployeeId(employeeId);
+    const contractEvents = await this.contractEventsService.findManyByIds(
+      employee.contractEvents.map((event) => event),
+    );
 
     return {
       ...this.toPublicEmployeeResponseDto(employee),
