@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
   Param,
@@ -84,20 +83,5 @@ export class DocumentTypesController {
       documentTypeId,
       updateDocumentsTypeDto,
     );
-  }
-
-  @ApiStandardResponses({
-    ok: {
-      description: "Deletes a document type by ID.",
-      type: void 0,
-    },
-    notFound: true,
-  })
-  @Delete(":documentTypeId")
-  async delete(
-    @Param("documentTypeId", new ParseObjectIdPipeLocal())
-    documentTypeId: string,
-  ): Promise<void> {
-    return await this.documentTypesService.delete(documentTypeId);
   }
 }
