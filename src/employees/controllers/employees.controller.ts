@@ -14,6 +14,7 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
+import { Public } from "src/common/decorators/routes/public.decorator";
 
 import {
   FireEmployeeRequestDto,
@@ -191,6 +192,7 @@ export class EmployeesController {
     );
   }
 
+  @Public()
   @ApiStandardResponses({
     ok: {
       description: "Create a new admin employee",

@@ -3,6 +3,7 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
+import { Public } from "src/common/decorators/routes/public.decorator";
 
 import { CreateAuthRequestDto } from "../dto/request/create-auth.dto";
 import { SignInAuthResponseDto } from "../dto/response/sign-in-auth.dto";
@@ -13,6 +14,7 @@ import { AuthService } from "../providers/auth.service";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @ApiStandardResponses({
     ok: {
       description: "Successful sign-in",

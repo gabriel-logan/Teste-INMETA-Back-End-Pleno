@@ -2,7 +2,9 @@ import { Controller, Get, HttpStatus } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 
 import { ApiGlobalErrorResponses } from "./common/decorators/routes/docs.decorator";
+import { Public } from "./common/decorators/routes/public.decorator";
 
+@Public()
 @ApiGlobalErrorResponses()
 @Controller()
 export class AppController {
