@@ -31,12 +31,12 @@ import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-d
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
-@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
 @Controller("documents")
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Returns all documents",
@@ -49,6 +49,7 @@ export class DocumentsController {
     return await this.documentsService.findAll();
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Returns a document by ID",
@@ -63,6 +64,7 @@ export class DocumentsController {
     return await this.documentsService.findById(documentId);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Updates a document by ID",
@@ -79,7 +81,7 @@ export class DocumentsController {
     return await this.documentsService.update(documentId, updateDocumentDto);
   }
 
-  @Roles(EmployeeRole.COMMON)
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN, EmployeeRole.COMMON)
   @ApiStandardResponses({
     ok: {
       description: "Sends a document file",
@@ -112,6 +114,7 @@ export class DocumentsController {
     );
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Deletes a document file",
@@ -127,6 +130,7 @@ export class DocumentsController {
     return await this.documentsService.deleteDocumentFile(documentId);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Returns document statuses by employee ID",
@@ -154,6 +158,7 @@ export class DocumentsController {
     );
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Returns all missing documents",

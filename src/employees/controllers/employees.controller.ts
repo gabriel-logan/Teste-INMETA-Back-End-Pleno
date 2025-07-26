@@ -67,6 +67,7 @@ export class EmployeesController {
     });
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Employee details by ID",
@@ -81,6 +82,7 @@ export class EmployeesController {
     return await this.employeesService.findById(employeeId);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Employee details with contract events",
@@ -95,6 +97,7 @@ export class EmployeesController {
     return await this.employeesService.findByIdWithContractEvents(employeeId);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Create a new employee",
@@ -110,6 +113,7 @@ export class EmployeesController {
     return await this.employeesService.create(createEmployeeDto);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Update employee details",
@@ -126,6 +130,7 @@ export class EmployeesController {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Fire an employee",
@@ -142,6 +147,7 @@ export class EmployeesController {
     return await this.employeesService.fire(employeeId, fireEmployeeDto);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Rehire an employee",
@@ -158,6 +164,7 @@ export class EmployeesController {
     return await this.employeesService.reHire(employeeId, reHireEmployeeDto);
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Link document types to an employee",
@@ -176,6 +183,7 @@ export class EmployeesController {
     );
   }
 
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Unlink document types from an employee",
