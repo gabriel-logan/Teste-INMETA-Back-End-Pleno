@@ -4,6 +4,7 @@ import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
 import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
+import { AuthModule } from "./auth/auth.module";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
@@ -12,7 +13,6 @@ import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
 import { EmployeeDocumentModule } from "./shared/employee-document/employee-document.module";
-import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,12 +26,12 @@ import { AuthModule } from './auth/auth.module';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
     EmployeeDocumentModule,
     EmployeesModule,
     DocumentsModule,
     DocumentTypesModule,
     ContractEventsModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [],
