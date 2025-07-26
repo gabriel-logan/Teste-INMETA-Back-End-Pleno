@@ -14,7 +14,7 @@ export default (): EnvTestConfig => ({
       host: "localhost",
       port: 3306,
       user: "test_user",
-      password: "123456",
+      password: "123456", // nosonar
       database: "employee_management",
     },
 

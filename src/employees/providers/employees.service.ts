@@ -159,7 +159,7 @@ export class EmployeesService {
       cpf: parsedCpf,
       contractEvents: [contractEvent._id],
       username: parsedCpf,
-      password: "123456",
+      password: "123456", // nosonar
     });
 
     const savedEmployee = await createdEmployee.save();
