@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -415,7 +416,7 @@ export class EmployeesService {
       existingEmployee?.username === username ||
       existingEmployee?.cpf === parsedCpf
     ) {
-      throw new BadRequestException(
+      throw new ConflictException(
         `An employee with username ${username} or CPF ${parsedCpf} already exists`,
       );
     }

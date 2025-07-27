@@ -113,6 +113,7 @@ export class EmployeesController {
       statusCode: HttpStatus.CREATED,
     },
     badRequest: true,
+    conflict: true,
   })
   @Post()
   async create(
@@ -130,6 +131,7 @@ export class EmployeesController {
     },
     notFound: true,
     badRequest: true,
+    conflict: true,
   })
   @Patch(":employeeId")
   async update(
@@ -241,6 +243,7 @@ export class EmployeesController {
     },
     badRequest: true,
     isPublic: true,
+    conflict: true,
   })
   @Post("admin")
   async createAdminEmployee(
