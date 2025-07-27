@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { cacheKeys } from "src/common/constants";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -12,6 +14,8 @@ export class DocumentTypesService {
   constructor(
     @InjectModel(DocumentType.name)
     private readonly documentTypeModel: Model<DocumentType>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   private toPublicDocumentTypeResponseDto(
@@ -26,14 +30,35 @@ export class DocumentTypesService {
   }
 
   async findAll(): Promise<PublicDocumentTypeResponseDto[]> {
-    return (await this.documentTypeModel.find().lean()).map((docType) =>
-      this.toPublicDocumentTypeResponseDto(docType),
+    const cachedDocumentTypes = await this.cacheManager.get<
+      PublicDocumentTypeResponseDto[]
+    >(cacheKeys.documentTypes.findAll);
+
+    if (cachedDocumentTypes) {
+      return cachedDocumentTypes;
+    }
+
+    const documentTypes = (await this.documentTypeModel.find().lean()).map(
+      (docType) => this.toPublicDocumentTypeResponseDto(docType),
     );
+
+    await this.cacheManager.set(cacheKeys.documentTypes.findAll, documentTypes);
+
+    return documentTypes;
   }
 
   async findById(
     documentTypeId: string,
   ): Promise<PublicDocumentTypeResponseDto> {
+    const cachedDocumentType =
+      await this.cacheManager.get<PublicDocumentTypeResponseDto>(
+        cacheKeys.documentTypes.findById(documentTypeId),
+      );
+
+    if (cachedDocumentType) {
+      return cachedDocumentType;
+    }
+
     const docType = await this.documentTypeModel
       .findById(documentTypeId)
       .lean();
@@ -44,12 +69,26 @@ export class DocumentTypesService {
       );
     }
 
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findById(documentTypeId),
+      this.toPublicDocumentTypeResponseDto(docType),
+    );
+
     return this.toPublicDocumentTypeResponseDto(docType);
   }
 
   async findOneByName(
     documentTypeName: string,
   ): Promise<PublicDocumentTypeResponseDto> {
+    const cachedDocumentType =
+      await this.cacheManager.get<PublicDocumentTypeResponseDto>(
+        cacheKeys.documentTypes.findOneByName(documentTypeName),
+      );
+
+    if (cachedDocumentType) {
+      return cachedDocumentType;
+    }
+
     const docType = await this.documentTypeModel
       .findOne({ name: documentTypeName.toUpperCase() })
       .lean();
@@ -59,6 +98,11 @@ export class DocumentTypesService {
         `DocumentType with name ${documentTypeName} not found`,
       );
     }
+
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findOneByName(documentTypeName),
+      this.toPublicDocumentTypeResponseDto(docType),
+    );
 
     return this.toPublicDocumentTypeResponseDto(docType);
   }
@@ -73,6 +117,9 @@ export class DocumentTypesService {
     });
 
     const createdDocumentType = await newDocumentType.save();
+
+    // Invalidate cache for findAll
+    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
 
     return this.toPublicDocumentTypeResponseDto(createdDocumentType);
   }
@@ -96,6 +143,15 @@ export class DocumentTypesService {
         `DocumentType with id ${documentTypeId} not found`,
       );
     }
+
+    // Invalidate cache for findAll and specific document type
+    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
+    await this.cacheManager.del(
+      cacheKeys.documentTypes.findById(documentTypeId),
+    );
+    await this.cacheManager.del(
+      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
+    );
 
     return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
   }

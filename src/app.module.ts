@@ -1,3 +1,4 @@
+import { CacheModule } from "@nestjs/cache-manager";
 import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
@@ -5,6 +6,7 @@ import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
+import { cacheTtl } from "./common/constants";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
@@ -25,6 +27,10 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
         uri: configService.get<string>("database.mongodb.uri"),
       }),
       inject: [ConfigService],
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: cacheTtl,
     }),
     AuthModule,
     EmployeeDocumentModule,
