@@ -2,6 +2,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
+import { ThrottlerModule } from "@nestjs/throttler";
 import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
@@ -10,6 +11,7 @@ import { cacheTtl } from "./common/constants";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
+import throttlerModuleOptions from "./configs/throttlerModuleOptions";
 import { ContractEventsModule } from "./contract-events/contract-events.module";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
@@ -21,6 +23,7 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
     ConfigModule.forRoot({
       load: [envGlobal],
     }),
+    ThrottlerModule.forRoot(throttlerModuleOptions),
     MongooseModule.forRootAsync({
       imports: [ConfigModule.forFeature(envDatabase)],
       useFactory: (configService: ConfigService) => ({
