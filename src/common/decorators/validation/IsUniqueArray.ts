@@ -3,7 +3,7 @@ import { buildMessage, ValidateBy } from "class-validator";
 
 export const IS_UNIQUE_ARRAY = "isUniqueArray";
 
-function isUniqueArray(value: unknown): boolean {
+export function isUniqueArray(value: unknown): boolean {
   if (!Array.isArray(value)) {
     return false;
   }

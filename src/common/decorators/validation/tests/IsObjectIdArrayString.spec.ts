@@ -46,7 +46,7 @@ describe("isObjectIdArrayString", () => {
 describe("IsObjectIdArrayString decorator", () => {
   class TestClass {
     @IsObjectIdArrayString()
-    public ids: string[];
+    public ids!: string[];
   }
 
   it("should validate a property with valid ObjectId array", async () => {
