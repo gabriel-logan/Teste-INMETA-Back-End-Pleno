@@ -10,7 +10,7 @@ describe("AuthService", () => {
   let service: AuthService;
 
   const mockEmployeesService = {
-    findByUsername: jest.fn().mockResolvedValue({
+    findOneByUsername: jest.fn().mockResolvedValue({
       id: 1,
       username: "testUser",
       password: "hashedPassword",
@@ -61,7 +61,7 @@ describe("AuthService", () => {
 
     it("should throw UnauthorizedException for invalid username", async () => {
       jest
-        .spyOn(mockEmployeesService, "findByUsername")
+        .spyOn(mockEmployeesService, "findOneByUsername")
         .mockRejectedValue(new Error("User not found"));
 
       await expect(
@@ -73,7 +73,7 @@ describe("AuthService", () => {
     });
 
     it("should throw UnauthorizedException for invalid password", async () => {
-      jest.spyOn(mockEmployeesService, "findByUsername").mockResolvedValue({
+      jest.spyOn(mockEmployeesService, "findOneByUsername").mockResolvedValue({
         id: 1,
         username: "testUser",
         password: "hashedPassword",
