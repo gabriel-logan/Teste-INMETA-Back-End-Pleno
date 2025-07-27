@@ -1,4 +1,4 @@
-import type { INestApplication } from "@nestjs/common";
+import { HttpStatus, type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import * as request from "supertest";
@@ -18,10 +18,14 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it("/ (GET)", () => {
     return request(app.getHttpServer())
       .get("/")
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect("Hello World!");
   });
 });
