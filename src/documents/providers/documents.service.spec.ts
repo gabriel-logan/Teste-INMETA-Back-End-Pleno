@@ -3,9 +3,11 @@ import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import type { Connection } from "mongoose";
 import { type Model, Types } from "mongoose";
 import type { AuthPayload } from "src/common/types";
 import envTests from "src/configs/env.tests";
+import { MongooseProvider } from "src/configs/mongoose-provider";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import {
   ContractStatus,
@@ -36,9 +38,9 @@ describe("DocumentsService", () => {
   };
 
   const mockPublicDocumentResponseDto = {
-    _id: "1",
+    _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
     employee: {
-      _id: "1",
+      _id: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
       firstName: "John",
       lastName: "Doe",
       fullName: "John Doe",
@@ -49,14 +51,14 @@ describe("DocumentsService", () => {
       updatedAt: new Date(),
     },
     documentType: {
-      _id: "1",
+      _id: new Types.ObjectId("60c72b2f9b1d8c021c8e4e1a"),
       name: "Passport",
       description: "Passport document",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
     status: DocumentStatus.AVAILABLE,
-    documentUrl: "http://example.com/document.pdf",
+    documentUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -82,8 +84,30 @@ describe("DocumentsService", () => {
     public save = jest.fn();
   };
 
+  const mockSession = {
+    startTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    abortTransaction: jest.fn(),
+    endSession: jest.fn(),
+  };
+
+  const mockConnection = {
+    transaction: jest.fn().mockImplementation(async (cb) => {
+      try {
+        return await cb(mockSession);
+      } catch (error) {
+        throw error;
+      }
+    }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    // Mock the Mongoose connection
+    MongooseProvider.setMongooseInstance(
+      mockConnection as unknown as Connection,
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forFeature(envTests)],
@@ -220,6 +244,24 @@ describe("DocumentsService", () => {
 
   describe("sendDocumentFile", () => {
     it("should return success message when document file is sent", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: employeeId,
+        status: DocumentStatus.MISSING,
+        documentUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+      const spyOnFindById = jest
+        .spyOn(mockDocumentModel, "findById")
+        .mockReturnValue({
+          populate: jest.fn().mockResolvedValue(mockDocument),
+        } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
       const mockFile = {
         originalname: "document.pdf",
         buffer: Buffer.from("mock file content"),
@@ -227,7 +269,7 @@ describe("DocumentsService", () => {
       } as Express.Multer.File;
 
       const mockAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        sub: employeeId,
         role: EmployeeRole.COMMON,
         username: "johndoe",
       };
@@ -238,7 +280,12 @@ describe("DocumentsService", () => {
         mockAuthPayload,
       );
 
-      expect(result).toEqual({ message: "Document file sent successfully" });
+      expect(result).toEqual({
+        message: "Document file sent successfully",
+        documentUrl: expect.any(String) as string,
+      });
+      expect(spyOnFindById).toHaveBeenCalledWith("1");
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
   });
 });
