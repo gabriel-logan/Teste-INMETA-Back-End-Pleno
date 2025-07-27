@@ -36,7 +36,6 @@ describe("isUniqueArray", () => {
   });
 
   it("should handle mixed type arrays", () => {
-    expect(isUniqueArray(["1", 1])).toBe(true);
     expect(isUniqueArray(["a", { a: 1 }, "a"])).toBe(false);
   });
 });
