@@ -23,7 +23,7 @@ import {
 } from "../dto/request/action-reason-employee.dto";
 import { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
-import { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
+import { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import {
   FireEmployeeResponseDto,
@@ -285,7 +285,7 @@ export class EmployeesService {
   @Transactional()
   async linkDocumentTypes(
     employeeId: string,
-    linkDocumentTypesDto: LinkDocumentTypesDto,
+    linkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const { documentTypeIds } = linkDocumentTypesDto;
 
@@ -337,10 +337,10 @@ export class EmployeesService {
       );
     }
 
-    await employee.save();
+    const result = await employee.save();
 
     return {
-      documentTypeIdsLinked: employee.documentTypes.map((doc) =>
+      documentTypeIdsLinked: result.documentTypes.map((doc) =>
         doc._id.toString(),
       ),
     };
@@ -349,7 +349,7 @@ export class EmployeesService {
   @Transactional()
   async unlinkDocumentTypes(
     employeeId: string,
-    unlinkDocumentTypesDto: LinkDocumentTypesDto,
+    unlinkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const { documentTypeIds } = unlinkDocumentTypesDto;
 

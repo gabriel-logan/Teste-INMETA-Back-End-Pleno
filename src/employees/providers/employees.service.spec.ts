@@ -13,6 +13,7 @@ import type {
   ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
+import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import {
   ContractStatus,
@@ -26,7 +27,10 @@ describe("EmployeesService", () => {
   let mockEmployeeModel: Model<Employee>;
 
   const mockEmployeeDocumentService = {
-    findById: jest.fn(() => Promise.resolve({})),
+    createDocument: jest.fn(() => Promise.resolve({})),
+    deleteDocumentByEmployeeIdAndDocumentTypeId: jest.fn(() =>
+      Promise.resolve({}),
+    ),
   };
 
   const mockDocumentTypesService = {
@@ -415,6 +419,106 @@ describe("EmployeesService", () => {
       expect(result).toEqual({
         message: `Successfully rehired employee with id ${employeeId}`,
         reason: reHireEmployeeDto.reason,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("linkDocumentTypes", () => {
+    it("should link document types to an employee", async () => {
+      const spyOnFindById = jest
+        .spyOn(mockEmployeeModel, "findById")
+        .mockReturnValue({
+          _id: "1",
+          fullName: "Jane Smith",
+          contractStatus: ContractStatus.ACTIVE,
+          documentTypes: [],
+          firstName: "Jane",
+          lastName: "Smith",
+          cpf: "12345678900",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          save: jest.fn().mockResolvedValue({
+            documentTypes: [
+              {
+                _id: "doc1",
+                name: "Document Type 1",
+              },
+              {
+                _id: "doc2",
+                name: "Document Type 2",
+              },
+            ],
+          }),
+        } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
+        documentTypeIds: ["doc1", "doc2"],
+      };
+
+      linkDocumentTypesDto.documentTypeIds.forEach((docId) => {
+        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+          id: docId,
+          name: `Document Type ${docId}`,
+        } as never);
+      });
+
+      const employeeId = "1";
+
+      const result = await service.linkDocumentTypes(
+        employeeId,
+        linkDocumentTypesDto,
+      );
+
+      expect(result).toEqual({
+        documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("unlinkDocumentTypes", () => {
+    it("should unlink document types from an employee", async () => {
+      const spyOnFindById = jest
+        .spyOn(mockEmployeeModel, "findById")
+        .mockReturnValue({
+          _id: "1",
+          fullName: "Jane Smith",
+          contractStatus: ContractStatus.ACTIVE,
+          documentTypes: [
+            { _id: "doc1", name: "Document Type 1" },
+            { _id: "doc2", name: "Document Type 2" },
+          ],
+          firstName: "Jane",
+          lastName: "Smith",
+          cpf: "12345678900",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          save: jest.fn().mockResolvedValue({
+            documentTypes: [{ _id: "doc2", name: "Document Type 2" }],
+          }),
+        } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+
+      const documentTypeIdsToUnlink: LinkDocumentTypesRequestDto = {
+        documentTypeIds: ["doc1"],
+      };
+
+      documentTypeIdsToUnlink.documentTypeIds.forEach((docId) => {
+        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+          id: docId,
+          name: `Document Type ${docId}`,
+        } as never);
+      });
+
+      const employeeId = "1";
+
+      const result = await service.unlinkDocumentTypes(
+        employeeId,
+        documentTypeIdsToUnlink,
+      );
+
+      expect(result).toEqual({
+        documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds,
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });

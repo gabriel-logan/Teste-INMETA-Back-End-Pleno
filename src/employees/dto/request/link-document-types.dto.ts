@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsObjectIdArrayString } from "src/common/decorators/validation/IsObjectIdArrayString";
 import { IsUniqueArray } from "src/common/decorators/validation/IsUniqueArray";
 
-export class LinkDocumentTypesDto {
+export class LinkDocumentTypesRequestDto {
   @ApiProperty({
     description: "Array of document type IDs to link to the employee",
     type: String,
