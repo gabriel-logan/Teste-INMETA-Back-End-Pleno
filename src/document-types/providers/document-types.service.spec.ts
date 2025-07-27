@@ -1,3 +1,4 @@
+import { CacheModule } from "@nestjs/cache-manager";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -47,6 +48,7 @@ describe("DocumentTypesService", () => {
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         DocumentTypesService,
         {
