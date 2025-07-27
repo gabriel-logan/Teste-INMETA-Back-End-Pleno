@@ -11,6 +11,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { BadRequestExceptionDto } from "src/common/dto/exception/bad-request.dto";
@@ -18,6 +19,7 @@ import { ConflictExceptionDto } from "src/common/dto/exception/conflict.dto";
 import { ForbiddenExceptionDto } from "src/common/dto/exception/forbidden.dto";
 import { InternalServerErrorDto } from "src/common/dto/exception/internal-server-error.dto";
 import { NotFoundExceptionDto } from "src/common/dto/exception/not-found.dto";
+import { ThrottlerExceptionDto } from "src/common/dto/exception/throttler.dto";
 import { UnauthorizedExceptionDto } from "src/common/dto/exception/unauthorized.dto";
 import { ContractStatus } from "src/employees/schemas/employee.schema";
 
@@ -119,6 +121,10 @@ export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
     ApiInternalServerErrorResponse({
       description: "Internal server error",
       type: InternalServerErrorDto,
+    }),
+    ApiTooManyRequestsResponse({
+      description: "Too many requests",
+      type: ThrottlerExceptionDto,
     }),
   );
 }
