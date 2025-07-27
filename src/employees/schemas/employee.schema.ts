@@ -59,8 +59,8 @@ export class Employee {
   })
   public documentTypes: mongoose.Types.ObjectId[];
 
-  public createdAt: Date;
-  public updatedAt: Date;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);

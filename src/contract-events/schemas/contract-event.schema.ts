@@ -22,8 +22,8 @@ export class ContractEvent {
   @Prop({ required: true })
   public reason: string;
 
-  public createdAt: Date;
-  public updatedAt: Date;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 export const ContractEventSchema = SchemaFactory.createForClass(ContractEvent);

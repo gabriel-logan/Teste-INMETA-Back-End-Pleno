@@ -35,8 +35,8 @@ export class Document {
   @Prop({ type: String, default: null })
   public documentUrl: string | null;
 
-  public createdAt: Date;
-  public updatedAt: Date;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 export const DocumentSchema = SchemaFactory.createForClass(Document);

@@ -18,8 +18,8 @@ export class DocumentType {
   @Prop({ required: true, unique: true, enum: DocumentTypeAllowedValues })
   public name: DocumentTypeAllowedValues;
 
-  public createdAt: Date;
-  public updatedAt: Date;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 export const DocumentTypeSchema = SchemaFactory.createForClass(DocumentType);
