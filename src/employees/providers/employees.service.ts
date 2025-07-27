@@ -289,6 +289,14 @@ export class EmployeesService {
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const { documentTypeIds } = linkDocumentTypesDto;
 
+    const uniqueIds = new Set(documentTypeIds.map((id) => id.toString()));
+
+    if (uniqueIds.size !== documentTypeIds.length) {
+      throw new BadRequestException(
+        "Duplicated documentTypeIds are not allowed",
+      );
+    }
+
     const documentTypes = await Promise.all(
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
     );
@@ -353,6 +361,14 @@ export class EmployeesService {
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const { documentTypeIds } = unlinkDocumentTypesDto;
 
+    const uniqueIds = new Set(documentTypeIds.map((id) => id.toString()));
+
+    if (uniqueIds.size !== documentTypeIds.length) {
+      throw new BadRequestException(
+        "Duplicated documentTypeIds are not allowed",
+      );
+    }
+
     const documentTypes = await Promise.all(
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
     );
@@ -374,8 +390,12 @@ export class EmployeesService {
       );
     }
 
+    const idsToRemoveSet = new Set(
+      documentTypes.map((doc) => doc.id.toString()),
+    );
+
     employee.documentTypes = employee.documentTypes.filter(
-      (id) => !documentTypes.map((doc) => doc.id).includes(id._id),
+      (docTypeId) => !idsToRemoveSet.has(docTypeId._id.toString()),
     );
 
     // Remove documents associated with the unlinked document types
