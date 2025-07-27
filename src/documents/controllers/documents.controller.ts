@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { fileValidation } from "src/common/constants";
 import {
   ApiGetAllMissingDocumentsQueries,
   ApiGlobalErrorResponses,
@@ -102,9 +103,9 @@ export class DocumentsController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
-          maxSize: 5 * 1024 * 1024, // 5 MB
+          maxSize: fileValidation.general.size.maxSize,
           message(maxSize) {
-            return `File size should not exceed ${maxSize / 1024 / 1024} MB`;
+            return fileValidation.general.size.message(maxSize);
           },
         })
         .build(),

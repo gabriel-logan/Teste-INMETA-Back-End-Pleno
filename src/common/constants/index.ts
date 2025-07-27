@@ -1,3 +1,5 @@
+import { minutes, seconds } from "@nestjs/throttler";
+
 export const cacheKeys = {
   documentTypes: {
     findAll: "documentTypes:findAll",
@@ -20,3 +22,28 @@ export const cacheKeys = {
 };
 
 export const cacheTtl = 60000 * 60; // 1 hour
+
+export const fileValidation = {
+  general: {
+    size: {
+      maxSize: 1024 * 1024 * 5, // 5MB
+      message: (maxSize: number): string =>
+        `File size should not exceed ${maxSize / 1024 / 1024} MB`,
+    },
+  },
+};
+
+export const throttler = {
+  global: {
+    ttl: seconds(10),
+    limit: 3,
+    blockDuration: {
+      POST: {
+        "/user": seconds(8),
+      },
+      DELETE: minutes(1),
+      PUT: seconds(15),
+      default: seconds(20),
+    },
+  },
+};
