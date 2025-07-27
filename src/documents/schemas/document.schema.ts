@@ -23,14 +23,14 @@ export class Document {
     ref: "Employee",
     required: true,
   })
-  public employee: Employee | mongoose.Types.ObjectId;
+  public employee: Employee;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: "DocumentType",
     required: true,
   })
-  public documentType: DocumentType | mongoose.Types.ObjectId;
+  public documentType: DocumentType;
 
   @Prop({ type: String, default: null })
   public documentUrl: string | null;

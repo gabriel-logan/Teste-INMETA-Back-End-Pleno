@@ -11,7 +11,6 @@ import { Model } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { AuthPayload } from "src/common/types";
 import type { EnvGlobalConfig } from "src/configs/types";
-import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { Employee, EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
@@ -44,8 +43,8 @@ export class DocumentsService {
   ): PublicDocumentResponseDto {
     return {
       id: document._id,
-      employee: document.employee as Employee,
-      documentType: document.documentType as DocumentType,
+      employee: document.employee,
+      documentType: document.documentType,
       status: document.status,
       documentUrl: document.documentUrl,
       createdAt: document.createdAt,
@@ -171,11 +170,9 @@ export class DocumentsService {
   async deleteDocumentFile(
     documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
-    const document = (await this.documentModel
+    const document = await this.documentModel
       .findById(documentId)
-      .populate("employee")) as
-      | (DocumentDocument & { employee: Employee })
-      | null;
+      .populate("employee");
 
     if (!document) {
       throw new NotFoundException(`Document with id ${documentId} not found`);
@@ -219,10 +216,10 @@ export class DocumentsService {
   > {
     const employee = await this.employeesService.findById(employeeId);
 
-    const documents = (await this.documentModel
+    const documents = await this.documentModel
       .find({ employee: employee.id })
       .populate("documentType")
-      .lean()) as (Document & { documentType: DocumentType })[];
+      .lean();
 
     if (documents.length === 0) {
       throw new NotFoundException(
