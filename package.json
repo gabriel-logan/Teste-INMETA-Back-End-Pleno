@@ -94,7 +94,8 @@
     },
     "coveragePathIgnorePatterns": [
       "src/main.ts",
-      "\\.module\\.ts$"
+      "\\.module\\.ts$",
+      "\\.decorator\\.ts$"
     ]
   },
   "packageManager": "yarn@4.9.2"
