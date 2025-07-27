@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
 import { hash } from "bcrypt";
 import mongoose, { HydratedDocument } from "mongoose";
+import { ContractEvent } from "src/contract-events/schemas/contract-event.schema";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 
 export type EmployeeDocument = HydratedDocument<Employee>;
 
@@ -45,7 +47,7 @@ export class Employee {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "ContractEvent" }],
     required: true,
   })
-  public contractEvents: mongoose.Types.ObjectId[];
+  public contractEvents: ContractEvent[];
 
   @Prop({ required: true, unique: true })
   public cpf: string;
@@ -57,7 +59,7 @@ export class Employee {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "DocumentType" }],
     default: [],
   })
-  public documentTypes: mongoose.Types.ObjectId[];
+  public documentTypes: DocumentType[];
 
   public readonly createdAt: Date;
   public readonly updatedAt: Date;

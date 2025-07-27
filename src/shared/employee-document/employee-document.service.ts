@@ -27,17 +27,21 @@ export class EmployeeDocumentService {
     return savedDocument;
   }
 
-  async deleteDocument(documentId: string | Types.ObjectId): Promise<Document> {
-    const deletedDocument = await this.documentModel
-      .findByIdAndDelete(documentId)
-      .lean();
+  async deleteDocumentByEmployeeIdAndDocumentTypeId(
+    employeeId: string | Types.ObjectId,
+    documentTypeId: string | Types.ObjectId,
+  ): Promise<Document> {
+    const document = await this.documentModel.findOneAndDelete({
+      employee: employeeId,
+      documentType: documentTypeId,
+    });
 
-    if (!deletedDocument) {
+    if (!document) {
       throw new NotFoundException(
-        `Document with id ${documentId as string} not found`,
+        `Document with employeeId ${employeeId.toString()} and documentTypeId ${documentTypeId.toString()} not found`,
       );
     }
 
-    return deletedDocument;
+    return document;
   }
 }

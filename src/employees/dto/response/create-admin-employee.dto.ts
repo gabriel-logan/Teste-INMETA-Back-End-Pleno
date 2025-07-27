@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import type { Types } from "mongoose";
+import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import type { ContractStatus } from "src/employees/schemas/employee.schema";
 
 export class CreateAdminEmployeeResponseDto {
@@ -21,7 +22,7 @@ export class CreateAdminEmployeeResponseDto {
   public contractStatus: ContractStatus;
 
   @ApiProperty()
-  public documentTypes: Types.ObjectId[];
+  public documentTypes: DocumentType[];
 
   @ApiProperty()
   public cpf: string;

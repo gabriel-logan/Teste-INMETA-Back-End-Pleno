@@ -59,7 +59,7 @@ export class EmployeesService {
       lastName: employee.lastName,
       fullName: employee.fullName,
       contractStatus: employee.contractStatus,
-      documentTypes: employee.documentTypes as unknown as DocumentType[],
+      documentTypes: employee.documentTypes,
       cpf: employee.cpf,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
@@ -133,7 +133,7 @@ export class EmployeesService {
     }
 
     const contractEvents = await this.contractEventsService.findManyByIds(
-      employee.contractEvents.map((event) => event),
+      employee.contractEvents.map((event) => event._id),
     );
 
     return {
@@ -228,7 +228,7 @@ export class EmployeesService {
     });
 
     deletedEmployee.contractStatus = ContractStatus.INACTIVE;
-    deletedEmployee.contractEvents.push(contractEvent._id);
+    deletedEmployee.contractEvents.push(contractEvent);
 
     await deletedEmployee.save();
 
@@ -272,7 +272,7 @@ export class EmployeesService {
     });
 
     employee.contractStatus = ContractStatus.ACTIVE;
-    employee.contractEvents.push(contractEvent._id);
+    employee.contractEvents.push(contractEvent);
 
     await employee.save();
 
@@ -299,15 +299,11 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
-    const existing = new Set(
-      employee.documentTypes.map((doc) => doc.toString()),
-    );
+    const existing = new Set(employee.documentTypes.map((doc) => doc._id));
 
-    for (const docId of documentTypes.map(
-      (doc) => doc.id as unknown as string,
-    )) {
-      if (!existing.has(docId)) {
-        employee.documentTypes.push(new Types.ObjectId(docId));
+    for (const docId of documentTypes.map((doc) => doc)) {
+      if (!existing.has(docId.id)) {
+        employee.documentTypes.push(docId.id as unknown as DocumentType);
       }
     }
 
@@ -323,7 +319,7 @@ export class EmployeesService {
 
     return {
       documentTypeIdsLinked: employee.documentTypes.map((doc) =>
-        doc.toString(),
+        doc._id.toString(),
       ),
     };
   }
@@ -346,19 +342,22 @@ export class EmployeesService {
     }
 
     employee.documentTypes = employee.documentTypes.filter(
-      (id) => !documentTypes.map((doc) => doc.id).includes(id),
+      (id) => !documentTypes.map((doc) => doc.id).includes(id._id),
     );
 
     // Remove documents associated with the unlinked document types
     for (const documentType of documentTypes) {
-      await this.employeeDocumentService.deleteDocument(documentType.id);
+      await this.employeeDocumentService.deleteDocumentByEmployeeIdAndDocumentTypeId(
+        employeeId,
+        documentType.id,
+      );
     }
 
     await employee.save();
 
     return {
       documentTypeIdsUnlinked: employee.documentTypes.map((doc) =>
-        doc.toString(),
+        doc._id.toString(),
       ),
     };
   }
