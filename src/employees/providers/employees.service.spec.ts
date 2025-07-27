@@ -178,18 +178,18 @@ describe("EmployeesService", () => {
     });
   });
 
-  describe("findByUsername", () => {
+  describe("findOneByUsername", () => {
     it("should return an employee by username", async () => {
-      const spyOnFindByUsername = jest
+      const spyOnfindOneByUsername = jest
         .spyOn(mockEmployeeModel, "findOne")
         .mockReturnValue({
           lean: jest.fn().mockResolvedValue(mockEmployee),
         } as unknown as ReturnType<typeof mockEmployeeModel.findOne>);
 
-      const result = await service.findByUsername("jane.doe");
+      const result = await service.findOneByUsername("jane.doe");
 
       expect(result).toEqual(mockEmployee);
-      expect(spyOnFindByUsername).toHaveBeenCalled();
+      expect(spyOnfindOneByUsername).toHaveBeenCalled();
     });
   });
 

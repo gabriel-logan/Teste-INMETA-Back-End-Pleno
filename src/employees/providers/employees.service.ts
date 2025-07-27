@@ -108,7 +108,7 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(employee);
   }
 
-  async findByUsername(username: string): Promise<Employee> {
+  async findOneByUsername(username: string): Promise<Employee> {
     const employee = await this.employeeModel.findOne({ username }).lean();
 
     if (!employee) {

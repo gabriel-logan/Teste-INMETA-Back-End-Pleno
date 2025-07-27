@@ -20,7 +20,7 @@ export class AuthService {
     const { username, password } = createAuthDto;
 
     const employee = await this.employeesService
-      .findByUsername(username)
+      .findOneByUsername(username)
       .catch(() => {
         throw new UnauthorizedException("Invalid username or password");
       });
