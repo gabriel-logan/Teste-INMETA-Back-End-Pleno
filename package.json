@@ -22,7 +22,8 @@
     "test:verb:cov": "jest --coverage --verbose",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --verbose",
-    "test:e2e:watch": "jest --config ./test/jest-e2e.json --watch"
+    "test:e2e:watch": "jest --config ./test/jest-e2e.json --watch",
+    "pre:push": "yarn test && yarn lint && yarn format:check && yarn test:e2e && yarn build"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
