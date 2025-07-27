@@ -10,49 +10,49 @@ export class PublicEmployeeResponseDto {
     description: "Unique identifier for the employee",
     example: "60c72b2f9b1e8c001c8f8e1d",
   })
-  public id: Types.ObjectId;
+  public readonly id: Types.ObjectId;
 
   @ApiProperty()
-  public firstName: string;
+  public readonly firstName: string;
 
   @ApiProperty()
-  public lastName: string;
+  public readonly lastName: string;
 
   @ApiProperty()
-  public fullName: string;
+  public readonly fullName: string;
 
   @ApiProperty({
     enum: ContractStatus,
     description: "The current status of the employee's contract",
     example: ContractStatus.ACTIVE,
   })
-  public contractStatus: ContractStatus;
+  public readonly contractStatus: ContractStatus;
 
   @ApiProperty({
     type: DocumentType,
     isArray: true,
     description: "List of document types associated with the employee",
   })
-  public documentTypes: DocumentType[];
+  public readonly documentTypes: DocumentType[];
 
   @ApiProperty({
     type: String,
     description: "The CPF (Cadastro de Pessoas Físicas) of the employee",
     example: "12345678909",
   })
-  public cpf: string;
+  public readonly cpf: string;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was created",
     example: "2021-06-14T10:00:00Z",
   })
-  public createdAt: Date;
+  public readonly createdAt: Date;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was last updated",
     example: "2021-06-14T10:00:00Z",
   })
-  public updatedAt: Date;
+  public readonly updatedAt: Date;
 }

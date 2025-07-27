@@ -9,26 +9,26 @@ export class PublicDocumentTypeResponseDto {
     description: "Unique identifier for the document",
     example: "60c72b2f9b1e8c001c8f8e1d",
   })
-  public id: Types.ObjectId;
+  public readonly id: Types.ObjectId;
 
   @ApiProperty({
     enum: DocumentTypeAllowedValues,
     description: "The name of the document type",
     example: DocumentTypeAllowedValues.CPF,
   })
-  public name: DocumentTypeAllowedValues;
+  public readonly name: DocumentTypeAllowedValues;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was created",
     example: "2021-06-14T10:00:00Z",
   })
-  public createdAt: Date;
+  public readonly createdAt: Date;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was last updated",
     example: "2021-06-14T10:00:00Z",
   })
-  public updatedAt: Date;
+  public readonly updatedAt: Date;
 }

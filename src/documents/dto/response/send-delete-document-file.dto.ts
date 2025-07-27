@@ -5,11 +5,11 @@ export class SendDeleteDocumentFileResponseDto {
     description: "Message indicating the result of the operation",
     example: "Document file deleted successfully",
   })
-  public message: string;
+  public readonly message: string;
 
   @ApiProperty({
     description: "URL of the document",
     example: "https://example.com/files/document.pdf",
   })
-  public documentUrl: string;
+  public readonly documentUrl: string;
 }

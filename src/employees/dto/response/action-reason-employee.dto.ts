@@ -4,11 +4,11 @@ import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankStr
 export class ActionReasonEmployeeResponseDto {
   @ApiProperty()
   @IsNotBlankString()
-  public reason: string;
+  public readonly reason: string;
 
   @ApiProperty()
   @IsNotBlankString()
-  public message: string;
+  public readonly message: string;
 }
 
 export class FireEmployeeResponseDto extends ActionReasonEmployeeResponseDto {}

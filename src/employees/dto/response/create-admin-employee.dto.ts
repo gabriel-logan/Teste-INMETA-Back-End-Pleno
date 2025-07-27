@@ -7,33 +7,33 @@ export class CreateAdminEmployeeResponseDto {
   @ApiProperty({
     type: String,
   })
-  public id: Types.ObjectId;
+  public readonly id: Types.ObjectId;
 
   @ApiProperty()
-  public firstName: string;
+  public readonly firstName: string;
 
   @ApiProperty()
-  public lastName: string;
+  public readonly lastName: string;
 
   @ApiProperty()
-  public fullName: string;
+  public readonly fullName: string;
 
   @ApiProperty()
-  public contractStatus: ContractStatus;
+  public readonly contractStatus: ContractStatus;
 
   @ApiProperty()
-  public documentTypes: DocumentType[];
+  public readonly documentTypes: DocumentType[];
 
   @ApiProperty()
-  public cpf: string;
+  public readonly cpf: string;
 
   @ApiProperty({
     type: String,
   })
-  public createdAt: Date;
+  public readonly createdAt: Date;
 
   @ApiProperty({
     type: String,
   })
-  public updatedAt: Date;
+  public readonly updatedAt: Date;
 }

@@ -11,13 +11,13 @@ export class PublicDocumentResponseDto {
     description: "Unique identifier for the document",
     example: "60c72b2f9b1e8c001c8f8e1d",
   })
-  public id: Types.ObjectId;
+  public readonly id: Types.ObjectId;
 
   @ApiProperty()
-  public employee: Employee;
+  public readonly employee: Employee;
 
   @ApiProperty()
-  public documentType: DocumentType;
+  public readonly documentType: DocumentType;
 
   @ApiProperty({
     type: DocumentStatus,
@@ -26,7 +26,7 @@ export class PublicDocumentResponseDto {
     enum: DocumentStatus,
     enumName: "DocumentStatus",
   })
-  public status: DocumentStatus;
+  public readonly status: DocumentStatus;
 
   @ApiProperty({
     type: String,
@@ -34,19 +34,19 @@ export class PublicDocumentResponseDto {
     example: "https://example.com/document.pdf",
     nullable: true,
   })
-  public documentUrl: string | null;
+  public readonly documentUrl: string | null;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was created",
     example: "2021-06-14T10:00:00Z",
   })
-  public createdAt: Date;
+  public readonly createdAt: Date;
 
   @ApiProperty({
     type: Date,
     description: "The date and time when the employee was last updated",
     example: "2021-06-14T10:00:00Z",
   })
-  public updatedAt: Date;
+  public readonly updatedAt: Date;
 }

@@ -7,5 +7,5 @@ export class DocumentTypeEmployeeUnlinkedResponseDto {
     isArray: true,
     example: ["60d5f484f1b2c8b1f8e4a3c1"],
   })
-  public documentTypeIdsUnlinked: string[];
+  public readonly documentTypeIdsUnlinked: string[];
 }

@@ -1,6 +1,6 @@
 import type { Types } from "mongoose";
 
 export class DeleteContractEventResponseDto {
-  public id: Types.ObjectId;
-  public message: string;
+  public readonly id: Types.ObjectId;
+  public readonly message: string;
 }
