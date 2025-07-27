@@ -21,7 +21,6 @@ const config = new DocumentBuilder()
   .setDescription("The API V1 Server description")
   .setVersion("1.0.0")
   .addBearerAuth()
-  .addSecurityRequirements("bearer")
   .build();
 
 export default function swaggerInitializer(

@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiQuery } from "@nestjs/swagger";
+import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
 import {
   ApiGetAllMissingDocumentsQueries,
   ApiGlobalErrorResponses,
@@ -33,6 +33,7 @@ import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-d
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
+@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Controller("documents")
 export class DocumentsController {

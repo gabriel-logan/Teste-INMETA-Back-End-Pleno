@@ -7,6 +7,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
+import { ApiSecurity } from "@nestjs/swagger";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -20,6 +21,7 @@ import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-typ
 import { PublicDocumentTypeResponseDto } from "../dto/response/public-document-type.dto";
 import { DocumentTypesService } from "../providers/document-types.service";
 
+@ApiSecurity("bearer")
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
 @Controller("document-types")

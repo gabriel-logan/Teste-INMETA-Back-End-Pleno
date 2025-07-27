@@ -10,6 +10,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import { ApiSecurity } from "@nestjs/swagger";
 import {
   ApiGetAllEmployeesQueries,
   ApiGlobalErrorResponses,
@@ -44,6 +45,7 @@ import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -70,6 +72,7 @@ export class EmployeesController {
     });
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -85,6 +88,7 @@ export class EmployeesController {
     return await this.employeesService.findById(employeeId);
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -100,6 +104,7 @@ export class EmployeesController {
     return await this.employeesService.findByIdWithContractEvents(employeeId);
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -116,6 +121,7 @@ export class EmployeesController {
     return await this.employeesService.create(createEmployeeDto);
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -133,6 +139,7 @@ export class EmployeesController {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -156,6 +163,7 @@ export class EmployeesController {
     );
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -179,6 +187,7 @@ export class EmployeesController {
     );
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
@@ -200,6 +209,7 @@ export class EmployeesController {
     );
   }
 
+  @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
