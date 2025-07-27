@@ -1,3 +1,4 @@
+import { CacheModule } from "@nestjs/cache-manager";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -21,6 +22,8 @@ describe("ContractEventsService", () => {
       this.data = {
         _id: "1",
         ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       this.save = jest.fn().mockResolvedValue(this.data);
@@ -35,6 +38,7 @@ describe("ContractEventsService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         ContractEventsService,
         {

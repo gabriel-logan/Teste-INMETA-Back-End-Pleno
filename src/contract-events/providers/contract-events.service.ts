@@ -84,16 +84,18 @@ export class ContractEventsService {
       reason,
     });
 
+    const newContractEvent = await createdContractEvent.save();
+
     // Invalidate cache for findAll
     await this.cacheManager.del(cacheKeys.contractEvents.findAll);
 
     // Set cache for the newly created contract event
     await this.cacheManager.set(
-      cacheKeys.contractEvents.findById(createdContractEvent._id.toString()),
-      createdContractEvent,
+      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
+      newContractEvent,
     );
 
-    return await createdContractEvent.save();
+    return newContractEvent;
   }
 
   async update(
