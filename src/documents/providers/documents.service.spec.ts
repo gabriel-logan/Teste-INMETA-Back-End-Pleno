@@ -1,3 +1,4 @@
+import { NotFoundException } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
@@ -7,7 +8,7 @@ import envTests from "src/configs/env.tests";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { ContractStatus } from "src/employees/schemas/employee.schema";
 
-import { Document } from "../schemas/document.schema";
+import { Document, DocumentStatus } from "../schemas/document.schema";
 import { DocumentsService } from "./documents.service";
 
 describe("DocumentsService", () => {
@@ -30,6 +31,32 @@ describe("DocumentsService", () => {
     ),
   };
 
+  const mockPublicDocumentResponseDto = {
+    _id: "1",
+    employee: {
+      _id: "1",
+      firstName: "John",
+      lastName: "Doe",
+      fullName: "John Doe",
+      contractStatus: ContractStatus.ACTIVE,
+      documentTypes: [],
+      cpf: "123.456.789-00",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    documentType: {
+      _id: "1",
+      name: "Passport",
+      description: "Passport document",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    status: DocumentStatus.AVAILABLE,
+    documentUrl: "http://example.com/document.pdf",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mockDocumentModelSchema = class {
     private readonly data: any;
 
@@ -46,8 +73,8 @@ describe("DocumentsService", () => {
 
     public static readonly find = jest.fn();
     public static readonly findById = jest.fn();
-    public static readonly findOne = jest.fn();
     public static readonly findByIdAndUpdate = jest.fn();
+
     public save = jest.fn();
   };
 
@@ -78,4 +105,114 @@ describe("DocumentsService", () => {
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
+
+  describe("findAll", () => {
+    it("should return an array of PublicDocumentResponseDto", async () => {
+      const spyOnFind = jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue([mockPublicDocumentResponseDto]),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      const result = await service.findAll();
+
+      expect(result).toEqual([
+        {
+          id: mockPublicDocumentResponseDto._id,
+          employee: mockPublicDocumentResponseDto.employee,
+          documentType: mockPublicDocumentResponseDto.documentType,
+          status: mockPublicDocumentResponseDto.status,
+          documentUrl: mockPublicDocumentResponseDto.documentUrl,
+          createdAt: expect.any(Date) as Date,
+          updatedAt: expect.any(Date) as Date,
+        },
+      ]);
+      expect(spyOnFind).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("findById", () => {
+    it("should return a PublicDocumentResponseDto", async () => {
+      const spyOnFindById = jest
+        .spyOn(mockDocumentModel, "findById")
+        .mockReturnValue({
+          populate: jest.fn().mockReturnThis(),
+          lean: jest.fn().mockResolvedValue(mockPublicDocumentResponseDto),
+        } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      const result = await service.findById("1");
+
+      expect(result).toEqual({
+        id: mockPublicDocumentResponseDto._id,
+        employee: mockPublicDocumentResponseDto.employee,
+        documentType: mockPublicDocumentResponseDto.documentType,
+        status: mockPublicDocumentResponseDto.status,
+        documentUrl: mockPublicDocumentResponseDto.documentUrl,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw NotFoundException if document does not exist", async () => {
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(null),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      await expect(service.findById("nonexistent-id")).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.findById("nonexistent-id")).rejects.toThrow(
+        "Document with id nonexistent-id not found",
+      );
+    });
+  });
+
+  describe("update", () => {
+    it("should update a document and return the updated PublicDocumentResponseDto", async () => {
+      const updateDocumentDto = {
+        status: DocumentStatus.MISSING,
+      };
+
+      const mockUpdatedDocument = {
+        ...mockPublicDocumentResponseDto,
+        status: updateDocumentDto.status,
+      };
+
+      jest.spyOn(mockDocumentModel, "findByIdAndUpdate").mockReturnValue({
+        lean: jest.fn().mockResolvedValue(mockUpdatedDocument),
+      } as unknown as ReturnType<typeof mockDocumentModel.findByIdAndUpdate>);
+
+      const result = await service.update("1", updateDocumentDto);
+
+      expect(result).toEqual({
+        id: mockUpdatedDocument._id,
+        employee: mockUpdatedDocument.employee,
+        documentType: mockUpdatedDocument.documentType,
+        status: updateDocumentDto.status,
+        documentUrl: mockUpdatedDocument.documentUrl,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+    });
+
+    it("should throw NotFoundException if document to update does not exist", async () => {
+      const updateDocumentDto = {
+        status: DocumentStatus.MISSING,
+      };
+
+      jest.spyOn(mockDocumentModel, "findByIdAndUpdate").mockReturnValue({
+        lean: jest.fn().mockResolvedValue(null),
+      } as unknown as ReturnType<typeof mockDocumentModel.findByIdAndUpdate>);
+
+      await expect(
+        service.update("nonexistent-id", updateDocumentDto),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update("nonexistent-id", updateDocumentDto),
+      ).rejects.toThrow("Document with id nonexistent-id not found");
+    });
+  });
+
+  describe("sendDocumentFile", () => {});
 });

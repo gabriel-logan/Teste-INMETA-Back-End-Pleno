@@ -56,18 +56,18 @@ export class DocumentsService {
     return (
       await this.documentModel
         .find()
-        .lean()
         .populate("documentType")
         .populate("employee")
+        .lean()
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
 
   async findById(documentId: string): Promise<PublicDocumentResponseDto> {
     const document = await this.documentModel
       .findById(documentId)
-      .lean()
       .populate("documentType")
-      .populate("employee");
+      .populate("employee")
+      .lean();
 
     if (!document) {
       throw new NotFoundException(`Document with id ${documentId} not found`);
