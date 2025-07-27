@@ -18,7 +18,7 @@ describe("ContractEventsService", () => {
   const mockContractEventModelSchema = class {
     private readonly data: any;
 
-    constructor(data?: unknown[]) {
+    constructor(data: Partial<ContractEvent> = {}) {
       this.data = {
         _id: "1",
         ...data,

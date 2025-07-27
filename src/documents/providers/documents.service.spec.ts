@@ -66,12 +66,12 @@ describe("DocumentsService", () => {
   const mockDocumentModelSchema = class {
     private readonly data: any;
 
-    constructor(data?: unknown[]) {
+    constructor(data: Partial<Document> = {}) {
       this.data = {
         _id: "1",
+        ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
-        ...data,
       };
 
       this.save = jest.fn().mockResolvedValue(this.data);

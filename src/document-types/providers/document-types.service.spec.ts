@@ -26,12 +26,12 @@ describe("DocumentTypesService", () => {
   const mockDocumentTypeModelSchema = class {
     private readonly data: any;
 
-    constructor(data?: unknown[]) {
+    constructor(data: Partial<DocumentType> = {}) {
       this.data = {
         _id: "1",
+        ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
-        ...data,
       };
 
       this.save = jest.fn().mockResolvedValue(this.data);
