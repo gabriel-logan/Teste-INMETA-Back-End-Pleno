@@ -5,13 +5,13 @@ import type { Request } from "express";
 const throttlerModuleOptions: ThrottlerModuleOptions = {
   throttlers: [
     {
-      ttl: seconds(30),
-      limit: 25,
+      ttl: seconds(25),
+      limit: 20,
       blockDuration: (context: ExecutionContext): number => {
         const request = context.switchToHttp().getRequest<Request>();
         const method = request.method;
 
-        if (method === "POST") {
+        if (method === "GET") {
           return seconds(10);
         }
 
