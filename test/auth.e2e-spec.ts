@@ -23,21 +23,24 @@ describe("AppController (e2e)", () => {
   });
 
   describe("signIn", () => {
-    it("should sign in with valid credentials (POST)", () => {
-      return request(app.getHttpServer())
+    it("should sign in with valid credentials (POST)", async () => {
+      return await request(app.getHttpServer())
         .post("/auth/sign-in")
         .send({
           username: "string",
           password: "123456",
         })
         .expect(HttpStatus.OK)
-        .expect({
-          accessToken: expect.any(String) as string,
+        .expect((res) => {
+          const body = res.body as { accessToken: string };
+
+          expect(body).toHaveProperty("accessToken");
+          expect(typeof body.accessToken).toBe("string");
         });
     });
 
-    it("should return unauthorized for invalid password credentials (POST)", () => {
-      return request(app.getHttpServer())
+    it("should return unauthorized for invalid password credentials (POST)", async () => {
+      return await request(app.getHttpServer())
         .post("/auth/sign-in")
         .send({
           username: "string",
@@ -51,8 +54,8 @@ describe("AppController (e2e)", () => {
         });
     });
 
-    it("should return unauthorized for invalid username credentials (POST)", () => {
-      return request(app.getHttpServer())
+    it("should return unauthorized for invalid username credentials (POST)", async () => {
+      return await request(app.getHttpServer())
         .post("/auth/sign-in")
         .send({
           username: "wrongUsername",
