@@ -10,6 +10,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"eslint.config.*\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"eslint.config.*\"",
     "dev": "nest start --watch",
     "debug": "nest start --debug --watch",
     "start": "node dist/main",
