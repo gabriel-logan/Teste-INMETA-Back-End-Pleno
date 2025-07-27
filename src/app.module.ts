@@ -1,8 +1,9 @@
 import { CacheModule } from "@nestjs/cache-manager";
 import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
@@ -43,7 +44,12 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
     ContractEventsModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(@InjectConnection() private readonly connection: Connection) {}
