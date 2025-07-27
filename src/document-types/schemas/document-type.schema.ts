@@ -9,6 +9,9 @@ export enum DocumentTypeAllowedValues {
   CTPS = "CTPS",
   RG = "RG",
   CNH = "CNH",
+  PASSAPORTE = "PASSAPORTE",
+  CRM = "CRM",
+  SUS = "SUS",
 }
 
 @Schema({ timestamps: true })
