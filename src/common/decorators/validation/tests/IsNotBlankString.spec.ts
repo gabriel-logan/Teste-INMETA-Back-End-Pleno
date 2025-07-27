@@ -52,7 +52,7 @@ describe("IsNotBlankString decorator", () => {
   it("should invalidate non-string value", async () => {
     const instance = new TestClass();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    // @ts-ignore
     instance.value = null;
     const errors = await validate(instance);
     expect(errors.length).toBe(1);
