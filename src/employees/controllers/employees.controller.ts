@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Patch,
@@ -141,6 +142,7 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @HttpCode(HttpStatus.OK)
   @Post("fire/:employeeId")
   async fire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
@@ -163,6 +165,7 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @HttpCode(HttpStatus.OK)
   @Post("rehire/:employeeId")
   async reHire(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
@@ -185,6 +188,7 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/link")
   async linkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
@@ -205,6 +209,7 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/unlink")
   async unlinkDocumentTypes(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
