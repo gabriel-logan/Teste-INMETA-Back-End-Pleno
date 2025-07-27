@@ -12,6 +12,7 @@ import type {
   FireEmployeeRequestDto,
   ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
+import type { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -58,15 +59,11 @@ describe("EmployeesService", () => {
   const mockEmployeeModelSchema = class {
     private readonly data: any;
 
-    constructor(data?: unknown[]) {
+    constructor(data: Partial<Employee> = {}) {
       this.data = {
-        _id: "1",
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        fullName: mockEmployee.fullName,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        ...mockEmployee,
         ...data,
+        fullName: `${data.firstName} ${data.lastName}`,
       };
 
       this.save = jest.fn().mockResolvedValue(this.data);
@@ -521,6 +518,32 @@ describe("EmployeesService", () => {
         documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds,
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("createAdminEmployee", () => {
+    it("should create an admin employee", async () => {
+      const createDto: CreateAdminEmployeeRequestDto = {
+        firstName: "Admin",
+        lastName: "User",
+        cpf: "123.456.789-00",
+        username: "admin.user",
+        password: "securepassword",
+      };
+
+      const result = await service.createAdminEmployee(createDto);
+
+      expect(result).toEqual({
+        id: expect.any(String) as string,
+        firstName: "Admin",
+        lastName: "User",
+        fullName: "Admin User",
+        contractStatus: ContractStatus.ACTIVE,
+        documentTypes: [],
+        cpf: "12345678900",
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
     });
   });
 });

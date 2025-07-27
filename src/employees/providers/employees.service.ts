@@ -404,30 +404,32 @@ export class EmployeesService {
     const { username, password, cpf, firstName, lastName } =
       createAdminEmployeeDto;
 
+    const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
+
     // FindByUsername or CPF to ensure uniqueness
     const existingEmployee = await this.employeeModel.findOne({
-      $or: [{ username }, { cpf }],
+      $or: [{ username }, { cpf: parsedCpf }],
     });
 
     if (
       existingEmployee?.username === username ||
-      existingEmployee?.cpf === cpf
+      existingEmployee?.cpf === parsedCpf
     ) {
       throw new BadRequestException(
-        `An employee with username ${username} or CPF ${cpf} already exists`,
+        `An employee with username ${username} or CPF ${parsedCpf} already exists`,
       );
     }
 
     const contractEvent = await this.contractEventsService.create({
       type: ContractEventType.HIRED,
       date: new Date(),
-      reason: "New admin employee hired successfully cpf: " + cpf,
+      reason: "New admin employee hired successfully cpf: " + parsedCpf,
     });
 
     const newEmployee = new this.employeeModel({
       firstName,
       lastName,
-      cpf: cpf,
+      cpf: parsedCpf,
       contractEvents: [contractEvent._id],
       username: username,
       password: password,
