@@ -1,4 +1,4 @@
-import { cacheKeys, cacheTtl } from ".";
+import { cacheKeys, cacheTtl, fileValidation } from ".";
 
 describe("cacheKeys", () => {
   describe("documentTypes", () => {
@@ -53,5 +53,18 @@ describe("cacheKeys", () => {
 describe("cacheTtl", () => {
   it("should be equal to 3600000 (1 hour in ms)", () => {
     expect(cacheTtl).toBe(60000 * 60);
+  });
+});
+
+describe("fileValidation", () => {
+  describe("general", () => {
+    it("should have correct maxSize", () => {
+      expect(fileValidation.general.size.maxSize).toBe(1024 * 1024 * 5); // 5MB
+    });
+
+    it("should have correct message function", () => {
+      const message = fileValidation.general.size.message(1024 * 1024 * 9);
+      expect(message).toBe("File size should not exceed 9 MB");
+    });
   });
 });
