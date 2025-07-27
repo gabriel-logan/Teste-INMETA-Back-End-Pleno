@@ -318,4 +318,55 @@ describe("DocumentsService", () => {
       expect(mockDocument.documentUrl).toBeDefined();
     });
   });
+
+  describe("getDocumentStatusesByEmployeeId", () => {
+    it("should return an array of document statuses for a given employee ID", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+
+      const mockDocuments = [
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a"),
+            name: "RG",
+          },
+          status: DocumentStatus.AVAILABLE,
+        },
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1b"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c71b2f9b1d8c001a1e4e1b"),
+            name: "PDF",
+          },
+          status: DocumentStatus.MISSING,
+        },
+      ];
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDocuments),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      const result = await service.getDocumentStatusesByEmployeeId(
+        employeeId.toString(),
+      );
+
+      expect(result).toEqual({
+        RG: {
+          documentId: mockDocuments[0]._id.toString(),
+          status: DocumentStatus.AVAILABLE,
+        },
+        PDF: {
+          documentId: mockDocuments[1]._id.toString(),
+          status: DocumentStatus.MISSING,
+        },
+      });
+    });
+  });
 });
