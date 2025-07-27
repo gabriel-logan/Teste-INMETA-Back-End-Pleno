@@ -145,13 +145,6 @@ export class DocumentsService {
       }
     }
 
-    // Logic to send the document (e.g., via email)
-    // This is a placeholder for the actual implementation
-    this.logger.log(
-      `Sending document to employee ${document.employee.firstName}`,
-    );
-    // Implement the actual
-
     const documentUrl = this.generateDocumentUrl(documentFile.mimetype);
 
     document.documentUrl = documentUrl;
@@ -160,6 +153,13 @@ export class DocumentsService {
     document.status = DocumentStatus.AVAILABLE;
 
     await document.save();
+
+    // Logic to send the document (e.g., via email)
+    // This is a placeholder for the actual implementation
+    this.logger.log(
+      `Sending document to employee ${document.employee.firstName}`,
+    );
+    // Implement the actual
 
     return {
       message: "Document file sent successfully",
@@ -187,17 +187,17 @@ export class DocumentsService {
       );
     }
 
-    // Logic to delete the document file (e.g., from cloud storage)
-    this.logger.log(
-      `Deleting document file for employee ${document.employee.firstName}`,
-    );
-
     const documentUrlBeforeDelete = document.documentUrl;
 
     document.documentUrl = null;
     document.status = DocumentStatus.MISSING;
 
     await document.save();
+
+    // Logic to delete the document file (e.g., from cloud storage)
+    this.logger.log(
+      `Deleting document file for employee ${document.employee.firstName}`,
+    );
 
     return {
       message: "Document file deleted successfully",
