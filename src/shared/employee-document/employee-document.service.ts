@@ -12,6 +12,18 @@ export class EmployeeDocumentService {
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
   ) {}
 
+  async findDocumentByEmployeeIdAndDocumentTypeId(
+    employeeId: string | Types.ObjectId,
+    documentTypeId: string | Types.ObjectId,
+  ): Promise<Document | null> {
+    const document = await this.documentModel.findOne({
+      employee: employeeId,
+      documentType: documentTypeId,
+    });
+
+    return document;
+  }
+
   async createDocument(
     employeeId: string | Types.ObjectId,
     documentTypeId: string | Types.ObjectId,

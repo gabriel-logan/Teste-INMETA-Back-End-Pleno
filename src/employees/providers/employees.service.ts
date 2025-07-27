@@ -309,6 +309,20 @@ export class EmployeesService {
 
     // Create documents for each linked document type
     for (const documentType of documentTypes) {
+      // Check if the document already exists
+      const existingDocument =
+        await this.employeeDocumentService.findDocumentByEmployeeIdAndDocumentTypeId(
+          employeeId,
+          documentType.id,
+        );
+
+      if (existingDocument) {
+        const msg = `Document for employee ${employeeId} and document type ${documentType.id.toString()} already exists`;
+        this.logger.warn(msg);
+
+        throw new BadRequestException(msg);
+      }
+
       await this.employeeDocumentService.createDocument(
         employee._id,
         documentType.id,
