@@ -31,10 +31,12 @@ export class EmployeeDocumentService {
     employeeId: string | Types.ObjectId,
     documentTypeId: string | Types.ObjectId,
   ): Promise<Document> {
-    const document = await this.documentModel.findOneAndDelete({
-      employee: employeeId,
-      documentType: documentTypeId,
-    });
+    const document = await this.documentModel
+      .findOneAndDelete({
+        employee: employeeId,
+        documentType: documentTypeId,
+      })
+      .lean();
 
     if (!document) {
       throw new NotFoundException(
