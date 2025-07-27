@@ -78,7 +78,7 @@ export class EmployeesService {
     byContractStatus?: ContractStatus;
     byDocumentType?: string;
     byCpf?: string;
-  }): Promise<PublicEmployeeResponseDto[]> {
+  } = {}): Promise<PublicEmployeeResponseDto[]> {
     return (
       await this.employeeModel
         .find({
@@ -90,16 +90,16 @@ export class EmployeesService {
           }),
           ...(byCpf && { cpf: new RegExp(byCpf, "i") }),
         })
-        .lean()
         .populate("documentTypes")
+        .lean()
     ).map((employee) => this.toPublicEmployeeResponseDto(employee));
   }
 
   async findById(employeeId: string): Promise<PublicEmployeeResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
-      .lean()
-      .populate("documentTypes");
+      .populate("documentTypes")
+      .lean();
 
     if (!employee) {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
@@ -125,8 +125,8 @@ export class EmployeesService {
   ): Promise<PublicEmployeeResponseDto & { contractEvents: ContractEvent[] }> {
     const employee = await this.employeeModel
       .findById(employeeId)
-      .lean()
-      .populate("contractEvents");
+      .populate("contractEvents")
+      .lean();
 
     if (!employee) {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
