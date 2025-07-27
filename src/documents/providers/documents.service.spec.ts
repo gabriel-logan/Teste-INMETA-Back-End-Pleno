@@ -281,6 +281,41 @@ describe("DocumentsService", () => {
       });
       expect(spyOnFindById).toHaveBeenCalledWith("1");
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockDocument.save).toHaveBeenCalled();
+      expect(mockDocument.status).toBe(DocumentStatus.AVAILABLE);
+      expect(mockDocument.documentUrl).toBeDefined();
+    });
+  });
+
+  describe("deleteDocumentFile", () => {
+    it("should return success message when document file is deleted", async () => {
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        status: DocumentStatus.AVAILABLE,
+        documentUrl: "http://example.com/document.pdf",
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+      const spyOnFindById = jest
+        .spyOn(mockDocumentModel, "findById")
+        .mockReturnValue({
+          populate: jest.fn().mockResolvedValue(mockDocument),
+        } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      const urlBeforeDelete = mockDocument.documentUrl;
+
+      const result = await service.deleteDocumentFile("1");
+
+      expect(result).toEqual({
+        message: "Document file deleted successfully",
+        documentUrl: urlBeforeDelete,
+      });
+      expect(spyOnFindById).toHaveBeenCalledWith("1");
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockDocument.save).toHaveBeenCalled();
+      expect(mockDocument.status).toBe(DocumentStatus.MISSING);
+      expect(mockDocument.documentUrl).toBeDefined();
     });
   });
 });
