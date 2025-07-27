@@ -93,7 +93,8 @@
       "^src/(.*)$": "<rootDir>/$1"
     },
     "coveragePathIgnorePatterns": [
-      "src/main.ts"
+      "src/main.ts",
+      "\\.module\\.ts$"
     ]
   },
   "packageManager": "yarn@4.9.2"
