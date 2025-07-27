@@ -3,10 +3,14 @@ import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Model } from "mongoose";
+import { type Model, Types } from "mongoose";
+import type { AuthPayload } from "src/common/types";
 import envTests from "src/configs/env.tests";
 import { EmployeesService } from "src/employees/providers/employees.service";
-import { ContractStatus } from "src/employees/schemas/employee.schema";
+import {
+  ContractStatus,
+  EmployeeRole,
+} from "src/employees/schemas/employee.schema";
 
 import { Document, DocumentStatus } from "../schemas/document.schema";
 import { DocumentsService } from "./documents.service";
@@ -214,5 +218,27 @@ describe("DocumentsService", () => {
     });
   });
 
-  describe("sendDocumentFile", () => {});
+  describe("sendDocumentFile", () => {
+    it("should return success message when document file is sent", async () => {
+      const mockFile = {
+        originalname: "document.pdf",
+        buffer: Buffer.from("mock file content"),
+        mimetype: "application/pdf",
+      } as Express.Multer.File;
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        role: EmployeeRole.COMMON,
+        username: "johndoe",
+      };
+
+      const result = await service.sendDocumentFile(
+        "1",
+        mockFile,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({ message: "Document file sent successfully" });
+    });
+  });
 });
