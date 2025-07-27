@@ -393,9 +393,7 @@ export class EmployeesService {
     await employee.save();
 
     return {
-      documentTypeIdsUnlinked: employee.documentTypes.map((doc) =>
-        doc._id.toString(),
-      ),
+      documentTypeIdsUnlinked: documentTypeIds.map((doc) => doc),
     };
   }
 
