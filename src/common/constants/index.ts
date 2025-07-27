@@ -6,6 +6,13 @@ export const cacheKeys = {
       `documentTypes:findOneByName:${name}`,
   },
 
+  contractEvents: {
+    findAll: "contractEvents:findAll",
+    findById: (id: string): string => `contractEvents:findById:${id}`,
+    findManyByIds: (ids: string[]): string =>
+      `contractEvents:findManyByIds:${ids.join(",")}`,
+  },
+
   employees: {
     findAll: "employees:findAll",
     findById: (id: string): string => `employees:findById:${id}`,
