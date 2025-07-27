@@ -6,7 +6,7 @@ type OperationsSorterParam = {
   get: (type: string) => string;
 };
 
-function operationsSorter(
+export function operationsSorter(
   a: OperationsSorterParam,
   b: OperationsSorterParam,
 ): number {
