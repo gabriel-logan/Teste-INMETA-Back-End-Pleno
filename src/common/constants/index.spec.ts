@@ -1,4 +1,4 @@
-import { cacheKeys, cacheTtl, fileValidation } from ".";
+import { apiPrefix, cacheKeys, cacheTtl, fileValidation } from ".";
 
 describe("cacheKeys", () => {
   describe("documentTypes", () => {
@@ -66,5 +66,11 @@ describe("fileValidation", () => {
       const message = fileValidation.general.size.message(1024 * 1024 * 9);
       expect(message).toBe("File size should not exceed 9 MB");
     });
+  });
+});
+
+describe("apiPrefix", () => {
+  it("should be equal to '/api/v1'", () => {
+    expect(apiPrefix).toBe("/api/v1");
   });
 });

@@ -1,6 +1,7 @@
 import type { ExecutionContext } from "@nestjs/common";
 import { seconds, type ThrottlerModuleOptions } from "@nestjs/throttler";
 import type { Request } from "express";
+import { apiPrefix } from "src/common/constants";
 
 const throttlerModuleOptions: ThrottlerModuleOptions = {
   throttlers: [
@@ -23,7 +24,7 @@ const throttlerModuleOptions: ThrottlerModuleOptions = {
   skipIf: (context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const freeEndpoints = ["/document-types", "/files"];
+    const freeEndpoints = [`${apiPrefix}/document-types`, `${apiPrefix}/files`];
 
     return (
       request.method === "GET" &&

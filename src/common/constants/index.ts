@@ -30,3 +30,5 @@ export const fileValidation = {
     },
   },
 };
+
+export const apiPrefix = "/api/v1";
