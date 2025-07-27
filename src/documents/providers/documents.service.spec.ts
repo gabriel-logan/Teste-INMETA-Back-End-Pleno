@@ -3,8 +3,8 @@ import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Connection } from "mongoose";
-import { type Model, Types } from "mongoose";
+import type { Connection, Model } from "mongoose";
+import { Types } from "mongoose";
 import type { AuthPayload } from "src/common/types";
 import envTests from "src/configs/env.tests";
 import { MongooseProvider } from "src/configs/mongoose-provider";
@@ -92,13 +92,8 @@ describe("DocumentsService", () => {
   };
 
   const mockConnection = {
-    transaction: jest.fn().mockImplementation(async (cb) => {
-      try {
-        return await cb(mockSession);
-      } catch (error) {
-        throw error;
-      }
-    }),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    transaction: jest.fn((fn) => fn(mockSession)),
   };
 
   beforeEach(async () => {
