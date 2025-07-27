@@ -6,6 +6,7 @@ import helmet from "helmet";
 
 import { AppModule } from "./app.module";
 import { apiPrefix } from "./common/constants";
+import { MongooseExceptionFilter } from "./common/filters/mongoose-exception.filter";
 import swaggerInitializer from "./configs/swagger";
 import type { EnvGlobalConfig } from "./configs/types";
 
@@ -15,6 +16,8 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix(apiPrefix);
+
+  app.useGlobalFilters(new MongooseExceptionFilter());
 
   const configService = app.get(ConfigService<EnvGlobalConfig, true>);
 
@@ -32,9 +35,9 @@ async function bootstrap(): Promise<void> {
 
   await app.listen(port);
 
-  logger.log(`Application is running on: ${baseUrl}/${apiPrefix}`);
+  logger.log(`Application is running on: ${baseUrl}${apiPrefix}`);
   logger.log(
-    `Access the Swagger documentation at: ${baseUrl}/${apiPrefix}/docs`,
+    `Access the Swagger documentation at: ${baseUrl}${apiPrefix}/docs`,
   );
   logger.log(`Environment: ${nodeEnv}`);
 }
