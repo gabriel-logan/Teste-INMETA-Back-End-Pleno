@@ -21,8 +21,10 @@ import {
   ApiStandardResponses,
   ApiTypeFormData,
 } from "src/common/decorators/routes/docs.decorator";
+import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
+import { AuthPayload } from "src/common/types";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -107,10 +109,12 @@ export class DocumentsController {
         .build(),
     )
     documentFile: Express.Multer.File,
+    @EmployeeFromReq() employee: AuthPayload,
   ): Promise<SendDeleteDocumentFileResponseDto> {
     return await this.documentsService.sendDocumentFile(
       documentId,
       documentFile,
+      employee,
     );
   }
 

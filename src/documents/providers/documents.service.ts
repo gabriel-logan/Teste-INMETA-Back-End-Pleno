@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -8,10 +9,11 @@ import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { AuthPayload } from "src/common/types";
 import type { EnvGlobalConfig } from "src/configs/types";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
-import { Employee } from "src/employees/schemas/employee.schema";
+import { Employee, EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -22,6 +24,7 @@ import {
   DocumentDocument,
   DocumentStatus,
 } from "../schemas/document.schema";
+
 @Injectable()
 export class DocumentsService {
   private readonly logger = new Logger(DocumentsService.name);
@@ -112,6 +115,7 @@ export class DocumentsService {
   async sendDocumentFile(
     documentId: string,
     documentFile: Express.Multer.File,
+    employee: AuthPayload,
   ): Promise<SendDeleteDocumentFileResponseDto> {
     const document = (await this.documentModel
       .findById(documentId)
@@ -128,6 +132,17 @@ export class DocumentsService {
       throw new BadRequestException(
         `Document with id ${documentId} has already been sent. If you want to resend it, please delete the existing document and create a new one.`,
       );
+    }
+
+    // if its the common employee that is trying to send a document file
+    // Verify if the employee is the document owner
+    // If not, throw a ForbiddenException
+    if (employee.role === EmployeeRole.COMMON) {
+      if (document.employee._id !== employee.sub) {
+        throw new ForbiddenException(
+          `Employee ${employee.username} is not the owner of document ${documentId}`,
+        );
+      }
     }
 
     // Logic to send the document (e.g., via email)
