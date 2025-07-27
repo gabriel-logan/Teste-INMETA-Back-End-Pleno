@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsObjectIdArrayString } from "src/common/decorators/validation/IsObjectIdArrayString";
+import { IsUniqueArray } from "src/common/decorators/validation/IsUniqueArray";
 
 export class LinkDocumentTypesDto {
   @ApiProperty({
@@ -9,5 +10,6 @@ export class LinkDocumentTypesDto {
     isArray: true,
   })
   @IsObjectIdArrayString()
+  @IsUniqueArray()
   public documentTypeIds: string[];
 }

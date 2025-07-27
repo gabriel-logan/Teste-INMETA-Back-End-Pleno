@@ -289,14 +289,6 @@ export class EmployeesService {
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const { documentTypeIds } = linkDocumentTypesDto;
 
-    const uniqueIds = new Set(documentTypeIds.map((id) => id.toString()));
-
-    if (uniqueIds.size !== documentTypeIds.length) {
-      throw new BadRequestException(
-        "Duplicated documentTypeIds are not allowed",
-      );
-    }
-
     const documentTypes = await Promise.all(
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
     );
@@ -360,14 +352,6 @@ export class EmployeesService {
     unlinkDocumentTypesDto: LinkDocumentTypesDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const { documentTypeIds } = unlinkDocumentTypesDto;
-
-    const uniqueIds = new Set(documentTypeIds.map((id) => id.toString()));
-
-    if (uniqueIds.size !== documentTypeIds.length) {
-      throw new BadRequestException(
-        "Duplicated documentTypeIds are not allowed",
-      );
-    }
 
     const documentTypes = await Promise.all(
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
