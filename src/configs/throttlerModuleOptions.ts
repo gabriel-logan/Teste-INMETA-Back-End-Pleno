@@ -6,7 +6,17 @@ const throttlerModuleOptions: ThrottlerModuleOptions = {
   throttlers: [
     {
       ttl: seconds(30),
-      limit: 20,
+      limit: 25,
+      blockDuration: (context: ExecutionContext): number => {
+        const request = context.switchToHttp().getRequest<Request>();
+        const method = request.method;
+
+        if (method === "POST") {
+          return seconds(10);
+        }
+
+        return seconds(30);
+      },
     },
   ],
 
