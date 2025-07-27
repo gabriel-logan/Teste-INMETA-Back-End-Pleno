@@ -80,6 +80,7 @@ describe("DocumentsService", () => {
     public static readonly find = jest.fn();
     public static readonly findById = jest.fn();
     public static readonly findByIdAndUpdate = jest.fn();
+    public static readonly countDocuments = jest.fn();
 
     public save = jest.fn();
   };
@@ -366,6 +367,57 @@ describe("DocumentsService", () => {
           documentId: mockDocuments[1]._id.toString(),
           status: DocumentStatus.MISSING,
         },
+      });
+    });
+  });
+
+  describe("getAllMissingDocuments", () => {
+    it("should return an array of PublicDocumentResponseDto with missing documents", async () => {
+      const mockMissingDocuments = [
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+          employee: {
+            _id: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+            firstName: "John",
+            lastName: "Doe",
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a"),
+            name: "RG",
+          },
+          status: DocumentStatus.MISSING,
+          documentUrl: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockMissingDocuments),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      jest.spyOn(mockDocumentModel, "countDocuments").mockReturnValue({
+        lean: jest.fn().mockResolvedValue(mockMissingDocuments.length),
+      } as unknown as ReturnType<typeof mockDocumentModel.countDocuments>);
+
+      const result = await service.getAllMissingDocuments();
+
+      expect(result).toEqual({
+        documents: mockMissingDocuments.map((doc) => ({
+          id: doc._id,
+          employee: doc.employee,
+          documentType: doc.documentType,
+          status: doc.status,
+          documentUrl: doc.documentUrl,
+          createdAt: expect.any(Date) as Date,
+          updatedAt: expect.any(Date) as Date,
+        })),
+        total: mockMissingDocuments.length,
+        page: 1,
+        limit: 10,
       });
     });
   });
