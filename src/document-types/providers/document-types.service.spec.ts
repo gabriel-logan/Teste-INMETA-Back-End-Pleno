@@ -3,7 +3,12 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import type { Model } from "mongoose";
 
-import { DocumentType } from "../schemas/document-type.schema";
+import type { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
+import type { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
+import {
+  DocumentType,
+  DocumentTypeAllowedValues,
+} from "../schemas/document-type.schema";
 import { DocumentTypesService } from "./document-types.service";
 
 describe("DocumentTypesService", () => {
@@ -23,6 +28,8 @@ describe("DocumentTypesService", () => {
     constructor(data?: unknown[]) {
       this.data = {
         _id: "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
         ...data,
       };
 
@@ -37,6 +44,8 @@ describe("DocumentTypesService", () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DocumentTypesService,
@@ -182,6 +191,90 @@ describe("DocumentTypesService", () => {
 
       expect(mockFindOne.lean).toHaveBeenCalled();
       expect(spyFindOne).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("create", () => {
+    it("should create a new document type", async () => {
+      const createDocumentTypeDto: CreateDocumentTypeRequestDto = {
+        name: DocumentTypeAllowedValues.RG,
+      };
+
+      const result = await service.create(createDocumentTypeDto);
+
+      expect(result).toBeDefined();
+      expect(result).toEqual({
+        id: mockDocumentType._id,
+        name: createDocumentTypeDto.name,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+    });
+  });
+
+  describe("update", () => {
+    it("should update an existing document type", async () => {
+      const mockFindByIdAndUpdate = {
+        lean: jest.fn().mockResolvedValue({
+          ...mockDocumentType,
+          name: DocumentTypeAllowedValues.RG,
+          updatedAt: new Date(),
+        }),
+      };
+
+      const spyFindByIdAndUpdate = jest
+        .spyOn(mockDocumentTypeModel, "findByIdAndUpdate")
+        .mockReturnValue(
+          mockFindByIdAndUpdate as unknown as ReturnType<
+            typeof mockDocumentTypeModel.findByIdAndUpdate
+          >,
+        );
+
+      const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
+        name: DocumentTypeAllowedValues.RG,
+      };
+
+      const result = await service.update(
+        mockDocumentType._id,
+        updateDocumentTypeDto,
+      );
+
+      expect(result).toBeDefined();
+      expect(result).toEqual({
+        id: mockDocumentType._id,
+        name: updateDocumentTypeDto.name,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+      expect(mockFindByIdAndUpdate.lean).toHaveBeenCalled();
+      expect(spyFindByIdAndUpdate).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if document type not found for update", async () => {
+      const mockFindByIdAndUpdate = {
+        lean: jest.fn().mockResolvedValue(null),
+      };
+
+      const spyFindByIdAndUpdate = jest
+        .spyOn(mockDocumentTypeModel, "findByIdAndUpdate")
+        .mockReturnValue(
+          mockFindByIdAndUpdate as unknown as ReturnType<
+            typeof mockDocumentTypeModel.findByIdAndUpdate
+          >,
+        );
+
+      const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
+        name: DocumentTypeAllowedValues.RG,
+      };
+
+      await expect(
+        service.update(mockDocumentType._id, updateDocumentTypeDto),
+      ).rejects.toThrow(
+        `DocumentType with id ${mockDocumentType._id} not found`,
+      );
+
+      expect(mockFindByIdAndUpdate.lean).toHaveBeenCalled();
+      expect(spyFindByIdAndUpdate).toHaveBeenCalledTimes(1);
     });
   });
 });
