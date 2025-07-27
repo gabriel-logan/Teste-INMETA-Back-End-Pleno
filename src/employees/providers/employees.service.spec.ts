@@ -1,15 +1,24 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Connection, Model } from "mongoose";
+import { type Connection, type Model, Types } from "mongoose";
+import type { AuthPayload } from "src/common/types";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
+import type {
+  FireEmployeeRequestDto,
+  ReHireEmployeeRequestDto,
+} from "../dto/request/action-reason-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
-import { ContractStatus, Employee } from "../schemas/employee.schema";
+import {
+  ContractStatus,
+  Employee,
+  EmployeeRole,
+} from "../schemas/employee.schema";
 import { EmployeesService } from "./employees.service";
 
 describe("EmployeesService", () => {
@@ -299,6 +308,115 @@ describe("EmployeesService", () => {
         updatedAt: expect.any(Date) as Date,
       });
       expect(spyOnFindByIdAndUpdate).toHaveBeenCalled();
+    });
+  });
+
+  describe("fire", () => {
+    it("should fire an employee by id", async () => {
+      const spyOnFindById = jest
+        .spyOn(mockEmployeeModel, "findById")
+        .mockReturnValue({
+          populate: jest.fn().mockResolvedValue({
+            _id: "1",
+            fullName: "Jane Smith",
+            contractStatus: ContractStatus.ACTIVE,
+            documentTypes: [],
+            contractEvents: [
+              {
+                _id: "event1",
+                type: "hire",
+                reason: "Initial hire",
+              },
+            ],
+            firstName: "Jane",
+            lastName: "Smith",
+            cpf: "12345678900",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            save: jest.fn().mockResolvedValue({}),
+          }),
+        } as unknown as ReturnType<typeof mockEmployeeModel.findByIdAndUpdate>);
+
+      const fireEmployeeDto: FireEmployeeRequestDto = {
+        reason: "Performance issues",
+      };
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a"),
+        username: "admin",
+        role: EmployeeRole.ADMIN,
+      };
+
+      const employeeId = "1";
+
+      const result = await service.fire(
+        employeeId,
+        fireEmployeeDto,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({
+        reason: fireEmployeeDto.reason,
+        message: `Successfully terminated contract for employee with id ${employeeId}`,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("reHire", () => {
+    it("should rehire an employee by id", async () => {
+      const spyOnFindById = jest
+        .spyOn(mockEmployeeModel, "findById")
+        .mockReturnValue({
+          populate: jest.fn().mockResolvedValue({
+            _id: "1",
+            fullName: "Jane Smith",
+            contractStatus: ContractStatus.INACTIVE,
+            documentTypes: [],
+            contractEvents: [
+              {
+                _id: "event1",
+                type: "hire",
+                reason: "Initial hire",
+              },
+              {
+                _id: "event2",
+                type: "fire",
+                reason: "Performance issues",
+              },
+            ],
+            firstName: "Jane",
+            lastName: "Smith",
+            cpf: "12345678900",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            save: jest.fn().mockResolvedValue({}),
+          }),
+        } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a"),
+        username: "admin",
+        role: EmployeeRole.ADMIN,
+      };
+
+      const employeeId = "1";
+
+      const reHireEmployeeDto: ReHireEmployeeRequestDto = {
+        reason: "Rehired for new project",
+      };
+
+      const result = await service.reHire(
+        employeeId,
+        reHireEmployeeDto,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({
+        message: `Successfully rehired employee with id ${employeeId}`,
+        reason: reHireEmployeeDto.reason,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
   });
 });
