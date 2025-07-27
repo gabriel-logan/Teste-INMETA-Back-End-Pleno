@@ -6,7 +6,7 @@ export class BadRequestExceptionDto {
     example: HttpStatus.BAD_REQUEST,
     description: "HTTP status code for the bad request",
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 
   @ApiProperty({
     description: "Error message describing the bad request",
@@ -19,11 +19,11 @@ export class BadRequestExceptionDto {
       },
     ],
   })
-  public message: string | string[];
+  public readonly message: string | string[];
 
   @ApiProperty({
     example: "Bad Request",
     description: "Error message describing the bad request",
   })
-  public error: string;
+  public readonly error: string;
 }

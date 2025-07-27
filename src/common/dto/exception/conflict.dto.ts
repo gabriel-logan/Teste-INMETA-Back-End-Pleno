@@ -6,17 +6,17 @@ export class ConflictExceptionDto {
     description: "Error message describing the conflict",
     example: "Conflict occurred",
   })
-  public message: string;
+  public readonly message: string;
 
   @ApiProperty({
     description: "Error type",
     example: "Conflict",
   })
-  public error: string;
+  public readonly error: string;
 
   @ApiProperty({
     description: "HTTP status code",
     example: HttpStatus.CONFLICT,
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 }

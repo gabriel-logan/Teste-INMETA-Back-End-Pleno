@@ -6,17 +6,17 @@ export class UnauthorizedExceptionDto {
     description: "Error message describing the unauthorized access",
     example: "Unauthorized access",
   })
-  public message: string;
+  public readonly message: string;
 
   @ApiProperty({
     description: "Error type",
     example: "Unauthorized",
   })
-  public error: string;
+  public readonly error: string;
 
   @ApiProperty({
     description: "HTTP status code",
     example: HttpStatus.UNAUTHORIZED,
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 }

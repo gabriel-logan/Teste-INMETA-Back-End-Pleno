@@ -6,17 +6,17 @@ export class ForbiddenExceptionDto {
     description: "Error message describing the forbidden access",
     example: "Forbidden access",
   })
-  public message: string;
+  public readonly message: string;
 
   @ApiProperty({
     description: "Error type",
     example: "Forbidden",
   })
-  public error: string;
+  public readonly error: string;
 
   @ApiProperty({
     description: "HTTP status code",
     example: HttpStatus.FORBIDDEN,
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 }

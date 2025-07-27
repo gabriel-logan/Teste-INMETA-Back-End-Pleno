@@ -6,8 +6,8 @@ export class InternalServerErrorDto {
     example: HttpStatus.INTERNAL_SERVER_ERROR,
     description: "HTTP status code for the internal server error",
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 
   @ApiProperty()
-  public message: string;
+  public readonly message: string;
 }

@@ -5,10 +5,10 @@ export class ThrottlerExceptionDto {
   @ApiProperty({
     example: HttpStatus.TOO_MANY_REQUESTS,
   })
-  public statusCode: number;
+  public readonly statusCode: number;
 
   @ApiProperty({
     example: "ThrottlerException: Too Many Requests",
   })
-  public message: string;
+  public readonly message: string;
 }
