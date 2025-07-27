@@ -150,7 +150,8 @@ describe("DocumentsController", () => {
       const fakeMulterFile = {
         originalname: "document.pdf",
         mimetype: "application/pdf",
-        buffer: Buffer.from("fake file content"),
+        buffer: Buffer.alloc(1 * 1024 * 1024), // 1 MB buffer
+        size: 1 * 1024 * 1024, // 1 MB
       } as Express.Multer.File;
 
       const fakeEmployeeAuthPayload = {
