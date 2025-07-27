@@ -9,7 +9,7 @@ import type {
 } from "../dto/request/action-reason-employee.dto";
 import type { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
-import type { LinkDocumentTypesDto } from "../dto/request/link-document-types.dto";
+import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
@@ -94,13 +94,13 @@ describe("EmployeesController", () => {
         }),
     ),
     linkDocumentTypes: jest.fn(
-      (_employeeId: string, dto: LinkDocumentTypesDto) =>
+      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
         Promise.resolve({
           documentTypeIdsLinked: dto.documentTypeIds,
         }),
     ),
     unlinkDocumentTypes: jest.fn(
-      (_employeeId: string, dto: LinkDocumentTypesDto) =>
+      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
         Promise.resolve({
           documentTypeIdsUnlinked: dto.documentTypeIds,
         }),
@@ -311,7 +311,7 @@ describe("EmployeesController", () => {
 
   describe("linkDocumentTypes", () => {
     it("should link document types to an employee", async () => {
-      const linkDocumentTypesDto: LinkDocumentTypesDto = {
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
         documentTypeIds: [
           "60c72b2f9b1e8c001c8f8e1d",
           "60c72b2f9b1e8c001c8f8e1e",
@@ -334,7 +334,7 @@ describe("EmployeesController", () => {
 
   describe("unlinkDocumentTypes", () => {
     it("should unlink document types from an employee", async () => {
-      const linkDocumentTypesDto: LinkDocumentTypesDto = {
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
         documentTypeIds: [
           "60c72b2f9b1e8c001c8f8e1d",
           "60c72b2f9b1e8c001c8f8e1e",
