@@ -299,6 +299,28 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
+    // Prevent duplicate document types
+    if (employee.documentTypes.length > 0) {
+      const existingDocumentTypes = employee.documentTypes.map((doc) =>
+        doc._id.toString(),
+      );
+      const newDocumentTypes = documentTypes.map((doc) => doc.id.toString());
+
+      const duplicates = newDocumentTypes.filter((doc) =>
+        existingDocumentTypes.includes(doc),
+      );
+
+      if (duplicates.length > 0) {
+        const msg = `Document types ${duplicates.join(
+          ", ",
+        )} are already linked to employee ${employeeId}`;
+
+        this.logger.warn(msg);
+
+        throw new BadRequestException(msg);
+      }
+    }
+
     const existing = new Set(employee.documentTypes.map((doc) => doc._id));
 
     for (const docId of documentTypes.map((doc) => doc)) {
@@ -309,20 +331,6 @@ export class EmployeesService {
 
     // Create documents for each linked document type
     for (const documentType of documentTypes) {
-      // Check if the document already exists
-      const existingDocument =
-        await this.employeeDocumentService.findDocumentByEmployeeIdAndDocumentTypeId(
-          employeeId,
-          documentType.id,
-        );
-
-      if (existingDocument) {
-        const msg = `Document for employee ${employeeId} and document type ${documentType.id.toString()} already exists`;
-        this.logger.warn(msg);
-
-        throw new BadRequestException(msg);
-      }
-
       await this.employeeDocumentService.createDocument(
         employee._id,
         documentType.id,
@@ -353,6 +361,17 @@ export class EmployeesService {
 
     if (!employee) {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
+
+    // Check if the document types are linked to the employee
+    const linkedDocumentTypes = employee.documentTypes.filter((doc) =>
+      documentTypes.map((dt) => dt.id.toString()).includes(doc._id.toString()),
+    );
+
+    if (linkedDocumentTypes.length === 0) {
+      throw new BadRequestException(
+        `No linked document types found for employee ${employeeId}`,
+      );
     }
 
     employee.documentTypes = employee.documentTypes.filter(
