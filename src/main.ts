@@ -6,7 +6,7 @@ import helmet from "helmet";
 
 import { AppModule } from "./app.module";
 import { apiPrefix } from "./common/constants";
-import { MongooseExceptionFilter } from "./common/filters/mongoose-exception.filter";
+import { MongodbExceptionFilter } from "./common/filters/mongodb-exception.filter";
 import swaggerInitializer from "./configs/swagger";
 import type { EnvGlobalConfig } from "./configs/types";
 
@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix(apiPrefix);
 
-  app.useGlobalFilters(new MongooseExceptionFilter());
+  app.useGlobalFilters(new MongodbExceptionFilter());
 
   const configService = app.get(ConfigService<EnvGlobalConfig, true>);
 

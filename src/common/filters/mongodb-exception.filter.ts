@@ -8,7 +8,7 @@ import type { Response } from "express";
 import { MongoServerError } from "mongodb";
 
 @Catch(MongoServerError)
-export class MongooseExceptionFilter implements ExceptionFilter {
+export class MongodbExceptionFilter implements ExceptionFilter {
   catch(exception: MongoServerError, host: ArgumentsHost): Response {
     const ctx = host.switchToHttp();
 
