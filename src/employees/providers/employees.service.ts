@@ -345,10 +345,12 @@ export class EmployeesService {
       }
     }
 
-    const existing = new Set(employee.documentTypes.map((doc) => doc._id));
+    const existing = new Set(
+      employee.documentTypes.map((doc) => doc._id.toString()),
+    );
 
     for (const docId of documentTypes.map((doc) => doc)) {
-      if (!existing.has(docId.id)) {
+      if (!existing.has(docId.id.toString())) {
         employee.documentTypes.push(docId.id as unknown as DocumentType);
       }
     }
