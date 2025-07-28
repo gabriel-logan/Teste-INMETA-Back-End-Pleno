@@ -1,4 +1,7 @@
 import type { Cache } from "@nestjs/cache-manager";
+import { Logger } from "@nestjs/common";
+
+const logger = new Logger("getAndSetCache");
 
 export default async function getAndSetCache<T>(
   cacheManager: Cache,
@@ -8,8 +11,11 @@ export default async function getAndSetCache<T>(
   const cached = await cacheManager.get<T>(key);
 
   if (cached) {
+    logger.debug(`Returning cached data for key: ${key}`);
     return cached;
   }
+
+  logger.debug(`Cache miss for key: ${key}, fetching data...`);
 
   const data = await fetchCbFn();
 
