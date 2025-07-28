@@ -81,7 +81,18 @@ export class ContractEventsService {
   async findManyByIds(
     ids: string[] | Types.ObjectId[],
   ): Promise<ContractEvent[]> {
-    return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
+    const idsSet = new Set(ids.map((id) => id.toString()));
+
+    if (idsSet.size === 0) {
+      return [];
+    }
+
+    return await getAndSetCache(
+      this.cacheManager,
+      cacheKeys.contractEvents.findManyByIds([...idsSet]),
+      async () =>
+        await this.contractEventModel.find({ _id: { $in: ids } }).lean(),
+    );
   }
 
   async create(
