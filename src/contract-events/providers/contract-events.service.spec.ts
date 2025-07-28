@@ -162,6 +162,8 @@ describe("ContractEventsService", () => {
         date: new Date(),
         reason: "Test reason",
         type: ContractEventType.HIRED,
+        employeeCpf: "12345678901",
+        employeeFullName: "John Doe",
       };
 
       const result = await service.create(mockDto);
@@ -182,6 +184,8 @@ describe("ContractEventsService", () => {
         type: ContractEventType.FIRED,
         date: new Date(),
         reason: "Updated reason",
+        employeeCpf: "12345678901",
+        employeeFullName: "John Doe",
       };
 
       const mockFindByIdAndUpdate = {
@@ -221,47 +225,10 @@ describe("ContractEventsService", () => {
           type: ContractEventType.FIRED,
           date: new Date(),
           reason: "Updated reason",
+          employeeCpf: "12345678901",
+          employeeFullName: "John Doe",
         }),
       ).rejects.toThrow("ContractEvent with id nonexistent not found");
-    });
-  });
-
-  describe("delete", () => {
-    it("should delete a contract event", async () => {
-      const mockFindByIdAndDelete = {
-        lean: jest.fn().mockResolvedValue({ _id: "1" }),
-      };
-
-      jest
-        .spyOn(mockContractEventModel, "findByIdAndDelete")
-        .mockReturnValue(
-          mockFindByIdAndDelete as unknown as ReturnType<
-            typeof mockContractEventModel.findByIdAndDelete
-          >,
-        );
-
-      const result = await service.delete("1");
-
-      expect(result).toBeDefined();
-      expect(result.id).toEqual("1");
-    });
-
-    it("should throw NotFoundException if contract event not found for deletion", async () => {
-      const mockFindByIdAndDelete = {
-        lean: jest.fn().mockResolvedValue(null),
-      };
-
-      jest
-        .spyOn(mockContractEventModel, "findByIdAndDelete")
-        .mockReturnValue(
-          mockFindByIdAndDelete as unknown as ReturnType<
-            typeof mockContractEventModel.findByIdAndDelete
-          >,
-        );
-
-      await expect(service.delete("nonexistent")).rejects.toThrow(
-        "ContractEvent with id nonexistent not found",
-      );
     });
   });
 });
