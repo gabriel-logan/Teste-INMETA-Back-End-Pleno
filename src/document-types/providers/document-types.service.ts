@@ -3,6 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import { invalidateKeys, setMultipleKeys } from "src/common/utils/cache-utils";
 import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
@@ -18,27 +19,6 @@ export class DocumentTypesService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
-
-  private async invalidateDocumentTypesCacheByName(
-    name: string,
-  ): Promise<void> {
-    await this.cacheManager.del(cacheKeys.documentTypes.findOneByName(name));
-  }
-
-  private async invalidateDocumentTypesCacheById(id: string): Promise<void> {
-    await this.cacheManager.del(cacheKeys.documentTypes.findById(id));
-  }
-
-  private async invalidateAllDocumentTypesCache(
-    id: string,
-    name: string,
-  ): Promise<void> {
-    await Promise.all([
-      this.invalidateDocumentTypesCacheById(id),
-      this.invalidateDocumentTypesCacheByName(name),
-      this.cacheManager.del(cacheKeys.documentTypes.findAll),
-    ]);
-  }
 
   private toPublicDocumentTypeResponseDto(
     documentType: DocumentType,
@@ -119,21 +99,16 @@ export class DocumentTypesService {
     const createdDocumentType = await newDocumentType.save();
 
     // Invalidate cache for findAll, findById, and findOneByName
-    await this.invalidateAllDocumentTypesCache(
-      createdDocumentType._id.toString(),
-      createdDocumentType.name,
-    );
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.documentTypes.findAll,
+      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
+      cacheKeys.documentTypes.findOneByName(name),
+    ]);
 
     // Set cache for the newly created document type
-    await Promise.all([
-      this.cacheManager.set(
-        cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
-        this.toPublicDocumentTypeResponseDto(createdDocumentType),
-      ),
-      this.cacheManager.set(
-        cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
-        this.toPublicDocumentTypeResponseDto(createdDocumentType),
-      ),
+    await setMultipleKeys(this.cacheManager, createdDocumentType, [
+      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
+      cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
     ]);
 
     return this.toPublicDocumentTypeResponseDto(createdDocumentType);
@@ -163,25 +138,16 @@ export class DocumentTypesService {
     const updatedDocumentType = await existingDocumentType.save();
 
     // Invalidate cache for findAll, findById, and findOneByName
-    await this.invalidateAllDocumentTypesCache(
-      updatedDocumentType._id.toString(),
-      updatedDocumentType.name,
-    );
-    // Invalidate cache for the old name
-    if (previousName !== updatedDocumentType.name) {
-      await this.invalidateDocumentTypesCacheByName(previousName);
-    }
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.documentTypes.findAll,
+      cacheKeys.documentTypes.findById(documentTypeId),
+      cacheKeys.documentTypes.findOneByName(previousName),
+    ]);
 
     // Set cache for the updated document type
-    await Promise.all([
-      this.cacheManager.set(
-        cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
-        this.toPublicDocumentTypeResponseDto(updatedDocumentType),
-      ),
-      this.cacheManager.set(
-        cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
-        this.toPublicDocumentTypeResponseDto(updatedDocumentType),
-      ),
+    await setMultipleKeys(this.cacheManager, updatedDocumentType, [
+      cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
+      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
     ]);
 
     return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
