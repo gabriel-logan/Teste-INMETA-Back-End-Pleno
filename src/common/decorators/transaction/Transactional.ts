@@ -9,9 +9,9 @@ export function Transactional() {
   return (
     _target: any,
     _methodName: string,
-    desctriptor: DescriptorType,
+    descriptor: DescriptorType,
   ): DescriptorType => {
-    const originalMethod = desctriptor.value;
+    const originalMethod = descriptor.value;
 
     if (!originalMethod) {
       throw new Error(
@@ -19,7 +19,7 @@ export function Transactional() {
       );
     }
 
-    desctriptor.value = async function (...args: unknown[]): Promise<unknown> {
+    descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       const connection = MongooseProvider.getMongooseInstance(
         `Mongoose instance is not available in the context of this method. Method: ${_methodName}.`,
       );
@@ -49,6 +49,6 @@ export function Transactional() {
       return result;
     };
 
-    return desctriptor;
+    return descriptor;
   };
 }
