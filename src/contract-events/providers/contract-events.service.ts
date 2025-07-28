@@ -71,10 +71,16 @@ export class ContractEventsService {
   }
 
   async findAllByEmployeeCpf(employeeCpf: string): Promise<ContractEvent[]> {
+    const parsedCpf = this.parseEmployeeCpf(employeeCpf);
+
     return await getAndSetCache(
       this.cacheManager,
-      cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
-      async () => await this.contractEventModel.find({ employeeCpf }).lean(),
+      cacheKeys.contractEvents.findAllByEmployeeCpf(parsedCpf),
+      async () => {
+        return await this.contractEventModel
+          .find({ employeeCpf: parsedCpf })
+          .lean();
+      },
     );
   }
 
