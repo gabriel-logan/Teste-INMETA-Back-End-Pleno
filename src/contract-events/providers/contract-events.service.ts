@@ -90,8 +90,9 @@ export class ContractEventsService {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.contractEvents.findManyByIds([...idsSet]),
-      async () =>
-        await this.contractEventModel.find({ _id: { $in: ids } }).lean(),
+      async () => {
+        return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
+      },
     );
   }
 
