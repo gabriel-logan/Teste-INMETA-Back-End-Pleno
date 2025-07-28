@@ -52,6 +52,24 @@ describe("MongodbExceptionFilter", () => {
     });
   });
 
+  it("should return default conflict message when value is not defined and route is employee", () => {
+    mockRequest.url = "/api/employees";
+    const exception = {
+      code: 11000,
+      keyValue: { cpf: undefined },
+    } as unknown as MongoServerError;
+
+    filter.catch(exception, mockArgumentsHost);
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      statusCode: HttpStatus.CONFLICT,
+      message: "A conflict occurred due to a duplicate key.",
+      error: "Conflict",
+    });
+  });
+
   it("should return conflict error with generic duplicate key message for non-employee route", () => {
     mockRequest.url = "/api/other";
     const exception = {
