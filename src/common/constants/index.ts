@@ -26,7 +26,7 @@ export const cacheKeys = {
   },
 };
 
-export const cacheTtl = 60000 * 60; // 1 hour
+export const cacheTtl = 60000 * 60 * 24; // 1 day
 
 export const fileValidation = {
   general: {
