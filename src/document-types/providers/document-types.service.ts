@@ -105,13 +105,15 @@ export class DocumentTypesService {
       cacheKeys.documentTypes.findOneByName(name),
     ]);
 
+    const result = this.toPublicDocumentTypeResponseDto(createdDocumentType);
+
     // Set cache for the newly created document type
-    await setMultipleKeys(this.cacheManager, createdDocumentType, [
-      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
-      cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
+    await setMultipleKeys(this.cacheManager, result, [
+      cacheKeys.documentTypes.findById(result.id.toString()),
+      cacheKeys.documentTypes.findOneByName(result.name),
     ]);
 
-    return this.toPublicDocumentTypeResponseDto(createdDocumentType);
+    return result;
   }
 
   async update(
@@ -144,12 +146,14 @@ export class DocumentTypesService {
       cacheKeys.documentTypes.findOneByName(previousName),
     ]);
 
+    const result = this.toPublicDocumentTypeResponseDto(updatedDocumentType);
+
     // Set cache for the updated document type
-    await setMultipleKeys(this.cacheManager, updatedDocumentType, [
-      cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
-      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
+    await setMultipleKeys(this.cacheManager, result, [
+      cacheKeys.documentTypes.findById(result.id.toString()),
+      cacheKeys.documentTypes.findOneByName(result.name),
     ]);
 
-    return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
+    return result;
   }
 }
