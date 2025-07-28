@@ -76,12 +76,13 @@ export class ContractEventsService {
   async create(
     createContractEventDto: CreateContractEventRequestDto,
   ): Promise<ContractEventDocument> {
-    const { type, date, reason } = createContractEventDto;
+    const { type, date, reason, employeeId } = createContractEventDto;
 
     const createdContractEvent = new this.contractEventModel({
       type,
       date,
       reason,
+      employees: employeeId,
     });
 
     const newContractEvent = await createdContractEvent.save();
@@ -102,13 +103,14 @@ export class ContractEventsService {
     id: string,
     updateContractEventDto: UpdateContractEventRequestDto,
   ): Promise<ContractEvent> {
-    const { type, date, reason } = updateContractEventDto;
+    const { type, date, reason, employeeId } = updateContractEventDto;
 
     const updatedContractEvent = await this.contractEventModel
       .findByIdAndUpdate(id, {
         type,
         date,
         reason,
+        employees: employeeId,
       })
       .lean();
 

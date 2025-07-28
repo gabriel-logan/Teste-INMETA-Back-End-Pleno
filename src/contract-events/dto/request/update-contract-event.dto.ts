@@ -1,7 +1,18 @@
-import { PartialType } from "@nestjs/swagger";
+import { IsDate, IsEnum } from "class-validator";
+import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
+import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
+import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
-import { CreateContractEventRequestDto } from "./create-contract-event.dto";
+export class UpdateContractEventRequestDto {
+  @IsEnum(ContractEventType)
+  public type: ContractEventType;
 
-export class UpdateContractEventRequestDto extends PartialType(
-  CreateContractEventRequestDto,
-) {}
+  @IsDate()
+  public date: Date;
+
+  @IsNotBlankString()
+  public reason: string;
+
+  @IsObjectIdString()
+  public employeeId: string;
+}

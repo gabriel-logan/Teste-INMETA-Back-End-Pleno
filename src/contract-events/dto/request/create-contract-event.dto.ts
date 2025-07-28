@@ -1,5 +1,6 @@
 import { IsDate, IsEnum } from "class-validator";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
+import { IsObjectIdString } from "src/common/decorators/validation/IsObjectIdString";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
 export class CreateContractEventRequestDto {
@@ -11,4 +12,7 @@ export class CreateContractEventRequestDto {
 
   @IsNotBlankString()
   public reason: string;
+
+  @IsObjectIdString()
+  public employeeId: string;
 }
