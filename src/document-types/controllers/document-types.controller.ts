@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiSecurity } from "@nestjs/swagger";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -64,6 +64,11 @@ export class DocumentTypesController {
       type: PublicDocumentTypeResponseDto,
     },
     notFound: true,
+  })
+  @ApiParam({
+    name: "documentTypeName",
+    enum: DocumentTypeAllowedValues,
+    description: "The name of the document type to retrieve.",
   })
   @Get("name/:documentTypeName")
   async findOneByName(
