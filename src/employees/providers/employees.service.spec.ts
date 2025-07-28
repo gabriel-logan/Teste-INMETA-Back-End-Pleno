@@ -88,13 +88,15 @@ describe("EmployeesService", () => {
     transaction: jest.fn((fn) => fn(mockSession)),
   };
 
-  beforeEach(async () => {
-    jest.clearAllMocks();
-
+  beforeAll(() => {
     // Mock the Mongoose connection
     MongooseProvider.setMongooseInstance(
       mockConnection as unknown as Connection,
     );
+  });
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
