@@ -22,9 +22,7 @@ export class DocumentTypesService {
   private async invalidateDocumentTypesCacheByName(
     name: string,
   ): Promise<void> {
-    await this.cacheManager.del(
-      cacheKeys.documentTypes.findOneByName(name.toUpperCase()),
-    );
+    await this.cacheManager.del(cacheKeys.documentTypes.findOneByName(name));
   }
 
   private async invalidateDocumentTypesCacheById(id: string): Promise<void> {
@@ -92,10 +90,10 @@ export class DocumentTypesService {
   ): Promise<PublicDocumentTypeResponseDto> {
     return await getAndSetCache(
       this.cacheManager,
-      cacheKeys.documentTypes.findOneByName(documentTypeName.toUpperCase()),
+      cacheKeys.documentTypes.findOneByName(documentTypeName),
       async () => {
         const docType = await this.documentTypeModel
-          .findOne({ name: documentTypeName.toUpperCase() })
+          .findOne({ name: documentTypeName })
           .lean();
 
         if (!docType) {
@@ -115,7 +113,7 @@ export class DocumentTypesService {
     const { name } = createDocumentTypeDto;
 
     const newDocumentType = new this.documentTypeModel({
-      name: name.toUpperCase(),
+      name,
     });
 
     const createdDocumentType = await newDocumentType.save();
