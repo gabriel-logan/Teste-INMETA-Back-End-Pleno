@@ -119,6 +119,43 @@ describe("ContractEventsService", () => {
     });
   });
 
+  describe("findAllByEmployeeCpf", () => {
+    it("should return an array of contract events for a given employee CPF", async () => {
+      const mockFind = {
+        lean: jest.fn().mockResolvedValue([{ _id: "1" }, { _id: "2" }]),
+      };
+
+      jest
+        .spyOn(mockContractEventModel, "find")
+        .mockReturnValue(
+          mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
+        );
+
+      const result = await service.findAllByEmployeeCpf("12345678901");
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(2);
+      expect(result[0]._id).toEqual("1");
+      expect(result[1]._id).toEqual("2");
+    });
+
+    it("should return an empty array if no contract events found for the given CPF", async () => {
+      const mockFind = {
+        lean: jest.fn().mockResolvedValue([]),
+      };
+
+      jest
+        .spyOn(mockContractEventModel, "find")
+        .mockReturnValue(
+          mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
+        );
+
+      const result = await service.findAllByEmployeeCpf("nonexistent");
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe("findManyByIds", () => {
     it("should return an array of contract events", async () => {
       const mockFind = {
