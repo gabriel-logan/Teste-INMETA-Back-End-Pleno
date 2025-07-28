@@ -144,10 +144,6 @@ export class ContractEventsService {
     if (previousEmployeeCpf !== updatedContractEvent.employeeCpf) {
       await this.invalidateContractEventCacheByCpf(previousEmployeeCpf);
     }
-    // Invalidate cache for the old id
-    await this.invalidateContractEventCacheById(
-      existingContractEvent._id.toString(),
-    );
 
     // Set cache for the updated contract event
     await this.cacheManager.set(

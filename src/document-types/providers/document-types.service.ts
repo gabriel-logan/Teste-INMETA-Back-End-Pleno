@@ -159,10 +159,6 @@ export class DocumentTypesService {
     if (previousName !== updatedDocumentType.name) {
       await this.invalidateDocumentTypesCacheByName(previousName);
     }
-    // Invalidate cache for the old id
-    await this.invalidateDocumentTypesCacheById(
-      existingDocumentType._id.toString(),
-    );
 
     // Set cache for the updated document type
     await Promise.all([
