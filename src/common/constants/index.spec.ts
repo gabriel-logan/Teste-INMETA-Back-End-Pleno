@@ -78,8 +78,8 @@ describe("cacheKeys", () => {
 });
 
 describe("cacheTtl", () => {
-  it("should be equal to 3600000 (1 hour in ms)", () => {
-    expect(cacheTtl).toBe(60000 * 60);
+  it("should be equal to 86400000 (1 day in ms)", () => {
+    expect(cacheTtl).toBe(60000 * 60 * 24);
   });
 });
 
