@@ -1,4 +1,4 @@
-import { NotFoundException } from "@nestjs/common";
+import { Logger, NotFoundException } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
@@ -98,6 +98,8 @@ describe("DocumentsService", () => {
   };
 
   beforeAll(() => {
+    jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+
     // Mock the Mongoose connection
     MongooseProvider.setMongooseInstance(
       mockConnection as unknown as Connection,
@@ -288,6 +290,103 @@ describe("DocumentsService", () => {
       expect(mockDocument.status).toBe(DocumentStatus.AVAILABLE);
       expect(mockDocument.documentUrl).toBeDefined();
     });
+
+    it("should throw NotFoundException if document to send file does not exist", async () => {
+      const mockFile = {} as unknown as Express.Multer.File;
+
+      const mockAuthPayload = {} as unknown as AuthPayload;
+
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockResolvedValue(null),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      await expect(
+        service.sendDocumentFile("nonexistent-id", mockFile, mockAuthPayload),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.sendDocumentFile("nonexistent-id", mockFile, mockAuthPayload),
+      ).rejects.toThrow("Document with id nonexistent-id not found");
+    });
+
+    it("should throw BadRequestException if document has already been sent", async () => {
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        status: DocumentStatus.AVAILABLE,
+        documentUrl: "http://example.com/document.pdf",
+      };
+
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockResolvedValue(mockDocument),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      const mockFile = {} as unknown as Express.Multer.File;
+
+      const mockAuthPayload = {} as unknown as AuthPayload;
+
+      await expect(
+        service.sendDocumentFile("1", mockFile, mockAuthPayload),
+      ).rejects.toThrow(
+        "Document with id 1 has already been sent. If you want to resend it, please delete the existing document and create a new one.",
+      );
+    });
+
+    it("should throw ForbiddenException if common employee is not the owner of the document", async () => {
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        status: DocumentStatus.MISSING,
+        documentUrl: null,
+      };
+
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockResolvedValue(mockDocument),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      const mockFile = {} as unknown as Express.Multer.File;
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1b"),
+        role: EmployeeRole.COMMON,
+        username: "johndoe",
+      };
+
+      await expect(
+        service.sendDocumentFile("1", mockFile, mockAuthPayload),
+      ).rejects.toThrow(`Employee johndoe is not the owner of document 1`);
+    });
+
+    it("should generate url with final .bin when mimeType is undefined", async () => {
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        status: DocumentStatus.MISSING,
+        documentUrl: null,
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockResolvedValue(mockDocument),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      const mockAuthPayload = {} as unknown as AuthPayload;
+
+      const mockFile = {
+        originalname: "document",
+        mimetype: undefined,
+      } as unknown as Express.Multer.File;
+
+      const result = await service.sendDocumentFile(
+        "1",
+        mockFile,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({
+        message: "Document file sent successfully",
+        documentUrl: expect.stringContaining(".bin") as string,
+      });
+    });
   });
 
   describe("deleteDocumentFile", () => {
@@ -319,6 +418,23 @@ describe("DocumentsService", () => {
       expect(mockDocument.save).toHaveBeenCalled();
       expect(mockDocument.status).toBe(DocumentStatus.MISSING);
       expect(mockDocument.documentUrl).toBeDefined();
+    });
+
+    it("should throw BadRequestException if document does not have a file to delete", async () => {
+      const mockDocument = {
+        _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+        employee: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+        status: DocumentStatus.MISSING,
+        documentUrl: null,
+      };
+
+      jest.spyOn(mockDocumentModel, "findById").mockReturnValue({
+        populate: jest.fn().mockResolvedValue(mockDocument),
+      } as unknown as ReturnType<typeof mockDocumentModel.findById>);
+
+      await expect(service.deleteDocumentFile("1")).rejects.toThrow(
+        "Document with id 1 does not have a file to delete.",
+      );
     });
   });
 
@@ -371,6 +487,99 @@ describe("DocumentsService", () => {
         },
       });
     });
+
+    it("should throw NotFoundException if no documents found for employee", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue([]),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      await expect(
+        service.getDocumentStatusesByEmployeeId(employeeId.toString()),
+      ).rejects.toThrow(
+        `No documents found for employee with id ${employeeId.toString()}`,
+      );
+    });
+
+    it("should filter the results if status is provided", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+
+      const mockDocuments = [
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a"),
+            name: "RG",
+          },
+          status: DocumentStatus.AVAILABLE,
+        },
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1b"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c71b2f9b1d8c001a1e4e1b"),
+            name: "PDF",
+          },
+          status: DocumentStatus.MISSING,
+        },
+      ];
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDocuments),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      const result = await service.getDocumentStatusesByEmployeeId(
+        employeeId.toString(),
+        DocumentStatus.MISSING,
+      );
+
+      expect(result).toEqual({
+        PDF: {
+          documentId: mockDocuments[1]._id.toString(),
+          status: DocumentStatus.MISSING,
+        },
+      });
+    });
+
+    it("should throw NotFoundException if no documents match the requested status", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+
+      const mockDocuments = [
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a"),
+            name: "RG",
+          },
+          status: DocumentStatus.AVAILABLE,
+        },
+      ];
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDocuments),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      await expect(
+        service.getDocumentStatusesByEmployeeId(
+          employeeId.toString(),
+          DocumentStatus.MISSING,
+        ),
+      ).rejects.toThrow(
+        `No documents found for employee with id ${employeeId.toString()} with status missing`,
+      );
+    });
   });
 
   describe("getAllMissingDocuments", () => {
@@ -418,6 +627,55 @@ describe("DocumentsService", () => {
           updatedAt: expect.any(Date) as Date,
         })),
         total: mockMissingDocuments.length,
+        page: 1,
+        limit: 10,
+      });
+    });
+
+    it("should apply filters for employeeId and documentTypeId", async () => {
+      const employeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
+      const documentTypeId = new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a");
+
+      const mockDocuments = [
+        {
+          _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+          employee: {
+            _id: employeeId,
+          },
+          documentType: {
+            _id: documentTypeId,
+            name: "RG",
+          },
+          status: DocumentStatus.MISSING,
+        },
+      ];
+
+      jest.spyOn(mockDocumentModel, "find").mockReturnValue({
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDocuments),
+      } as unknown as ReturnType<typeof mockDocumentModel.find>);
+
+      jest.spyOn(mockDocumentModel, "countDocuments").mockReturnValue({
+        lean: jest.fn().mockResolvedValue(mockDocuments.length),
+      } as unknown as ReturnType<typeof mockDocumentModel.countDocuments>);
+
+      const result = await service.getAllMissingDocuments(
+        undefined,
+        undefined,
+        employeeId.toString(),
+        documentTypeId.toString(),
+      );
+
+      expect(result).toEqual({
+        documents: mockDocuments.map((doc) => ({
+          id: doc._id,
+          employee: doc.employee,
+          documentType: doc.documentType,
+          status: doc.status,
+        })),
+        total: mockDocuments.length,
         page: 1,
         limit: 10,
       });

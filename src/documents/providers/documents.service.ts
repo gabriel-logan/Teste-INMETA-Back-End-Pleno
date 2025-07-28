@@ -12,7 +12,7 @@ import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { AuthPayload } from "src/common/types";
 import type { EnvGlobalConfig } from "src/configs/types";
 import { EmployeesService } from "src/employees/providers/employees.service";
-import { Employee, EmployeeRole } from "src/employees/schemas/employee.schema";
+import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
@@ -108,6 +108,20 @@ export class DocumentsService {
     return `${this.baseUrl}/files/${newFileName}`;
   }
 
+  private async getDocumentByIdWithEmployee(
+    documentId: string,
+  ): Promise<DocumentDocument> {
+    const document = await this.documentModel
+      .findById(documentId)
+      .populate("employee");
+
+    if (!document) {
+      throw new NotFoundException(`Document with id ${documentId} not found`);
+    }
+
+    return document;
+  }
+
   // DocumentFile is a placeholder for the actual file type
   // Replace it with the actual type used for document files
   @Transactional()
@@ -116,15 +130,7 @@ export class DocumentsService {
     documentFile: Express.Multer.File,
     employee: AuthPayload,
   ): Promise<SendDeleteDocumentFileResponseDto> {
-    const document = (await this.documentModel
-      .findById(documentId)
-      .populate("employee")) as
-      | (DocumentDocument & { employee: Employee })
-      | null;
-
-    if (!document) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
-    }
+    const document = await this.getDocumentByIdWithEmployee(documentId);
 
     // Check if the document is already sent
     if (document.documentUrl) {
@@ -170,13 +176,7 @@ export class DocumentsService {
   async deleteDocumentFile(
     documentId: string,
   ): Promise<SendDeleteDocumentFileResponseDto> {
-    const document = await this.documentModel
-      .findById(documentId)
-      .populate("employee");
-
-    if (!document) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
-    }
+    const document = await this.getDocumentByIdWithEmployee(documentId);
 
     if (!document.documentUrl) {
       throw new BadRequestException(
