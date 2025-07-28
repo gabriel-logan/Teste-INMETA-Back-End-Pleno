@@ -42,6 +42,10 @@ export class ContractEventsService {
     ]);
   }
 
+  private parseEmployeeCpf(cpf: string): string {
+    return cpf.replace(/\D/g, ""); // Remove non-numeric characters
+  }
+
   async findAll(): Promise<ContractEvent[]> {
     return await getAndSetCache(
       this.cacheManager,
@@ -91,7 +95,7 @@ export class ContractEventsService {
       date,
       reason,
       employeeFullName,
-      employeeCpf,
+      employeeCpf: this.parseEmployeeCpf(employeeCpf),
     });
 
     const newContractEvent = await createdContractEvent.save();
@@ -131,7 +135,7 @@ export class ContractEventsService {
 
     const previousEmployeeCpf = existingContractEvent.employeeCpf;
 
-    existingContractEvent.employeeCpf = employeeCpf;
+    existingContractEvent.employeeCpf = this.parseEmployeeCpf(employeeCpf);
 
     const updatedContractEvent = await existingContractEvent.save();
 

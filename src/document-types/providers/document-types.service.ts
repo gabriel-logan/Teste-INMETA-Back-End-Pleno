@@ -124,6 +124,18 @@ export class DocumentTypesService {
       createdDocumentType.name,
     );
 
+    // Set cache for the newly created document type
+    await Promise.all([
+      this.cacheManager.set(
+        cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
+        this.toPublicDocumentTypeResponseDto(createdDocumentType),
+      ),
+      this.cacheManager.set(
+        cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
+        this.toPublicDocumentTypeResponseDto(createdDocumentType),
+      ),
+    ]);
+
     return this.toPublicDocumentTypeResponseDto(createdDocumentType);
   }
 
