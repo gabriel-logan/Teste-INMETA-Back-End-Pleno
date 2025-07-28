@@ -37,6 +37,7 @@ import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import {
   ContractStatus,
   Employee,
+  EmployeeDocument,
   EmployeeRole,
 } from "../schemas/employee.schema";
 
@@ -197,6 +198,38 @@ export class EmployeesService {
     return this.toPublicEmployeeResponseDto(updatedEmployee);
   }
 
+  private async getEmployeeWithContractEvents(
+    employeeId: string,
+  ): Promise<EmployeeDocument> {
+    const employee = await this.employeeModel
+      .findById(employeeId)
+      .populate("contractEvents");
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+    }
+
+    return employee;
+  }
+
+  private async createContractEvent({
+    type,
+    reason,
+    employee,
+  }: {
+    type: ContractEventType;
+    reason: string;
+    employee: Employee;
+  }): Promise<ContractEvent> {
+    return await this.contractEventsService.create({
+      type,
+      date: new Date(),
+      reason,
+      employeeCpf: employee.cpf,
+      employeeFullName: employee.fullName,
+    });
+  }
+
   @Transactional()
   async fire(
     employeeId: string,
@@ -210,32 +243,24 @@ export class EmployeesService {
       this.logger.warn("Only managers can fire employees");
     }
 
-    const deletedEmployee = await this.employeeModel
-      .findById(employeeId)
-      .populate("contractEvents");
+    const employeeToFire = await this.getEmployeeWithContractEvents(employeeId);
 
-    if (!deletedEmployee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
-    }
-
-    if (deletedEmployee.contractStatus === ContractStatus.INACTIVE) {
+    if (employeeToFire.contractStatus === ContractStatus.INACTIVE) {
       throw new BadRequestException(
         `Employee with id ${employeeId} is already inactive`,
       );
     }
 
-    const contractEvent = await this.contractEventsService.create({
+    const contractEvent = await this.createContractEvent({
       type: ContractEventType.FIRED,
-      date: new Date(),
       reason: fireEmployeeDto.reason,
-      employeeCpf: deletedEmployee.cpf,
-      employeeFullName: deletedEmployee.fullName,
+      employee: employeeToFire,
     });
 
-    deletedEmployee.contractStatus = ContractStatus.INACTIVE;
-    deletedEmployee.contractEvents.push(contractEvent);
+    employeeToFire.contractStatus = ContractStatus.INACTIVE;
+    employeeToFire.contractEvents.push(contractEvent);
 
-    await deletedEmployee.save();
+    await employeeToFire.save();
 
     return {
       reason: fireEmployeeDto.reason,
@@ -256,13 +281,7 @@ export class EmployeesService {
       this.logger.warn("Only managers can rehire employees");
     }
 
-    const employee = await this.employeeModel
-      .findById(employeeId)
-      .populate("contractEvents");
-
-    if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
-    }
+    const employee = await this.getEmployeeWithContractEvents(employeeId);
 
     if (employee.contractStatus === ContractStatus.ACTIVE) {
       throw new BadRequestException(
@@ -270,12 +289,10 @@ export class EmployeesService {
       );
     }
 
-    const contractEvent = await this.contractEventsService.create({
+    const contractEvent = await this.createContractEvent({
       type: ContractEventType.REHIRED,
-      date: new Date(),
       reason: reHireEmployeeDto.reason,
-      employeeCpf: employee.cpf,
-      employeeFullName: employee.fullName,
+      employee,
     });
 
     employee.contractStatus = ContractStatus.ACTIVE;
