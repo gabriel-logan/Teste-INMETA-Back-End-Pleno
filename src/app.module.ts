@@ -12,7 +12,7 @@ import { cacheTtl } from "./common/constants";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
-import throttlerModuleOptions from "./configs/throttlerModuleOptions";
+import throttlerModuleOptions from "./configs/throttler-module-options";
 import { ContractEventsModule } from "./contract-events/contract-events.module";
 import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
