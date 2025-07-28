@@ -62,6 +62,27 @@ export class ContractEventsService {
     return contractEvent;
   }
 
+  async findAllByEmployeeCpf(employeeCpf: string): Promise<ContractEvent[]> {
+    const cachedContractEvents = await this.cacheManager.get<ContractEvent[]>(
+      cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
+    );
+
+    if (cachedContractEvents) {
+      return cachedContractEvents;
+    }
+
+    const contractEvents = await this.contractEventModel
+      .find({ employeeCpf })
+      .lean();
+
+    await this.cacheManager.set(
+      cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
+      contractEvents,
+    );
+
+    return contractEvents;
+  }
+
   async findManyByIds(
     ids: string[] | Types.ObjectId[],
   ): Promise<ContractEvent[]> {
@@ -88,8 +109,16 @@ export class ContractEventsService {
 
     const newContractEvent = await createdContractEvent.save();
 
-    // Invalidate cache for findAll
+    // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
     await this.cacheManager.del(cacheKeys.contractEvents.findAll);
+    await this.cacheManager.del(
+      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
+    );
+    await this.cacheManager.del(
+      cacheKeys.contractEvents.findAllByEmployeeCpf(
+        newContractEvent.employeeCpf,
+      ),
+    );
 
     // Set cache for the newly created contract event
     await this.cacheManager.set(
@@ -128,9 +157,14 @@ export class ContractEventsService {
       throw new NotFoundException(`ContractEvent with id ${id} not found`);
     }
 
-    // Invalidate cache for findById and findAll
+    // Invalidate cache for findById and findAll, findAllByEmployeeCpf
     await this.cacheManager.del(cacheKeys.contractEvents.findById(id));
     await this.cacheManager.del(cacheKeys.contractEvents.findAll);
+    await this.cacheManager.del(
+      cacheKeys.contractEvents.findAllByEmployeeCpf(
+        updatedContractEvent.employeeCpf,
+      ),
+    );
 
     // Set cache for the updated contract event
     await this.cacheManager.set(

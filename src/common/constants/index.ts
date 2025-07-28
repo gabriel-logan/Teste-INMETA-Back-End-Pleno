@@ -11,6 +11,8 @@ export const cacheKeys = {
     findById: (id: string): string => `contractEvents:findById:${id}`,
     findManyByIds: (ids: string[]): string =>
       `contractEvents:findManyByIds:${ids.join(",")}`,
+    findAllByEmployeeCpf: (employeeCpf: string): string =>
+      `contractEvents:findAllByEmployeeCpf:${employeeCpf}`,
   },
 
   employees: {
