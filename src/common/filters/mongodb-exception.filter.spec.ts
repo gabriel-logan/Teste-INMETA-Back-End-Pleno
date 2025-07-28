@@ -53,7 +53,7 @@ describe("MongodbExceptionFilter", () => {
   });
 
   it("should return default conflict message when value is not defined and route is employee", () => {
-    mockRequest.url = "/api/employees";
+    mockRequest.url = `${apiPrefix}/employees`;
     const exception = {
       code: 11000,
       keyValue: { cpf: undefined },
@@ -71,7 +71,7 @@ describe("MongodbExceptionFilter", () => {
   });
 
   it("should return conflict error with generic duplicate key message for non-employee route", () => {
-    mockRequest.url = "/api/other";
+    mockRequest.url = `${apiPrefix}/other`;
     const exception = {
       code: 11000,
       keyValue: { username: "john" },
@@ -89,7 +89,7 @@ describe("MongodbExceptionFilter", () => {
   });
 
   it("should return conflict error with default message if keyValue is missing", () => {
-    mockRequest.url = "/api/other";
+    mockRequest.url = `${apiPrefix}/other`;
     const exception = {
       code: 11000,
       keyValue: undefined,
