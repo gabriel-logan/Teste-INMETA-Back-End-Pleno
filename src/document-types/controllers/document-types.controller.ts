@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpStatus,
   Param,
+  ParseEnumPipe,
   Post,
   Put,
 } from "@nestjs/common";
@@ -20,6 +22,7 @@ import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-typ
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
 import { PublicDocumentTypeResponseDto } from "../dto/response/public-document-type.dto";
 import { DocumentTypesService } from "../providers/document-types.service";
+import { DocumentTypeAllowedValues } from "../schemas/document-type.schema";
 
 @ApiSecurity("bearer")
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
@@ -64,7 +67,18 @@ export class DocumentTypesController {
   })
   @Get("name/:documentTypeName")
   async findOneByName(
-    @Param("documentTypeName") documentTypeName: string,
+    @Param(
+      "documentTypeName",
+      new ParseEnumPipe(DocumentTypeAllowedValues, {
+        exceptionFactory: (): void => {
+          throw new BadRequestException(
+            "Invalid document type name. Allowed values are: " +
+              Object.values(DocumentTypeAllowedValues).join(", "),
+          );
+        },
+      }),
+    )
+    documentTypeName: string,
   ): Promise<PublicDocumentTypeResponseDto> {
     return await this.documentTypesService.findOneByName(documentTypeName);
   }
