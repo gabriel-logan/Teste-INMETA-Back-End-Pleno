@@ -99,8 +99,9 @@ export class DocumentTypesService {
       );
     }
 
+    // Cache the document type by its name
     await this.cacheManager.set(
-      cacheKeys.documentTypes.findOneByName(documentTypeName),
+      cacheKeys.documentTypes.findOneByName(docType.name),
       this.toPublicDocumentTypeResponseDto(docType),
     );
 
@@ -120,6 +121,16 @@ export class DocumentTypesService {
 
     // Invalidate cache for findAll
     await this.cacheManager.del(cacheKeys.documentTypes.findAll);
+
+    // Set cache for the newly created document type
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
+      this.toPublicDocumentTypeResponseDto(createdDocumentType),
+    );
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
+      this.toPublicDocumentTypeResponseDto(createdDocumentType),
+    );
 
     return this.toPublicDocumentTypeResponseDto(createdDocumentType);
   }
@@ -151,6 +162,16 @@ export class DocumentTypesService {
     );
     await this.cacheManager.del(
       cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
+    );
+
+    // Set cache for the updated document type
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
+      this.toPublicDocumentTypeResponseDto(updatedDocumentType),
+    );
+    await this.cacheManager.set(
+      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
+      this.toPublicDocumentTypeResponseDto(updatedDocumentType),
     );
 
     return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
