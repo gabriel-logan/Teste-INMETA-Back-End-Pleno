@@ -3,6 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
@@ -31,32 +32,17 @@ export class ContractEventsService {
     );
   }
 
-  private async getOrSetCache<T>(
-    key: string,
-    fetchCbFn: () => Promise<T>,
-  ): Promise<T> {
-    const cached = await this.cacheManager.get<T>(key);
-
-    if (cached) {
-      return cached;
-    }
-
-    const data = await fetchCbFn();
-
-    await this.cacheManager.set(key, data);
-
-    return data;
-  }
-
   async findAll(): Promise<ContractEvent[]> {
-    return await this.getOrSetCache(
+    return await getAndSetCache(
+      this.cacheManager,
       cacheKeys.contractEvents.findAll,
       async () => await this.contractEventModel.find().lean(),
     );
   }
 
   async findById(id: string): Promise<ContractEvent> {
-    return await this.getOrSetCache(
+    return await getAndSetCache(
+      this.cacheManager,
       cacheKeys.contractEvents.findById(id),
       async () => {
         const contractEvent = await this.contractEventModel.findById(id).lean();
@@ -71,7 +57,8 @@ export class ContractEventsService {
   }
 
   async findAllByEmployeeCpf(employeeCpf: string): Promise<ContractEvent[]> {
-    return await this.getOrSetCache(
+    return await getAndSetCache(
+      this.cacheManager,
       cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
       async () => await this.contractEventModel.find({ employeeCpf }).lean(),
     );
