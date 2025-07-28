@@ -1,6 +1,10 @@
-import { operationsSorter } from "../swagger";
+import swaggerInitializer, { operationsSorter } from "../swagger";
 
-describe("swaggerInitializer", () => {});
+describe("swaggerInitializer", () => {
+  it("should be defined", () => {
+    expect(swaggerInitializer).toBeDefined();
+  });
+});
 
 describe("operationsSorter", () => {
   it("should sort methods according to methodOrder", () => {
