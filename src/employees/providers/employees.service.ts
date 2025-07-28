@@ -219,7 +219,7 @@ export class EmployeesService {
   }: {
     type: ContractEventType;
     reason: string;
-    employee: Employee;
+    employee: { cpf: string; fullName: string };
   }): Promise<ContractEvent> {
     return await this.contractEventsService.create({
       type,
@@ -444,12 +444,13 @@ export class EmployeesService {
       );
     }
 
-    const contractEvent = await this.contractEventsService.create({
+    const contractEvent = await this.createContractEvent({
       type: ContractEventType.HIRED,
-      date: new Date(),
       reason: "New admin employee hired successfully cpf: " + parsedCpf,
-      employeeCpf: parsedCpf,
-      employeeFullName: `${firstName} ${lastName}`,
+      employee: {
+        cpf: parsedCpf,
+        fullName: `${firstName} ${lastName}`,
+      },
     });
 
     const newEmployee = new this.employeeModel({
