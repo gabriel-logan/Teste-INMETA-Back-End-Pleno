@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 
 export type ContractEventDocument = HydratedDocument<ContractEvent>;
 
@@ -22,12 +22,8 @@ export class ContractEvent {
   @Prop({ required: true })
   public reason: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    required: true,
-  })
-  public employee: mongoose.Types.ObjectId;
+  @Prop({ required: true })
+  public employeeFullName: string;
 
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
