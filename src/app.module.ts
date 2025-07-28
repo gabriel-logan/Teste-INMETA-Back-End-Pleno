@@ -3,6 +3,7 @@ import { Module, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { InjectConnection, MongooseModule } from "@nestjs/mongoose";
+import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import mongoose, { Connection } from "mongoose";
 
@@ -18,6 +19,7 @@ import { DocumentTypesModule } from "./document-types/document-types.module";
 import { DocumentsModule } from "./documents/documents.module";
 import { EmployeesModule } from "./employees/employees.module";
 import { EmployeeDocumentModule } from "./shared/employee-document/employee-document.module";
+import { TasksModule } from "./tasks/tasks.module";
 
 @Module({
   imports: [
@@ -36,12 +38,14 @@ import { EmployeeDocumentModule } from "./shared/employee-document/employee-docu
       isGlobal: true,
       ttl: cacheTtl,
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     EmployeeDocumentModule,
     EmployeesModule,
     DocumentsModule,
     DocumentTypesModule,
     ContractEventsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [
