@@ -25,6 +25,9 @@ export class ContractEvent {
   @Prop({ required: true })
   public employeeFullName: string;
 
+  @Prop({ required: true })
+  public employeeCpf: string;
+
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 }
