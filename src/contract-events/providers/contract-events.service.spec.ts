@@ -77,6 +77,28 @@ describe("ContractEventsService", () => {
       expect(result).toBeInstanceOf(Array);
       expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it("should return value from cache if available", async () => {
+      const mockFind = {
+        lean: jest.fn().mockResolvedValue([]),
+      };
+
+      const spy = jest
+        .spyOn(mockContractEventModel, "find")
+        .mockReturnValue(
+          mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
+        );
+
+      // Simulate cache hit
+      const cachedResult = await service.findAll();
+      expect(cachedResult).toBeInstanceOf(Array);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      // Call again to check cache
+      const result = await service.findAll();
+      expect(result).toEqual(cachedResult);
+      expect(spy).toHaveBeenCalledTimes(1); // Should not call find again
+    });
   });
 
   describe("findById", () => {
