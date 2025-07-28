@@ -3,6 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import { invalidateKeys, setMultipleKeys } from "src/common/utils/cache-utils";
 import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
@@ -20,27 +21,6 @@ export class ContractEventsService {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
-
-  private async invalidateContractEventCacheById(id: string): Promise<void> {
-    await this.cacheManager.del(cacheKeys.contractEvents.findById(id));
-  }
-
-  private async invalidateContractEventCacheByCpf(cpf: string): Promise<void> {
-    await this.cacheManager.del(
-      cacheKeys.contractEvents.findAllByEmployeeCpf(cpf),
-    );
-  }
-
-  private async invalidateAllContractEventCache(
-    id: string,
-    cpf: string,
-  ): Promise<void> {
-    await Promise.all([
-      this.cacheManager.del(cacheKeys.contractEvents.findAll),
-      this.invalidateContractEventCacheById(id),
-      this.invalidateContractEventCacheByCpf(cpf),
-    ]);
-  }
 
   private parseEmployeeCpf(cpf: string): string {
     return cpf.replace(/\D/g, ""); // Remove non-numeric characters
@@ -121,16 +101,20 @@ export class ContractEventsService {
     const newContractEvent = await createdContractEvent.save();
 
     // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
-    await this.invalidateAllContractEventCache(
-      newContractEvent._id.toString(),
-      newContractEvent.employeeCpf,
-    );
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.contractEvents.findAll,
+      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
+      cacheKeys.contractEvents.findAllByEmployeeCpf(
+        newContractEvent.employeeCpf,
+      ),
+      cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
+    ]);
 
     // Set cache for the newly created contract event
-    await this.cacheManager.set(
+    await setMultipleKeys(this.cacheManager, newContractEvent, [
       cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
-      newContractEvent,
-    );
+      cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
+    ]);
 
     return newContractEvent;
   }
@@ -160,20 +144,20 @@ export class ContractEventsService {
     const updatedContractEvent = await existingContractEvent.save();
 
     // Invalidate cache for findById and findAll, findAllByEmployeeCpf
-    await this.invalidateAllContractEventCache(
-      updatedContractEvent._id.toString(),
-      updatedContractEvent.employeeCpf,
-    );
-    // In case the employeeCpf has changed, invalidate the old cache
-    if (previousEmployeeCpf !== updatedContractEvent.employeeCpf) {
-      await this.invalidateContractEventCacheByCpf(previousEmployeeCpf);
-    }
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.contractEvents.findById(id),
+      cacheKeys.contractEvents.findAll,
+      cacheKeys.contractEvents.findAllByEmployeeCpf(previousEmployeeCpf),
+      cacheKeys.contractEvents.findManyByIds([id]),
+    ]);
 
     // Set cache for the updated contract event
-    await this.cacheManager.set(
-      cacheKeys.contractEvents.findById(id),
-      updatedContractEvent,
-    );
+    await setMultipleKeys(this.cacheManager, updatedContractEvent, [
+      cacheKeys.contractEvents.findById(updatedContractEvent._id.toString()),
+      cacheKeys.contractEvents.findManyByIds([
+        updatedContractEvent._id.toString(),
+      ]),
+    ]);
 
     return updatedContractEvent;
   }
