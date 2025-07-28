@@ -17,8 +17,6 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix(apiPrefix);
 
-  app.useGlobalFilters(new MongodbExceptionFilter());
-
   const configService = app.get(ConfigService<EnvGlobalConfig, true>);
 
   const { nodeEnv, baseUrl, port } =
@@ -34,6 +32,8 @@ async function bootstrap(): Promise<void> {
     // To override the header to the real client IP
     app.set("trust proxy", true);
   }
+
+  app.useGlobalFilters(new MongodbExceptionFilter());
 
   app.useGlobalPipes(new ValidationPipe());
 
