@@ -26,7 +26,7 @@ import { TasksModule } from "./tasks/tasks.module";
     ConfigModule.forRoot({
       load: [envGlobal],
     }),
-    ThrottlerModule.forRoot(throttlerModuleOptions),
+    ThrottlerModule.forRoot(throttlerModuleOptions), // Using local storage, because of resources constraints
     MongooseModule.forRootAsync({
       imports: [ConfigModule.forFeature(envDatabase)],
       useFactory: (configService: ConfigService) => ({
@@ -35,6 +35,7 @@ import { TasksModule } from "./tasks/tasks.module";
       inject: [ConfigService],
     }),
     CacheModule.register({
+      // Using local storage, because of resources constraints
       isGlobal: true,
       ttl: cacheTtl,
     }),
