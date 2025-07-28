@@ -3,6 +3,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -18,6 +19,17 @@ export class DocumentTypesService {
     private readonly cacheManager: Cache,
   ) {}
 
+  private async invalidateDocumentTypesCache(
+    id: string,
+    name: string,
+  ): Promise<void> {
+    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
+    await this.cacheManager.del(cacheKeys.documentTypes.findById(id));
+    await this.cacheManager.del(
+      cacheKeys.documentTypes.findOneByName(name.toUpperCase()),
+    );
+  }
+
   private toPublicDocumentTypeResponseDto(
     documentType: DocumentType,
   ): PublicDocumentTypeResponseDto {
@@ -30,82 +42,59 @@ export class DocumentTypesService {
   }
 
   async findAll(): Promise<PublicDocumentTypeResponseDto[]> {
-    const cachedDocumentTypes = await this.cacheManager.get<
-      PublicDocumentTypeResponseDto[]
-    >(cacheKeys.documentTypes.findAll);
-
-    if (cachedDocumentTypes) {
-      return cachedDocumentTypes;
-    }
-
-    const documentTypes = (await this.documentTypeModel.find().lean()).map(
-      (docType) => this.toPublicDocumentTypeResponseDto(docType),
+    return await getAndSetCache(
+      this.cacheManager,
+      cacheKeys.documentTypes.findAll,
+      async () => {
+        return (await this.documentTypeModel.find().lean()).map((docType) =>
+          this.toPublicDocumentTypeResponseDto(docType),
+        );
+      },
     );
-
-    await this.cacheManager.set(cacheKeys.documentTypes.findAll, documentTypes);
-
-    return documentTypes;
   }
 
   async findById(
     documentTypeId: string,
   ): Promise<PublicDocumentTypeResponseDto> {
-    const cachedDocumentType =
-      await this.cacheManager.get<PublicDocumentTypeResponseDto>(
-        cacheKeys.documentTypes.findById(documentTypeId),
-      );
-
-    if (cachedDocumentType) {
-      return cachedDocumentType;
-    }
-
-    const docType = await this.documentTypeModel
-      .findById(documentTypeId)
-      .lean();
-
-    if (!docType) {
-      throw new NotFoundException(
-        `DocumentType with id ${documentTypeId} not found`,
-      );
-    }
-
-    await this.cacheManager.set(
+    return await getAndSetCache(
+      this.cacheManager,
       cacheKeys.documentTypes.findById(documentTypeId),
-      this.toPublicDocumentTypeResponseDto(docType),
-    );
+      async () => {
+        const docType = await this.documentTypeModel
+          .findById(documentTypeId)
+          .lean();
 
-    return this.toPublicDocumentTypeResponseDto(docType);
+        if (!docType) {
+          throw new NotFoundException(
+            `DocumentType with id ${documentTypeId} not found`,
+          );
+        }
+
+        return this.toPublicDocumentTypeResponseDto(docType);
+      },
+    );
   }
 
   async findOneByName(
     documentTypeName: string,
   ): Promise<PublicDocumentTypeResponseDto> {
-    const cachedDocumentType =
-      await this.cacheManager.get<PublicDocumentTypeResponseDto>(
-        cacheKeys.documentTypes.findOneByName(documentTypeName),
-      );
+    return await getAndSetCache(
+      this.cacheManager,
+      cacheKeys.documentTypes.findOneByName(documentTypeName.toUpperCase()),
+      async () => {
+        const docType = await this.documentTypeModel
+          .findOne({ name: documentTypeName.toUpperCase() })
+          .lean();
 
-    if (cachedDocumentType) {
-      return cachedDocumentType;
-    }
+        if (!docType) {
+          throw new NotFoundException(
+            `DocumentType with name ${documentTypeName} not found`,
+          );
+        }
 
-    const docType = await this.documentTypeModel
-      .findOne({ name: documentTypeName.toUpperCase() })
-      .lean();
-
-    if (!docType) {
-      throw new NotFoundException(
-        `DocumentType with name ${documentTypeName} not found`,
-      );
-    }
-
-    // Cache the document type by its name
-    await this.cacheManager.set(
-      cacheKeys.documentTypes.findOneByName(docType.name),
-      this.toPublicDocumentTypeResponseDto(docType),
+        return this.toPublicDocumentTypeResponseDto(docType);
+      },
     );
-
-    return this.toPublicDocumentTypeResponseDto(docType);
   }
 
   async create(
@@ -119,17 +108,10 @@ export class DocumentTypesService {
 
     const createdDocumentType = await newDocumentType.save();
 
-    // Invalidate cache for findAll
-    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
-
-    // Set cache for the newly created document type
-    await this.cacheManager.set(
-      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
-      this.toPublicDocumentTypeResponseDto(createdDocumentType),
-    );
-    await this.cacheManager.set(
-      cacheKeys.documentTypes.findOneByName(createdDocumentType.name),
-      this.toPublicDocumentTypeResponseDto(createdDocumentType),
+    // Invalidate cache for findAll, findById, and findOneByName
+    await this.invalidateDocumentTypesCache(
+      createdDocumentType._id.toString(),
+      createdDocumentType.name,
     );
 
     return this.toPublicDocumentTypeResponseDto(createdDocumentType);
@@ -155,14 +137,17 @@ export class DocumentTypesService {
       );
     }
 
-    // Invalidate cache for findAll and specific document type
-    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
-    await this.cacheManager.del(
-      cacheKeys.documentTypes.findById(documentTypeId),
+    // Invalidate cache for findAll, findById, and findOneByName
+    await this.invalidateDocumentTypesCache(
+      updatedDocumentType._id.toString(),
+      updatedDocumentType.name,
     );
-    await this.cacheManager.del(
-      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
-    );
+    // Invalidate cache for the old name
+    if (name) {
+      await this.cacheManager.del(
+        cacheKeys.documentTypes.findOneByName(name.toUpperCase()),
+      );
+    }
 
     // Set cache for the updated document type
     await this.cacheManager.set(
