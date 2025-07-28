@@ -197,7 +197,7 @@ describe("ContractEventsService", () => {
       expect(result[1]._id).toEqual("2");
     });
 
-    it("should return an empty array if no contract events found", async () => {
+    it("should return an empty array if no contract events found or if no IDs are provided", async () => {
       const mockFind = {
         lean: jest.fn().mockResolvedValue([]),
       };
@@ -208,9 +208,11 @@ describe("ContractEventsService", () => {
           mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
         );
 
-      const result = await service.findManyByIds(["nonexistent"]);
+      const result1 = await service.findManyByIds(["nonexistent"]);
+      const result2 = await service.findManyByIds([]);
 
-      expect(result).toEqual([]);
+      expect(result1).toEqual([]);
+      expect(result2).toEqual([]);
     });
   });
 
