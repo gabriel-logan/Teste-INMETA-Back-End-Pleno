@@ -40,7 +40,6 @@ describe("DocumentTypesService", () => {
     public static readonly find = jest.fn();
     public static readonly findById = jest.fn();
     public static readonly findOne = jest.fn();
-    public static readonly findByIdAndUpdate = jest.fn();
     public save = jest.fn();
   };
 
@@ -216,25 +215,28 @@ describe("DocumentTypesService", () => {
 
   describe("update", () => {
     it("should update an existing document type", async () => {
-      const mockFindByIdAndUpdate = {
-        lean: jest.fn().mockResolvedValue({
-          ...mockDocumentType,
-          name: DocumentTypeAllowedValues.RG,
-          updatedAt: new Date(),
-        }),
+      const mockOldDocumentType: Partial<DocumentType> = {
+        name: DocumentTypeAllowedValues.CNPJ,
       };
-
-      const spyFindByIdAndUpdate = jest
-        .spyOn(mockDocumentTypeModel, "findByIdAndUpdate")
-        .mockReturnValue(
-          mockFindByIdAndUpdate as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findByIdAndUpdate
-          >,
-        );
 
       const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
         name: DocumentTypeAllowedValues.RG,
       };
+
+      const spyFindById = jest
+        .spyOn(mockDocumentTypeModel, "findById")
+        .mockReturnValue({
+          _id: "1",
+          ...mockOldDocumentType,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          save: jest.fn().mockResolvedValue({
+            _id: "1",
+            ...updateDocumentTypeDto,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }),
+        } as unknown as ReturnType<typeof mockDocumentTypeModel.findById>);
 
       const result = await service.update(
         mockDocumentType._id,
@@ -248,22 +250,11 @@ describe("DocumentTypesService", () => {
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
-      expect(mockFindByIdAndUpdate.lean).toHaveBeenCalled();
-      expect(spyFindByIdAndUpdate).toHaveBeenCalledTimes(1);
+      expect(spyFindById).toHaveBeenCalledTimes(1);
     });
 
     it("should throw an error if document type not found for update", async () => {
-      const mockFindByIdAndUpdate = {
-        lean: jest.fn().mockResolvedValue(null),
-      };
-
-      const spyFindByIdAndUpdate = jest
-        .spyOn(mockDocumentTypeModel, "findByIdAndUpdate")
-        .mockReturnValue(
-          mockFindByIdAndUpdate as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findByIdAndUpdate
-          >,
-        );
+      jest.spyOn(mockDocumentTypeModel, "findById").mockResolvedValue(null);
 
       const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
         name: DocumentTypeAllowedValues.RG,
@@ -274,9 +265,6 @@ describe("DocumentTypesService", () => {
       ).rejects.toThrow(
         `DocumentType with id ${mockDocumentType._id} not found`,
       );
-
-      expect(mockFindByIdAndUpdate.lean).toHaveBeenCalled();
-      expect(spyFindByIdAndUpdate).toHaveBeenCalledTimes(1);
     });
   });
 });
