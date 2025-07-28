@@ -156,6 +156,8 @@ export class EmployeesService {
       type: ContractEventType.HIRED,
       date: new Date(),
       reason: "New employee hired",
+      employeeCpf: parsedCpf,
+      employeeFullName: `${firstName} ${lastName}`,
     });
 
     const createdEmployee = new this.employeeModel({
@@ -226,6 +228,8 @@ export class EmployeesService {
       type: ContractEventType.FIRED,
       date: new Date(),
       reason: fireEmployeeDto.reason,
+      employeeCpf: deletedEmployee.cpf,
+      employeeFullName: deletedEmployee.fullName,
     });
 
     deletedEmployee.contractStatus = ContractStatus.INACTIVE;
@@ -270,6 +274,8 @@ export class EmployeesService {
       type: ContractEventType.REHIRED,
       date: new Date(),
       reason: reHireEmployeeDto.reason,
+      employeeCpf: employee.cpf,
+      employeeFullName: employee.fullName,
     });
 
     employee.contractStatus = ContractStatus.ACTIVE;
@@ -425,6 +431,8 @@ export class EmployeesService {
       type: ContractEventType.HIRED,
       date: new Date(),
       reason: "New admin employee hired successfully cpf: " + parsedCpf,
+      employeeCpf: parsedCpf,
+      employeeFullName: `${firstName} ${lastName}`,
     });
 
     const newEmployee = new this.employeeModel({
