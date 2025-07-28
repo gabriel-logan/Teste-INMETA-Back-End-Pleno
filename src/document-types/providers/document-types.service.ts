@@ -115,7 +115,7 @@ export class DocumentTypesService {
     const { name } = createDocumentTypeDto;
 
     const newDocumentType = new this.documentTypeModel({
-      name,
+      name: name.toUpperCase(),
     });
 
     const createdDocumentType = await newDocumentType.save();
@@ -135,19 +135,18 @@ export class DocumentTypesService {
   ): Promise<PublicDocumentTypeResponseDto> {
     const { name } = updateDocumentTypeDto;
 
-    const updatedDocumentType = await this.documentTypeModel
-      .findByIdAndUpdate(
-        documentTypeId,
-        { name },
-        { new: true, runValidators: true },
-      )
-      .lean();
+    const existingDocumentType =
+      await this.documentTypeModel.findById(documentTypeId);
 
-    if (!updatedDocumentType) {
+    if (!existingDocumentType) {
       throw new NotFoundException(
         `DocumentType with id ${documentTypeId} not found`,
       );
     }
+
+    existingDocumentType.name = name || existingDocumentType.name;
+
+    const updatedDocumentType = await existingDocumentType.save();
 
     // Invalidate cache for findAll, findById, and findOneByName
     await this.invalidateAllDocumentTypesCache(
@@ -155,8 +154,10 @@ export class DocumentTypesService {
       updatedDocumentType.name,
     );
     // Invalidate cache for the old name
-    if (name) {
-      await this.invalidateDocumentTypesCacheByName(name.toUpperCase());
+    if (existingDocumentType.name !== updatedDocumentType.name) {
+      await this.invalidateDocumentTypesCacheByName(
+        existingDocumentType.name.toUpperCase(),
+      );
     }
 
     // Set cache for the updated document type
