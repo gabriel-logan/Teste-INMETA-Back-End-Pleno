@@ -144,6 +144,8 @@ export class DocumentTypesService {
       );
     }
 
+    const previousName = existingDocumentType.name;
+
     existingDocumentType.name = name || existingDocumentType.name;
 
     const updatedDocumentType = await existingDocumentType.save();
@@ -154,10 +156,8 @@ export class DocumentTypesService {
       updatedDocumentType.name,
     );
     // Invalidate cache for the old name
-    if (existingDocumentType.name !== updatedDocumentType.name) {
-      await this.invalidateDocumentTypesCacheByName(
-        existingDocumentType.name.toUpperCase(),
-      );
+    if (previousName !== updatedDocumentType.name) {
+      await this.invalidateDocumentTypesCacheByName(previousName);
     }
 
     // Set cache for the updated document type
