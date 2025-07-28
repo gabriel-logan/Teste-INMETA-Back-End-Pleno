@@ -7,6 +7,8 @@ import {
 import type { Response } from "express";
 import { MongoServerError } from "mongodb";
 
+import { apiPrefix } from "../constants";
+
 @Catch(MongoServerError)
 export class MongodbExceptionFilter implements ExceptionFilter {
   catch(exception: MongoServerError, host: ArgumentsHost): Response {
@@ -15,11 +17,20 @@ export class MongodbExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     if (exception.code === 11000) {
+      const request = ctx.getRequest<Request>();
+      const url = request.url;
+
       const keyValue = exception.keyValue as Record<string, string> | undefined;
       const key = Object.keys(keyValue || {})[0];
       const value = keyValue?.[key];
 
-      //!!!!! MODIFICAR
+      if (url.startsWith(`${apiPrefix}/employees`)) {
+        return response.status(HttpStatus.CONFLICT).json({
+          statusCode: HttpStatus.CONFLICT,
+          message: `The user registered with CPF '${value}' already exists.`,
+          error: "Conflict",
+        });
+      }
 
       return response.status(HttpStatus.CONFLICT).json({
         statusCode: HttpStatus.CONFLICT,
