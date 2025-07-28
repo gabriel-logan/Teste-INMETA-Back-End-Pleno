@@ -156,7 +156,7 @@ export class EmployeesService {
     const contractEvent = await this.contractEventsService.create({
       type: ContractEventType.HIRED,
       date: new Date(),
-      reason: "New employee hired",
+      reason: "New common employee hired successfully",
       employeeCpf: parsedCpf,
       employeeFullName: `${firstName} ${lastName}`,
     });
