@@ -32,7 +32,9 @@ export class MongodbExceptionFilter implements ExceptionFilter {
       if (url.startsWith(`${apiPrefix}/employees`)) {
         return response.status(HttpStatus.CONFLICT).json({
           statusCode: HttpStatus.CONFLICT,
-          message: `The employee registered with CPF '${value}' already exists.`,
+          message: value
+            ? `The employee registered with CPF '${value}' already exists.`
+            : "A conflict occurred due to a duplicate key.",
           error: "Conflict",
         });
       }
