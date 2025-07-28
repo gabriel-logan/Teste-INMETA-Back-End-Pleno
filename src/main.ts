@@ -26,6 +26,8 @@ async function bootstrap(): Promise<void> {
 
   if (nodeEnv === "production") {
     app.use(helmet());
+
+    app.set("trust proxy", "loopback");
   }
 
   app.useGlobalPipes(new ValidationPipe());
