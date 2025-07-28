@@ -19,6 +19,8 @@ export class MongodbExceptionFilter implements ExceptionFilter {
       const key = Object.keys(keyValue || {})[0];
       const value = keyValue?.[key];
 
+      //!!!!! MODIFICAR
+
       return response.status(HttpStatus.CONFLICT).json({
         statusCode: HttpStatus.CONFLICT,
         message: value
