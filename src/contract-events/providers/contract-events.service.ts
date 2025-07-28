@@ -20,67 +20,61 @@ export class ContractEventsService {
     private readonly cacheManager: Cache,
   ) {}
 
-  async findAll(): Promise<ContractEvent[]> {
-    const cachedContractEvents = await this.cacheManager.get<ContractEvent[]>(
-      cacheKeys.contractEvents.findAll,
+  private async invalidateContractEventCache(
+    id: string,
+    cpf: string,
+  ): Promise<void> {
+    await this.cacheManager.del(cacheKeys.contractEvents.findAll);
+    await this.cacheManager.del(cacheKeys.contractEvents.findById(id));
+    await this.cacheManager.del(
+      cacheKeys.contractEvents.findAllByEmployeeCpf(cpf),
     );
+  }
 
-    if (cachedContractEvents) {
-      return cachedContractEvents;
+  private async getOrSetCache<T>(
+    key: string,
+    fetchCbFn: () => Promise<T>,
+  ): Promise<T> {
+    const cached = await this.cacheManager.get<T>(key);
+
+    if (cached) {
+      return cached;
     }
 
-    const contractEvents = await this.contractEventModel.find().lean();
+    const data = await fetchCbFn();
 
-    await this.cacheManager.set(
+    await this.cacheManager.set(key, data);
+
+    return data;
+  }
+
+  async findAll(): Promise<ContractEvent[]> {
+    return await this.getOrSetCache(
       cacheKeys.contractEvents.findAll,
-      contractEvents,
+      async () => await this.contractEventModel.find().lean(),
     );
-
-    return contractEvents;
   }
 
   async findById(id: string): Promise<ContractEvent> {
-    const cachedContractEvent = await this.cacheManager.get<ContractEvent>(
+    return await this.getOrSetCache(
       cacheKeys.contractEvents.findById(id),
+      async () => {
+        const contractEvent = await this.contractEventModel.findById(id).lean();
+
+        if (!contractEvent) {
+          throw new NotFoundException(`ContractEvent with id ${id} not found`);
+        }
+
+        return contractEvent;
+      },
     );
-
-    if (cachedContractEvent) {
-      return cachedContractEvent;
-    }
-
-    const contractEvent = await this.contractEventModel.findById(id).lean();
-
-    if (!contractEvent) {
-      throw new NotFoundException(`ContractEvent with id ${id} not found`);
-    }
-
-    await this.cacheManager.set(
-      cacheKeys.contractEvents.findById(id),
-      contractEvent,
-    );
-
-    return contractEvent;
   }
 
   async findAllByEmployeeCpf(employeeCpf: string): Promise<ContractEvent[]> {
-    const cachedContractEvents = await this.cacheManager.get<ContractEvent[]>(
+    return await this.getOrSetCache(
       cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
+      async () => await this.contractEventModel.find({ employeeCpf }).lean(),
     );
-
-    if (cachedContractEvents) {
-      return cachedContractEvents;
-    }
-
-    const contractEvents = await this.contractEventModel
-      .find({ employeeCpf })
-      .lean();
-
-    await this.cacheManager.set(
-      cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
-      contractEvents,
-    );
-
-    return contractEvents;
   }
 
   async findManyByIds(
@@ -110,14 +104,9 @@ export class ContractEventsService {
     const newContractEvent = await createdContractEvent.save();
 
     // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
-    await this.cacheManager.del(cacheKeys.contractEvents.findAll);
-    await this.cacheManager.del(
-      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
-    );
-    await this.cacheManager.del(
-      cacheKeys.contractEvents.findAllByEmployeeCpf(
-        newContractEvent.employeeCpf,
-      ),
+    await this.invalidateContractEventCache(
+      newContractEvent._id.toString(),
+      newContractEvent.employeeCpf,
     );
 
     // Set cache for the newly created contract event
@@ -158,12 +147,13 @@ export class ContractEventsService {
     }
 
     // Invalidate cache for findById and findAll, findAllByEmployeeCpf
-    await this.cacheManager.del(cacheKeys.contractEvents.findById(id));
-    await this.cacheManager.del(cacheKeys.contractEvents.findAll);
+    await this.invalidateContractEventCache(
+      updatedContractEvent._id.toString(),
+      updatedContractEvent.employeeCpf,
+    );
+    // In case the employeeCpf has changed, invalidate the old cache
     await this.cacheManager.del(
-      cacheKeys.contractEvents.findAllByEmployeeCpf(
-        updatedContractEvent.employeeCpf,
-      ),
+      cacheKeys.contractEvents.findAllByEmployeeCpf(employeeCpf),
     );
 
     // Set cache for the updated contract event
