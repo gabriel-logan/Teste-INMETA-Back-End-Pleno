@@ -95,7 +95,9 @@ export class ContractEventsService {
 
     return await getAndSetCache(
       this.cacheManager,
-      cacheKeys.contractEvents.findManyByIds([...idsSet]),
+      cacheKeys.contractEvents.findManyByIds(
+        [...idsSet].sort((a, b) => a.localeCompare(b)),
+      ),
       async () => {
         return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
       },
