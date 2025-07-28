@@ -80,11 +80,7 @@ export class ContractEventsService {
   async findManyByIds(
     ids: string[] | Types.ObjectId[],
   ): Promise<ContractEvent[]> {
-    const contractEvents = await this.contractEventModel
-      .find({ _id: { $in: ids } })
-      .lean();
-
-    return contractEvents;
+    return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
   }
 
   async create(
