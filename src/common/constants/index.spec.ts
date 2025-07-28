@@ -48,6 +48,33 @@ describe("cacheKeys", () => {
       );
     });
   });
+
+  describe("contractEvents", () => {
+    it("should have correct findAll key", () => {
+      expect(cacheKeys.contractEvents.findAll).toBe("contractEvents:findAll");
+    });
+
+    it("should generate correct findById key", () => {
+      expect(cacheKeys.contractEvents.findById("101112")).toBe(
+        "contractEvents:findById:101112",
+      );
+    });
+
+    it("should generate correct findManyByIds key", () => {
+      expect(cacheKeys.contractEvents.findManyByIds(["1", "2", "3"])).toBe(
+        "contractEvents:findManyByIds:1,2,3",
+      );
+      expect(cacheKeys.contractEvents.findManyByIds([])).toBe(
+        "contractEvents:findManyByIds:",
+      );
+      expect(cacheKeys.contractEvents.findManyByIds(["single"])).toBe(
+        "contractEvents:findManyByIds:single",
+      );
+      expect(cacheKeys.contractEvents.findManyByIds(["awdawd"])).toBe(
+        "contractEvents:findManyByIds:awdawd",
+      );
+    });
+  });
 });
 
 describe("cacheTtl", () => {
