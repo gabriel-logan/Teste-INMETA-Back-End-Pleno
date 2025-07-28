@@ -24,7 +24,10 @@ const throttlerModuleOptions: ThrottlerModuleOptions = {
   skipIf: (context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const freeEndpoints = [`${apiPrefix}/document-types`, `${apiPrefix}/files`];
+    const cachedEndpoints = [`${apiPrefix}/document-types`];
+    const fileEndpoints = [`${apiPrefix}/files`];
+
+    const freeEndpoints = [...cachedEndpoints, ...fileEndpoints];
 
     return (
       request.method === "GET" &&
