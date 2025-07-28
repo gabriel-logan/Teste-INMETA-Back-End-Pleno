@@ -29,21 +29,23 @@ export class MongodbExceptionFilter implements ExceptionFilter {
       // If the CPF is already registered, it will return a conflict error. The same applies to the username.
       // This is a workaround to provide a more user-friendly error message.
       // If this is not set, the error will be generic about username uniqueness. But we want to provide a specific message for CPF uniqueness.
-      if (url.startsWith(`${apiPrefix}/employees`)) {
-        return response.status(HttpStatus.CONFLICT).json({
-          statusCode: HttpStatus.CONFLICT,
-          message: value
-            ? `The employee registered with CPF '${value}' already exists.`
-            : "A conflict occurred due to a duplicate key.",
-          error: "Conflict",
-        });
+      const isEmployeeRoute = url.startsWith(`${apiPrefix}/employees`);
+
+      const defaultMessage = "A conflict occurred due to a duplicate key.";
+
+      let message: string = defaultMessage;
+
+      if (isEmployeeRoute) {
+        message = value
+          ? `The employee registered with CPF '${value}' already exists.`
+          : defaultMessage;
+      } else if (value) {
+        message = `The value '${value}' for the field '${key}' already exists.`;
       }
 
       return response.status(HttpStatus.CONFLICT).json({
         statusCode: HttpStatus.CONFLICT,
-        message: value
-          ? `The value '${value}' for the field '${key}' already exists.`
-          : "A conflict occurred due to a duplicate key.",
+        message,
         error: "Conflict",
       });
     }
