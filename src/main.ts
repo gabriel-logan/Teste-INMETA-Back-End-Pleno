@@ -27,7 +27,12 @@ async function bootstrap(): Promise<void> {
   if (nodeEnv === "production") {
     app.use(helmet());
 
-    app.set("trust proxy", "loopback");
+    // Trust proxy headers in production for correct request IPs
+    // Setting "true" only for VERCEL deployments
+    // If you are using a different hosting provider, adjust accordingly
+    // For example, Nginx via reverse proxy, you might use "loopback" and configure it in Nginx
+    // To override the header to the real client IP
+    app.set("trust proxy", true);
   }
 
   app.useGlobalPipes(new ValidationPipe());
