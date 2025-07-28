@@ -6,7 +6,6 @@ import { cacheKeys } from "src/common/constants";
 
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
-import { DeleteContractEventResponseDto } from "../dto/response/delete-contract-event.dto";
 import {
   ContractEvent,
   ContractEventDocument,
@@ -129,24 +128,5 @@ export class ContractEventsService {
     );
 
     return updatedContractEvent;
-  }
-
-  async delete(id: string): Promise<DeleteContractEventResponseDto> {
-    const deletedContractEvent = await this.contractEventModel
-      .findByIdAndDelete(id)
-      .lean();
-
-    if (!deletedContractEvent) {
-      throw new NotFoundException(`ContractEvent with id ${id} not found`);
-    }
-
-    // Invalidate cache for findById and findAll
-    await this.cacheManager.del(cacheKeys.contractEvents.findById(id));
-    await this.cacheManager.del(cacheKeys.contractEvents.findAll);
-
-    return {
-      id: deletedContractEvent._id,
-      message: `ContractEvent with id ${id} has been deleted successfully`,
-    };
   }
 }
