@@ -19,15 +19,27 @@ export class DocumentTypesService {
     private readonly cacheManager: Cache,
   ) {}
 
-  private async invalidateDocumentTypesCache(
-    id: string,
+  private async invalidateDocumentTypesCacheByName(
     name: string,
   ): Promise<void> {
-    await this.cacheManager.del(cacheKeys.documentTypes.findAll);
-    await this.cacheManager.del(cacheKeys.documentTypes.findById(id));
     await this.cacheManager.del(
       cacheKeys.documentTypes.findOneByName(name.toUpperCase()),
     );
+  }
+
+  private async invalidateDocumentTypesCacheById(id: string): Promise<void> {
+    await this.cacheManager.del(cacheKeys.documentTypes.findById(id));
+  }
+
+  private async invalidateAllDocumentTypesCache(
+    id: string,
+    name: string,
+  ): Promise<void> {
+    await Promise.all([
+      this.invalidateDocumentTypesCacheById(id),
+      this.invalidateDocumentTypesCacheByName(name),
+      this.cacheManager.del(cacheKeys.documentTypes.findAll),
+    ]);
   }
 
   private toPublicDocumentTypeResponseDto(
@@ -109,7 +121,7 @@ export class DocumentTypesService {
     const createdDocumentType = await newDocumentType.save();
 
     // Invalidate cache for findAll, findById, and findOneByName
-    await this.invalidateDocumentTypesCache(
+    await this.invalidateAllDocumentTypesCache(
       createdDocumentType._id.toString(),
       createdDocumentType.name,
     );
@@ -138,26 +150,26 @@ export class DocumentTypesService {
     }
 
     // Invalidate cache for findAll, findById, and findOneByName
-    await this.invalidateDocumentTypesCache(
+    await this.invalidateAllDocumentTypesCache(
       updatedDocumentType._id.toString(),
       updatedDocumentType.name,
     );
     // Invalidate cache for the old name
     if (name) {
-      await this.cacheManager.del(
-        cacheKeys.documentTypes.findOneByName(name.toUpperCase()),
-      );
+      await this.invalidateDocumentTypesCacheByName(name.toUpperCase());
     }
 
     // Set cache for the updated document type
-    await this.cacheManager.set(
-      cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
-      this.toPublicDocumentTypeResponseDto(updatedDocumentType),
-    );
-    await this.cacheManager.set(
-      cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
-      this.toPublicDocumentTypeResponseDto(updatedDocumentType),
-    );
+    await Promise.all([
+      this.cacheManager.set(
+        cacheKeys.documentTypes.findById(updatedDocumentType._id.toString()),
+        this.toPublicDocumentTypeResponseDto(updatedDocumentType),
+      ),
+      this.cacheManager.set(
+        cacheKeys.documentTypes.findOneByName(updatedDocumentType.name),
+        this.toPublicDocumentTypeResponseDto(updatedDocumentType),
+      ),
+    ]);
 
     return this.toPublicDocumentTypeResponseDto(updatedDocumentType);
   }
