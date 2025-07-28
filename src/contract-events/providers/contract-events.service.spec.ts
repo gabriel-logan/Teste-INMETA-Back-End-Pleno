@@ -250,7 +250,7 @@ describe("ContractEventsService", () => {
         type: ContractEventType.FIRED,
         date: new Date(),
         reason: "Updated reason",
-        employeeCpf: "12345678901",
+        employeeCpf: "12345678900",
         employeeFullName: "John Doe",
       };
 
