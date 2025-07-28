@@ -100,8 +100,8 @@ export class DocumentsService {
     return this.toPublicDocumentResponseDto(updatedDocument);
   }
 
-  private generateDocumentUrl(mimeType: string): string {
-    const parsedMimeType = mimeType.split("/")[1];
+  private generateDocumentUrl(mimeType: string | undefined): string {
+    const parsedMimeType = mimeType?.split("/")[1] || "bin";
 
     const newFileName = uuidv4() + "." + parsedMimeType;
 
@@ -137,7 +137,7 @@ export class DocumentsService {
     // Verify if the employee is the document owner
     // If not, throw a ForbiddenException
     if (employee.role === EmployeeRole.COMMON) {
-      if (document.employee._id !== employee.sub) {
+      if (!document.employee._id.equals(employee.sub)) {
         throw new ForbiddenException(
           `Employee ${employee.username} is not the owner of document ${documentId}`,
         );
@@ -269,7 +269,7 @@ export class DocumentsService {
     page: number;
     limit: number;
   }> {
-    const filters: Record<string, any> = {
+    const filters: Partial<Record<keyof Document, any>> = {
       status: DocumentStatus.MISSING,
     };
 
