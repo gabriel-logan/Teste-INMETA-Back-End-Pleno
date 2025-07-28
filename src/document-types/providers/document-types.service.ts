@@ -144,7 +144,9 @@ export class DocumentTypesService {
 
     const previousName = existingDocumentType.name;
 
-    existingDocumentType.name = name || existingDocumentType.name;
+    if (name) {
+      existingDocumentType.name = name;
+    }
 
     const updatedDocumentType = await existingDocumentType.save();
 
