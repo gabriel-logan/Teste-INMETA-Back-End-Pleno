@@ -108,13 +108,20 @@ export class ContractEventsService {
       updateContractEventDto;
 
     const updatedContractEvent = await this.contractEventModel
-      .findByIdAndUpdate(id, {
-        type,
-        date,
-        reason,
-        employeeFullName: employeeFullName,
-        employeeCpf: employeeCpf,
-      })
+      .findByIdAndUpdate(
+        id,
+        {
+          type,
+          date,
+          reason,
+          employeeFullName: employeeFullName,
+          employeeCpf: employeeCpf,
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
       .lean();
 
     if (!updatedContractEvent) {
