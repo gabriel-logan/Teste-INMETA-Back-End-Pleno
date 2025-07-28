@@ -1,9 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 
-type DesctriptorType = TypedPropertyDescriptor<
-  (...args: any[]) => Promise<any>
->;
+type DescriptorType = TypedPropertyDescriptor<(...args: any[]) => Promise<any>>;
 
 const logger = new Logger("Transaction");
 
@@ -11,8 +9,8 @@ export function Transactional() {
   return (
     _target: any,
     _methodName: string,
-    desctriptor: DesctriptorType,
-  ): DesctriptorType => {
+    desctriptor: DescriptorType,
+  ): DescriptorType => {
     const originalMethod = desctriptor.value;
 
     if (!originalMethod) {
