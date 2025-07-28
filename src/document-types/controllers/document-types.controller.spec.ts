@@ -13,7 +13,7 @@ describe("DocumentTypesController", () => {
     findAll: jest.fn(() => Promise.resolve([])),
     findById: jest.fn((id: string) =>
       Promise.resolve({
-        id: id,
+        id,
         name: "Mocked Document Type",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -22,7 +22,7 @@ describe("DocumentTypesController", () => {
     findOneByName: jest.fn((name: string) =>
       Promise.resolve({
         id: "mocked-id",
-        name: name,
+        name,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
@@ -37,7 +37,7 @@ describe("DocumentTypesController", () => {
     ),
     update: jest.fn((id: string, dto: CreateDocumentTypeRequestDto) =>
       Promise.resolve({
-        id: id,
+        id,
         name: dto.name,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -77,7 +77,7 @@ describe("DocumentTypesController", () => {
       const result = await controller.findById(id);
 
       expect(result).toEqual({
-        id: id,
+        id,
         name: "Mocked Document Type",
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
@@ -94,7 +94,7 @@ describe("DocumentTypesController", () => {
 
       expect(result).toEqual({
         id: "mocked-id",
-        name: name,
+        name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
@@ -130,7 +130,7 @@ describe("DocumentTypesController", () => {
       const result = await controller.update(id, updateDto);
 
       expect(result).toEqual({
-        id: id,
+        id,
         name: updateDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,

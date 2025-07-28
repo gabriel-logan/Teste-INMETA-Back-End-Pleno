@@ -114,8 +114,8 @@ export class ContractEventsService {
           type,
           date,
           reason,
-          employeeFullName: employeeFullName,
-          employeeCpf: employeeCpf,
+          employeeFullName,
+          employeeCpf,
         },
         {
           new: true,

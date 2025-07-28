@@ -440,8 +440,8 @@ export class EmployeesService {
       lastName,
       cpf: parsedCpf,
       contractEvents: [contractEvent._id],
-      username: username,
-      password: password,
+      username,
+      password,
       role: EmployeeRole.ADMIN,
     });
 

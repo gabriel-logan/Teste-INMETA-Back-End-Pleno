@@ -22,7 +22,7 @@ describe("EmployeesController", () => {
     findAll: jest.fn(() => Promise.resolve([])),
     findById: jest.fn((id: string) =>
       Promise.resolve({
-        id: id,
+        id,
         firstName: "John",
         lastName: "Doe",
         fullName: "John Doe",
@@ -35,7 +35,7 @@ describe("EmployeesController", () => {
     ),
     findByIdWithContractEvents: jest.fn((id: string) =>
       Promise.resolve({
-        id: id,
+        id,
         firstName: "John",
         lastName: "Doe",
         fullName: "John Doe",
@@ -68,7 +68,7 @@ describe("EmployeesController", () => {
     ),
     update: jest.fn((id: string, dto: UpdateEmployeeRequestDto) =>
       Promise.resolve({
-        id: id,
+        id,
         firstName: dto.firstName,
         lastName: dto.lastName,
         fullName: `${dto.firstName} ${dto.lastName}`,

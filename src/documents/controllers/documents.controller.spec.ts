@@ -16,7 +16,7 @@ describe("DocumentsController", () => {
     findAll: jest.fn(() => Promise.resolve([])),
     findById: jest.fn((id: string) =>
       Promise.resolve({
-        id: id,
+        id,
         employee: {},
         documentType: {},
         status: DocumentStatus.AVAILABLE,
@@ -27,7 +27,7 @@ describe("DocumentsController", () => {
     ),
     update: jest.fn((id: string, dto: UpdateDocumentRequestDto) =>
       Promise.resolve({
-        id: id,
+        id,
         employee: {},
         documentType: {},
         status: dto.status,

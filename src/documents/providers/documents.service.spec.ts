@@ -24,7 +24,7 @@ describe("DocumentsService", () => {
   const mockEmployeesService = {
     findById: jest.fn((id: string) =>
       Promise.resolve({
-        id: id,
+        id,
         firstName: "John",
         lastName: "Doe",
         fullName: "John Doe",

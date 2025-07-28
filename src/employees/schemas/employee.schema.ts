@@ -28,7 +28,7 @@ export class Employee {
   public lastName: string;
 
   @Virtual({
-    get: function (this: Employee) {
+    get(this: Employee) {
       return `${this.firstName} ${this.lastName}`;
     },
   })
