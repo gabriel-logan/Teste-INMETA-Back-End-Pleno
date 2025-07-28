@@ -8,6 +8,8 @@ describe("env.global config", () => {
     jest.clearAllMocks();
     // Reset process.env to avoid pollution between tests
     process.env = { ...OLD_ENV };
+
+    delete process.env.NODE_ENV;
   });
 
   afterEach(() => {
@@ -35,7 +37,7 @@ describe("env.global config", () => {
 
     expect(config).toEqual({
       server: {
-        nodeEnv: "test",
+        nodeEnv: "production",
         baseUrl: undefined,
         port: NaN,
       },
