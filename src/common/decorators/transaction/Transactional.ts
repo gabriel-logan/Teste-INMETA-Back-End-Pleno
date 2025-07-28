@@ -24,7 +24,11 @@ export function Transactional() {
         `Mongoose instance is not available in the context of this method. Method: ${_methodName}.`,
       );
 
-      logger.debug(`Starting transaction for method: ${_methodName}.`);
+      const start = Date.now();
+
+      logger.debug(
+        `Starting transaction for method: ${_methodName}. At ${start}ms`,
+      );
 
       const result = await connection
         .transaction(async (session) => {
@@ -37,13 +41,13 @@ export function Transactional() {
         })
         .catch((error) => {
           logger.error(
-            `Transaction failed for method: ${_methodName}. Rolling back. \n`,
+            `Transaction failed for method: ${_methodName}. At ${Date.now() - start}ms. Rolling back. \n`,
           );
           throw error;
         });
 
       logger.debug(
-        `Transaction successfully completed for method: ${_methodName}. \n`,
+        `Transaction successfully completed for method: ${_methodName}. At ${Date.now() - start}ms. \n`,
       );
 
       return result;
