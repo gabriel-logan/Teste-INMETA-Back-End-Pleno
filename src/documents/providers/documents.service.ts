@@ -236,7 +236,7 @@ export class DocumentsService {
     const employee = await this.employeesService.findById(employeeId);
 
     const documents = await this.documentModel
-      .find({ employee: employee.id })
+      .find({ employee: employee._id })
       .populate("documentType")
       .lean();
 

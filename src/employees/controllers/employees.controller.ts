@@ -89,11 +89,11 @@ export class EmployeesController {
     notFound: true,
   })
   @Get(":employeeId")
-  async findById(
+  async findByIdWithDocumentTypes(
     @Param("employeeId", new ParseObjectIdPipeLocal())
     employeeId: Types.ObjectId,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
-    return await this.employeesService.findById(employeeId);
+    return await this.employeesService.findByIdWithDocumentTypes(employeeId);
   }
 
   @ApiSecurity("bearer")

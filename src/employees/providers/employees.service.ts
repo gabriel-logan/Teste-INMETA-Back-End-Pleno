@@ -177,7 +177,10 @@ export class EmployeesService {
   async findByIdWithDocumentTypes(
     employeeId: Types.ObjectId,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
-    const employee = await this.findById(employeeId);
+    const employee = await this.findById(employeeId, {
+      populates: ["documentTypes"],
+      lean: true,
+    });
 
     return this.genericEmployeeResponseMapper(employee);
   }
