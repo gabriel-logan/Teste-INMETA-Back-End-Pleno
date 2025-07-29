@@ -14,7 +14,7 @@ describe("DocumentsController", () => {
 
   const mockDocumentsService = {
     findAll: jest.fn(() => Promise.resolve([])),
-    findById: jest.fn((id: string) =>
+    findById: jest.fn((id: Types.ObjectId) =>
       Promise.resolve({
         id,
         employee: {},
@@ -25,7 +25,7 @@ describe("DocumentsController", () => {
         updatedAt: new Date(),
       }),
     ),
-    update: jest.fn((id: string, dto: UpdateDocumentRequestDto) =>
+    update: jest.fn((id: Types.ObjectId, dto: UpdateDocumentRequestDto) =>
       Promise.resolve({
         id,
         employee: {},
@@ -118,7 +118,7 @@ describe("DocumentsController", () => {
 
   describe("findById", () => {
     it("should return a document by id", async () => {
-      const id = "1234567890abcdef";
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
 
       const result = await controller.findById(id);
 
@@ -129,7 +129,7 @@ describe("DocumentsController", () => {
 
   describe("update", () => {
     it("should update a document and return the updated document", async () => {
-      const id = "1234567890abcdef";
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
 
       const dto: UpdateDocumentRequestDto = {
         status: DocumentStatus.AVAILABLE,
@@ -145,7 +145,7 @@ describe("DocumentsController", () => {
 
   describe("sendDocumentFile", () => {
     it("should send a document file and return a success message", async () => {
-      const id = "60c72b2f9b1e8c001c8f8e1d";
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
 
       const fakeMulterFile = {
         originalname: "document.pdf",
@@ -155,7 +155,7 @@ describe("DocumentsController", () => {
       } as Express.Multer.File;
 
       const fakeEmployeeAuthPayload = {
-        sub: new Types.ObjectId(id),
+        sub: id.toString(),
         role: EmployeeRole.ADMIN,
         username: "employeeUsername",
       } as AuthPayload;
@@ -177,7 +177,7 @@ describe("DocumentsController", () => {
 
   describe("deleteDocumentFile", () => {
     it("should delete a document file and return a success message", async () => {
-      const id = "60c72b2f9b1e8c001c8f8e1d";
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
 
       const result = await controller.deleteDocumentFile(id);
 
@@ -202,7 +202,7 @@ describe("DocumentsController", () => {
 
   describe("getDocumentStatusesByEmployeeId", () => {
     it("should return document statuses by employee ID", async () => {
-      const employeeId = "1234567890abcdef";
+      const employeeId = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
       const status = DocumentStatus.AVAILABLE;
 
       const result = await controller.getDocumentStatusesByEmployeeId(
