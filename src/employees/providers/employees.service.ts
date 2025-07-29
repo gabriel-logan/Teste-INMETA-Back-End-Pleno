@@ -507,13 +507,15 @@ export class EmployeesService {
     const createdEmployee = await newEmployee.save();
 
     return {
-      id: createdEmployee._id,
+      _id: createdEmployee._id,
+      id: createdEmployee._id.toString(),
       firstName: createdEmployee.firstName,
       lastName: createdEmployee.lastName,
       fullName: createdEmployee.fullName,
       contractStatus: createdEmployee.contractStatus,
       documentTypes: [],
       cpf: createdEmployee.cpf,
+      role: createdEmployee.role,
       createdAt: createdEmployee.createdAt,
       updatedAt: createdEmployee.updatedAt,
     };
