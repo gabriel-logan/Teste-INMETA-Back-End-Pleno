@@ -5,11 +5,11 @@ import { DocumentTypesModule } from "src/document-types/document-types.module";
 import { EmployeeDocumentModule } from "src/shared/employee-document/employee-document.module";
 
 import { EmployeesController } from "./controllers/employees.controller";
+import { AdminEmployeesService } from "./providers/admin-employees.service";
+import { DocumentTypeLinkersService } from "./providers/document-type-linkers.service";
 import { EmployeesService } from "./providers/employees.service";
+import { HumanResourcesService } from "./providers/human-resources.service";
 import { Employee, EmployeeSchema } from "./schemas/employee.schema";
-import { HumanResourcesService } from './providers/human-resources.service';
-import { AdminEmployeesService } from './providers/admin-employees.service';
-import { DocumentTypeLinkersService } from './providers/document-type-linkers.service';
 
 @Module({
   imports: [
@@ -24,7 +24,12 @@ import { DocumentTypeLinkersService } from './providers/document-type-linkers.se
     ContractEventsModule,
   ],
   controllers: [EmployeesController],
-  providers: [EmployeesService, HumanResourcesService, AdminEmployeesService, DocumentTypeLinkersService],
+  providers: [
+    EmployeesService,
+    HumanResourcesService,
+    AdminEmployeesService,
+    DocumentTypeLinkersService,
+  ],
   exports: [EmployeesService],
 })
 export class EmployeesModule {}

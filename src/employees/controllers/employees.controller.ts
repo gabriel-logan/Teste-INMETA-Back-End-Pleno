@@ -43,13 +43,21 @@ import {
 import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
+import { AdminEmployeesService } from "../providers/admin-employees.service";
+import { DocumentTypeLinkersService } from "../providers/document-type-linkers.service";
 import { EmployeesService } from "../providers/employees.service";
+import { HumanResourcesService } from "../providers/human-resources.service";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 
 @ApiGlobalErrorResponses()
 @Controller("employees")
 export class EmployeesController {
-  constructor(private readonly employeesService: EmployeesService) {}
+  constructor(
+    private readonly employeesService: EmployeesService,
+    private readonly documentTypeLinkersService: DocumentTypeLinkersService,
+    private readonly humanResourcesService: HumanResourcesService,
+    private readonly adminEmployeeService: AdminEmployeesService,
+  ) {}
 
   @ApiSecurity("bearer")
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
@@ -189,7 +197,7 @@ export class EmployeesController {
     @Body() fireEmployeeDto: FireEmployeeRequestDto,
     @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
-    return await this.employeesService.fire(
+    return await this.humanResourcesService.fire(
       employeeId,
       fireEmployeeDto,
       employeeFromReq,
@@ -219,7 +227,7 @@ export class EmployeesController {
     @Body() reHireEmployeeDto: ReHireEmployeeRequestDto,
     @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
-    return await this.employeesService.reHire(
+    return await this.humanResourcesService.reHire(
       employeeId,
       reHireEmployeeDto,
       employeeFromReq,
@@ -248,7 +256,7 @@ export class EmployeesController {
     employeeId: Types.ObjectId,
     @Body() linkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
-    return await this.employeesService.linkDocumentTypes(
+    return await this.documentTypeLinkersService.linkDocumentTypes(
       employeeId,
       linkDocumentTypesDto,
     );
@@ -276,7 +284,7 @@ export class EmployeesController {
     employeeId: Types.ObjectId,
     @Body() unlinkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
-    return await this.employeesService.unlinkDocumentTypes(
+    return await this.documentTypeLinkersService.unlinkDocumentTypes(
       employeeId,
       unlinkDocumentTypesDto,
     );
@@ -298,7 +306,7 @@ export class EmployeesController {
   async createAdminEmployee(
     @Body() createAdminEmployeeDto: CreateAdminEmployeeRequestDto,
   ): Promise<CreateAdminEmployeeResponseDto> {
-    return await this.employeesService.createAdminEmployee(
+    return await this.adminEmployeeService.createAdminEmployee(
       createAdminEmployeeDto,
     );
   }
