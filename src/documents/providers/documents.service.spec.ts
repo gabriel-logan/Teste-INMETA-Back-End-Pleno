@@ -39,21 +39,24 @@ describe("DocumentsService", () => {
 
   const mockPublicDocumentResponseDto = {
     _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
+    id: "60c72b2f9b1d8c001a8e4e1a",
     employee: {
       _id: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+      id: "60c72b2f9b1d8c001c8e4e1a",
       firstName: "John",
       lastName: "Doe",
       fullName: "John Doe",
+      username: "johndoe",
       contractStatus: ContractStatus.ACTIVE,
-      documentTypes: [],
+      role: EmployeeRole.COMMON,
       cpf: "123.456.789-00",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
     documentType: {
       _id: new Types.ObjectId("60c72b2f9b1d8c021c8e4e1a"),
+      id: "60c72b2f9b1d8c021c8e4e1a",
       name: "Passport",
-      description: "Passport document",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -145,7 +148,8 @@ describe("DocumentsService", () => {
 
       expect(result).toEqual([
         {
-          id: mockPublicDocumentResponseDto._id,
+          _id: mockPublicDocumentResponseDto._id,
+          id: mockPublicDocumentResponseDto._id.toString(),
           employee: mockPublicDocumentResponseDto.employee,
           documentType: mockPublicDocumentResponseDto.documentType,
           status: mockPublicDocumentResponseDto.status,
@@ -170,7 +174,8 @@ describe("DocumentsService", () => {
       const result = await service.findById("1");
 
       expect(result).toEqual({
-        id: mockPublicDocumentResponseDto._id,
+        _id: mockPublicDocumentResponseDto._id,
+        id: mockPublicDocumentResponseDto._id.toString(),
         employee: mockPublicDocumentResponseDto.employee,
         documentType: mockPublicDocumentResponseDto.documentType,
         status: mockPublicDocumentResponseDto.status,
@@ -214,7 +219,8 @@ describe("DocumentsService", () => {
       const result = await service.update("1", updateDocumentDto);
 
       expect(result).toEqual({
-        id: mockUpdatedDocument._id,
+        _id: mockUpdatedDocument._id,
+        id: mockUpdatedDocument._id.toString(),
         employee: mockUpdatedDocument.employee,
         documentType: mockUpdatedDocument.documentType,
         status: updateDocumentDto.status,
@@ -477,14 +483,22 @@ describe("DocumentsService", () => {
       );
 
       expect(result).toEqual({
-        RG: {
-          documentId: mockDocuments[0]._id.toString(),
-          status: DocumentStatus.AVAILABLE,
-        },
-        PDF: {
-          documentId: mockDocuments[1]._id.toString(),
-          status: DocumentStatus.MISSING,
-        },
+        documentStatuses: [
+          {
+            documentName: "RG",
+            documentStatus: {
+              documentId: mockDocuments[0]._id.toString(),
+              status: DocumentStatus.AVAILABLE,
+            },
+          },
+          {
+            documentName: "PDF",
+            documentStatus: {
+              documentId: mockDocuments[1]._id.toString(),
+              status: DocumentStatus.MISSING,
+            },
+          },
+        ],
       });
     });
 
@@ -542,10 +556,15 @@ describe("DocumentsService", () => {
       );
 
       expect(result).toEqual({
-        PDF: {
-          documentId: mockDocuments[1]._id.toString(),
-          status: DocumentStatus.MISSING,
-        },
+        documentStatuses: [
+          {
+            documentName: "PDF",
+            documentStatus: {
+              documentId: mockDocuments[1]._id.toString(),
+              status: DocumentStatus.MISSING,
+            },
+          },
+        ],
       });
     });
 
@@ -589,12 +608,23 @@ describe("DocumentsService", () => {
           _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
           employee: {
             _id: new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a"),
+            id: "60c72b2f9b1d8c001c8e4e1a",
             firstName: "John",
             lastName: "Doe",
+            fullName: "John Doe",
+            username: "johndoe",
+            contractStatus: ContractStatus.ACTIVE,
+            role: EmployeeRole.COMMON,
+            cpf: "123.456.789-00",
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
           documentType: {
             _id: new Types.ObjectId("60c72b2f9b1d8c001a1e4e1a"),
+            id: "60c72b2f9b1d8c001a1e4e1a",
             name: "RG",
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
           status: DocumentStatus.MISSING,
           documentUrl: null,
@@ -618,7 +648,8 @@ describe("DocumentsService", () => {
 
       expect(result).toEqual({
         documents: mockMissingDocuments.map((doc) => ({
-          id: doc._id,
+          _id: doc._id,
+          id: doc._id.toString(),
           employee: doc.employee,
           documentType: doc.documentType,
           status: doc.status,
@@ -641,10 +672,23 @@ describe("DocumentsService", () => {
           _id: new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a"),
           employee: {
             _id: employeeId,
+            id: employeeId.toString(),
+            firstName: "John",
+            lastName: "Doe",
+            fullName: "John Doe",
+            username: "johndoe",
+            contractStatus: ContractStatus.ACTIVE,
+            role: EmployeeRole.COMMON,
+            cpf: "123.456.789-00",
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
           documentType: {
             _id: documentTypeId,
+            id: documentTypeId.toString(),
             name: "RG",
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
           status: DocumentStatus.MISSING,
         },
@@ -670,7 +714,8 @@ describe("DocumentsService", () => {
 
       expect(result).toEqual({
         documents: mockDocuments.map((doc) => ({
-          id: doc._id,
+          _id: doc._id,
+          id: doc._id.toString(),
           employee: doc.employee,
           documentType: doc.documentType,
           status: doc.status,
