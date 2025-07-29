@@ -156,10 +156,12 @@ describe("EmployeesService", () => {
         lean: jest.fn().mockResolvedValue([]),
       } as unknown as ReturnType<typeof mockEmployeeModel.find>);
 
+      const documentTypeId = new Types.ObjectId("123456789012345678901234");
+
       const result = await service.findAll({
         byContractStatus: ContractStatus.INACTIVE,
         byCpf: "98765432100",
-        byDocumentTypeId: new Types.ObjectId("123456789012345678901234"),
+        byDocumentTypeId: documentTypeId,
         byFirstName: "Jane",
         byLastName: "Doe",
       });
@@ -167,6 +169,10 @@ describe("EmployeesService", () => {
       expect(result).toEqual([]);
       expect(spyOnFind).toHaveBeenCalledWith({
         contractStatus: ContractStatus.INACTIVE,
+        cpf: "98765432100",
+        documentTypes: documentTypeId,
+        firstName: { $regex: "^Jane", $options: "i" },
+        lastName: { $regex: "^Doe", $options: "i" },
       });
     });
   });
