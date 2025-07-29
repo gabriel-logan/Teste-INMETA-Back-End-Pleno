@@ -48,7 +48,7 @@ export class DocumentFilesController {
     type: String,
     format: "ObjectId",
   })
-  @Post(":documentId/file/send")
+  @Post(":documentId/send")
   @UseInterceptors(FileInterceptor("documentFile"))
   async sendDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal())
@@ -88,7 +88,7 @@ export class DocumentFilesController {
     type: String,
     format: "ObjectId",
   })
-  @Delete(":documentId/file/delete")
+  @Delete(":documentId/delete")
   async deleteDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal())
     documentId: Types.ObjectId,

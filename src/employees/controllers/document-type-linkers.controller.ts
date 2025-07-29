@@ -45,7 +45,7 @@ export class DocumentTypeLinkersController {
     format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
-  @Post(":employeeId/document-types/link")
+  @Post(":employeeId/link")
   async linkDocumentTypes(
     @Param("employeeId", new ParseObjectIdPipeLocal())
     employeeId: Types.ObjectId,
@@ -72,7 +72,7 @@ export class DocumentTypeLinkersController {
     format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
-  @Post(":employeeId/document-types/unlink")
+  @Post(":employeeId/unlink")
   async unlinkDocumentTypes(
     @Param("employeeId", new ParseObjectIdPipeLocal())
     employeeId: Types.ObjectId,
