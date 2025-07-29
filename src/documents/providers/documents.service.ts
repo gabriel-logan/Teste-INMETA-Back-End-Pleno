@@ -7,7 +7,24 @@ import { EmployeesService } from "src/employees/providers/employees.service";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
-import { Document, DocumentStatus } from "../schemas/document.schema";
+import {
+  Document,
+  DocumentDocument,
+  DocumentStatus,
+} from "../schemas/document.schema";
+
+type DocumentsPopulatableFields = "documentType" | "employee";
+
+type FindOptions<T extends boolean> = {
+  populates?: DocumentsPopulatableFields[];
+  lean?: T;
+};
+
+type DocumentFilters = {
+  byEmployeeId?: Types.ObjectId;
+  byDocumentTypeId?: Types.ObjectId;
+  byStatus?: DocumentStatus;
+};
 
 @Injectable()
 export class DocumentsService {
@@ -51,28 +68,97 @@ export class DocumentsService {
     };
   }
 
-  async findAll(): Promise<DocumentFullResponseDto[]> {
-    return (
-      await this.documentModel
-        .find()
-        .populate("documentType")
-        .populate("employee")
-        .lean()
-    ).map((doc) => this.genericDocumentResponseMapper(doc));
+  async findAll(
+    filters?: DocumentFilters,
+    options?: FindOptions<true>,
+  ): Promise<Document[]>;
+
+  async findAll(
+    filters?: DocumentFilters,
+    options?: FindOptions<false>,
+  ): Promise<DocumentDocument[]>;
+
+  async findAll(
+    filters: DocumentFilters = {},
+    options: FindOptions<boolean> = {},
+  ): Promise<(Document | DocumentDocument)[]> {
+    const { byEmployeeId, byDocumentTypeId, byStatus } = filters;
+    const { populates = [], lean = true } = options;
+
+    const filter: Record<string, any> = {};
+
+    if (byEmployeeId) {
+      filter.employee = byEmployeeId;
+    }
+
+    if (byDocumentTypeId) {
+      filter.documentType = byDocumentTypeId;
+    }
+
+    if (byStatus) {
+      filter.status = byStatus;
+    }
+
+    let query = this.documentModel.find(filter);
+
+    for (const populate of populates) {
+      query = query.populate(populate);
+    }
+
+    const documents = await (lean ? query.lean() : query);
+
+    return documents;
   }
 
-  async findById(documentId: Types.ObjectId): Promise<DocumentFullResponseDto> {
-    const document = await this.documentModel
-      .findById(documentId)
-      .populate("documentType")
-      .populate("employee")
-      .lean();
+  async findAllWithDocumentTypeAndEmployee(): Promise<
+    DocumentFullResponseDto[]
+  > {
+    const documents = await this.findAll(undefined, {
+      populates: ["documentType", "employee"],
+    });
+
+    return documents.map((doc) => this.genericDocumentResponseMapper(doc));
+  }
+
+  async findById(
+    documentId: Types.ObjectId,
+    options?: FindOptions<true>,
+  ): Promise<Document>;
+
+  async findById(
+    documentId: Types.ObjectId,
+    options?: FindOptions<false>,
+  ): Promise<DocumentDocument>;
+
+  async findById(
+    documentId: Types.ObjectId,
+    options: FindOptions<boolean> = {},
+  ): Promise<Document | DocumentDocument> {
+    const { populates = [], lean = true } = options;
+
+    let query = this.documentModel.findById(documentId);
+
+    for (const populate of populates) {
+      query = query.populate(populate);
+    }
+
+    const document = await (lean ? query.lean() : query);
 
     if (!document) {
       throw new NotFoundException(
         `Document with id ${documentId.toString()} not found`,
       );
     }
+
+    return document;
+  }
+
+  async findByIdWithDocumentTypeAndEmployee(
+    documentId: Types.ObjectId,
+  ): Promise<DocumentFullResponseDto> {
+    const document = await this.findById(documentId, {
+      populates: ["documentType", "employee"],
+    });
 
     return this.genericDocumentResponseMapper(document);
   }
@@ -109,10 +195,12 @@ export class DocumentsService {
   ): Promise<GetDocumentStatusesByEmployeeIdResponseDto> {
     const employee = await this.employeesService.findById(employeeId);
 
-    const documents = await this.documentModel
-      .find({ employee: employee._id })
-      .populate("documentType")
-      .lean();
+    const documents = await this.findAll(
+      { byEmployeeId: employee._id },
+      {
+        populates: ["documentType"],
+      },
+    );
 
     if (documents.length === 0) {
       throw new NotFoundException(
