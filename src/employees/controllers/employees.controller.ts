@@ -20,6 +20,7 @@ import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator
 import { Public } from "src/common/decorators/routes/public.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import {
+  EmployeeFullResponseDto,
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
@@ -112,7 +113,7 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Create a new employee",
-      type: EmployeeWithDocumentTypesResponseDto,
+      type: EmployeeFullResponseDto,
       isStatusCodeCreated: true,
     },
     badRequest: true,
@@ -121,7 +122,7 @@ export class EmployeesController {
   @Post()
   async create(
     @Body() createEmployeeDto: CreateEmployeeRequestDto,
-  ): Promise<EmployeeWithDocumentTypesResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     return await this.employeesService.create(createEmployeeDto);
   }
 
@@ -149,7 +150,7 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Fire an employee",
-      type: FireEmployeeRequestDto,
+      type: FireEmployeeResponseDto,
     },
     notFound: true,
     badRequest: true,

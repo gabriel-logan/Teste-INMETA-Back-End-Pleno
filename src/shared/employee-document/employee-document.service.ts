@@ -44,6 +44,8 @@ export class EmployeeDocumentService {
       );
     }
 
+    // If needed DELETE the document file from storage here TOO
+
     return document;
   }
 }

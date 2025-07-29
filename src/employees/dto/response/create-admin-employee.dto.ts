@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import type { Types } from "mongoose";
-import { DocumentType } from "src/document-types/schemas/document-type.schema";
+import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
 import type { ContractStatus } from "src/employees/schemas/employee.schema";
 
 export class CreateAdminEmployeeResponseDto {
@@ -21,8 +21,14 @@ export class CreateAdminEmployeeResponseDto {
   @ApiProperty()
   public readonly contractStatus: ContractStatus;
 
-  @ApiProperty()
-  public readonly documentTypes: DocumentType[];
+  @ApiProperty({
+    type: DocumentTypeResponseDto,
+    format: "objectId",
+    isArray: true,
+    description: "List of DocumentType IDs linked to the Employee",
+    default: [],
+  })
+  public readonly documentTypes: DocumentTypeResponseDto[];
 
   @ApiProperty()
   public readonly cpf: string;

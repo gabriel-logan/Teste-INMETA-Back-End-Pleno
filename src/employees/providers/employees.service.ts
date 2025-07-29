@@ -9,6 +9,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import {
+  EmployeeFullResponseDto,
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
@@ -160,7 +161,7 @@ export class EmployeesService {
   @Transactional()
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
-  ): Promise<EmployeeWithDocumentTypesResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     const { firstName, lastName, cpf } = createEmployeeDto;
 
     const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
@@ -185,7 +186,20 @@ export class EmployeesService {
 
     const savedEmployee = await createdEmployee.save();
 
-    return this.toPublicEmployeeResponseDto(savedEmployee);
+    return {
+      _id: savedEmployee._id,
+      id: savedEmployee._id.toString(),
+      firstName: savedEmployee.firstName,
+      lastName: savedEmployee.lastName,
+      fullName: savedEmployee.fullName,
+      username: savedEmployee.username,
+      cpf: savedEmployee.cpf,
+      contractStatus: savedEmployee.contractStatus,
+      contractEvents: [contractEvent],
+      documentTypes: [],
+      createdAt: savedEmployee.createdAt,
+      updatedAt: savedEmployee.updatedAt,
+    };
   }
 
   async update(
@@ -368,12 +382,15 @@ export class EmployeesService {
       }
     }
 
+    const documentsIds = [];
+
     // Create documents for each linked document type
     for (const documentType of documentTypes) {
-      await this.employeeDocumentService.createDocument(
+      const newDocument = await this.employeeDocumentService.createDocument(
         employee._id,
         documentType.id,
       );
+      documentsIds.push(newDocument._id);
     }
 
     const result = await employee.save();
@@ -382,6 +399,7 @@ export class EmployeesService {
       documentTypeIdsLinked: result.documentTypes.map((doc) =>
         doc._id.toString(),
       ),
+      documentIdsCreated: documentsIds.map((doc) => doc.toString()),
     };
   }
 
@@ -421,18 +439,24 @@ export class EmployeesService {
       (docTypeId) => !idsToRemoveSet.has(docTypeId._id.toString()),
     );
 
+    const deletedDocumentIds = [];
+
     // Remove documents associated with the unlinked document types
     for (const documentType of documentTypes) {
-      await this.employeeDocumentService.deleteDocumentByEmployeeIdAndDocumentTypeId(
-        employeeId,
-        documentType.id,
-      );
+      const deletedDocumentId =
+        await this.employeeDocumentService.deleteDocumentByEmployeeIdAndDocumentTypeId(
+          employeeId,
+          documentType.id,
+        );
+
+      deletedDocumentIds.push(deletedDocumentId);
     }
 
     await employee.save();
 
     return {
       documentTypeIdsUnlinked: documentTypeIds.map((doc) => doc),
+      documentIdsDeleted: deletedDocumentIds.map((doc) => doc._id.toString()),
     };
   }
 
@@ -486,7 +510,7 @@ export class EmployeesService {
       lastName: createdEmployee.lastName,
       fullName: createdEmployee.fullName,
       contractStatus: createdEmployee.contractStatus,
-      documentTypes: createdEmployee.documentTypes,
+      documentTypes: [],
       cpf: createdEmployee.cpf,
       createdAt: createdEmployee.createdAt,
       updatedAt: createdEmployee.updatedAt,
