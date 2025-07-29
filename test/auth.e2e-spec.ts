@@ -27,7 +27,7 @@ describe("AppController (e2e)", () => {
       return await request(app.getHttpServer())
         .post("/auth/sign-in")
         .send({
-          username: "string",
+          username: "admin",
           password: "123456",
         })
         .expect(HttpStatus.OK)
