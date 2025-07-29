@@ -53,7 +53,20 @@ describe("EmployeesService", () => {
     fullName: "Jane Doe",
     username: "jane.doe",
     contractStatus: ContractStatus.ACTIVE,
-    documentTypes: [],
+    documentTypes: [
+      {
+        _id: new Types.ObjectId("123456789012345678901234"),
+        name: "Document Type 1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        _id: new Types.ObjectId("123456789012345678901235"),
+        name: "Document Type 2",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
     role: EmployeeRole.COMMON,
     cpf: "987.654.321-00",
     createdAt: new Date(),
@@ -194,6 +207,17 @@ describe("EmployeesService", () => {
       });
       expect(spyOnFindById).toHaveBeenCalled();
     });
+
+    it("should throw an error if employee not found", async () => {
+      jest.spyOn(mockEmployeeModel, "findById").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(null),
+      } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+
+      await expect(service.findById(mockGenericObjectId)).rejects.toThrow(
+        `Employee with id ${mockGenericObjectId.toString()} not found`,
+      );
+    });
   });
 
   describe("findOneByUsername", () => {
@@ -208,6 +232,17 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual(mockEmployee);
       expect(spyOnfindOneByUsername).toHaveBeenCalled();
+    });
+
+    it("should throw an error if employee not found", async () => {
+      jest.spyOn(mockEmployeeModel, "findOne").mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(null),
+      } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+
+      await expect(service.findById(mockGenericObjectId)).rejects.toThrow(
+        `Employee with id ${mockGenericObjectId.toString()} not found`,
+      );
     });
   });
 
