@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
@@ -12,13 +17,15 @@ export class ParseObjectIdPipeLocal
     this.optional = optional;
   }
 
-  transform(value: unknown): Types.ObjectId {
+  transform(value: unknown, metadata: ArgumentMetadata): Types.ObjectId {
     if (this.optional && value === undefined) {
       return undefined as unknown as Types.ObjectId;
     }
 
     if (typeof value !== "string") {
-      throw new BadRequestException("Value is required and must be a string.");
+      throw new BadRequestException(
+        `Expected a string for ObjectId in ${metadata.type} '${metadata.data}'.`,
+      );
     }
 
     return new ParseObjectIdPipe().transform(value);

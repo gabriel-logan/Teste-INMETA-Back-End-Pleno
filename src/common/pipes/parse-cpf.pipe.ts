@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from "@nestjs/common";
 
 import { isCpf } from "../decorators/validation/IsCpf";
 
@@ -10,7 +15,7 @@ export class ParseCpfPipe implements PipeTransform<unknown, string> {
     this.optional = optional;
   }
 
-  transform(value: unknown): string {
+  transform(value: unknown, metadata: ArgumentMetadata): string {
     if (this.optional && value === undefined) {
       return undefined as unknown as string;
     }
@@ -19,6 +24,8 @@ export class ParseCpfPipe implements PipeTransform<unknown, string> {
       return (value as string).replace(/\D/g, "").trim(); // Remove non-numeric characters and trim whitespace
     }
 
-    throw new BadRequestException("The provided value is not a valid CPF.");
+    throw new BadRequestException(
+      `Invalid CPF provided in ${metadata.type} '${metadata.data}'.`,
+    );
   }
 }
