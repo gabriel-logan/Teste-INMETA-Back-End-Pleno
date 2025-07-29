@@ -3,12 +3,12 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
 import { invalidateKeys, setMultipleKeys } from "src/common/utils/cache-utils";
 import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
-import { PublicDocumentTypeResponseDto } from "../dto/response/public-document-type.dto";
 import { DocumentType } from "../schemas/document-type.schema";
 
 @Injectable()
@@ -22,16 +22,17 @@ export class DocumentTypesService {
 
   private toPublicDocumentTypeResponseDto(
     documentType: DocumentType,
-  ): PublicDocumentTypeResponseDto {
+  ): DocumentTypeResponseDto {
     return {
-      id: documentType._id,
+      _id: documentType._id,
+      id: documentType._id.toString(),
       name: documentType.name,
       createdAt: documentType.createdAt,
       updatedAt: documentType.updatedAt,
     };
   }
 
-  async findAll(): Promise<PublicDocumentTypeResponseDto[]> {
+  async findAll(): Promise<DocumentTypeResponseDto[]> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.documentTypes.findAll,
@@ -43,9 +44,7 @@ export class DocumentTypesService {
     );
   }
 
-  async findById(
-    documentTypeId: string,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  async findById(documentTypeId: string): Promise<DocumentTypeResponseDto> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.documentTypes.findById(documentTypeId),
@@ -67,7 +66,7 @@ export class DocumentTypesService {
 
   async findOneByName(
     documentTypeName: string,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.documentTypes.findOneByName(documentTypeName),
@@ -89,7 +88,7 @@ export class DocumentTypesService {
 
   async create(
     createDocumentTypeDto: CreateDocumentTypeRequestDto,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     const { name } = createDocumentTypeDto;
 
     const newDocumentType = new this.documentTypeModel({
@@ -119,7 +118,7 @@ export class DocumentTypesService {
   async update(
     documentTypeId: string,
     updateDocumentTypeDto: UpdateDocumentTypeRequestDto,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     const { name } = updateDocumentTypeDto;
 
     const existingDocumentType =

@@ -14,12 +14,12 @@ import {
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
+import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
-import { PublicDocumentTypeResponseDto } from "../dto/response/public-document-type.dto";
 import { DocumentTypesService } from "../providers/document-types.service";
 import { DocumentTypeAllowedValues } from "../schemas/document-type.schema";
 
@@ -33,19 +33,19 @@ export class DocumentTypesController {
   @ApiStandardResponses({
     ok: {
       description: "Returns a list of all document types.",
-      type: PublicDocumentTypeResponseDto,
+      type: DocumentTypeResponseDto,
       isArray: true,
     },
   })
   @Get()
-  async findAll(): Promise<PublicDocumentTypeResponseDto[]> {
+  async findAll(): Promise<DocumentTypeResponseDto[]> {
     return await this.documentTypesService.findAll();
   }
 
   @ApiStandardResponses({
     ok: {
       description: "Returns a specific document type by ID.",
-      type: PublicDocumentTypeResponseDto,
+      type: DocumentTypeResponseDto,
     },
     notFound: true,
   })
@@ -53,14 +53,14 @@ export class DocumentTypesController {
   async findById(
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
     documentTypeId: string,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.findById(documentTypeId);
   }
 
   @ApiStandardResponses({
     ok: {
       description: "Returns a specific document type by name.",
-      type: PublicDocumentTypeResponseDto,
+      type: DocumentTypeResponseDto,
     },
     notFound: true,
   })
@@ -83,14 +83,14 @@ export class DocumentTypesController {
       }),
     )
     documentTypeName: string,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.findOneByName(documentTypeName);
   }
 
   @ApiStandardResponses({
     ok: {
       description: "Creates a new document type.",
-      type: PublicDocumentTypeResponseDto,
+      type: DocumentTypeResponseDto,
       isStatusCodeCreated: true,
     },
     badRequest: true,
@@ -98,14 +98,14 @@ export class DocumentTypesController {
   @Post()
   async create(
     @Body() createDocumentsTypeDto: CreateDocumentTypeRequestDto,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.create(createDocumentsTypeDto);
   }
 
   @ApiStandardResponses({
     ok: {
       description: "Updates an existing document type.",
-      type: PublicDocumentTypeResponseDto,
+      type: DocumentTypeResponseDto,
     },
     notFound: true,
     badRequest: true,
@@ -115,7 +115,7 @@ export class DocumentTypesController {
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
     documentTypeId: string,
     @Body() updateDocumentsTypeDto: UpdateDocumentTypeRequestDto,
-  ): Promise<PublicDocumentTypeResponseDto> {
+  ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.update(
       documentTypeId,
       updateDocumentsTypeDto,

@@ -3,15 +3,13 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { cacheKeys } from "src/common/constants";
+import { ContractEventResponseDto } from "src/common/dto/response/contract-event.dto";
 import { invalidateKeys, setMultipleKeys } from "src/common/utils/cache-utils";
 import getAndSetCache from "src/common/utils/get-and-set.cache";
 
 import { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
-import {
-  ContractEvent,
-  ContractEventDocument,
-} from "../schemas/contract-event.schema";
+import { ContractEvent } from "../schemas/contract-event.schema";
 
 @Injectable()
 export class ContractEventsService {
@@ -26,15 +24,29 @@ export class ContractEventsService {
     return cpf.replace(/\D/g, ""); // Remove non-numeric characters
   }
 
-  async findAll(): Promise<ContractEvent[]> {
+  async findAll(): Promise<ContractEventResponseDto[]> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.contractEvents.findAll,
-      async () => await this.contractEventModel.find().lean(),
+      async () => {
+        const contractEvents = await this.contractEventModel.find().lean();
+
+        return contractEvents.map((event) => ({
+          _id: event._id,
+          id: event._id.toString(),
+          type: event.type,
+          date: event.date,
+          reason: event.reason,
+          employeeFullName: event.employeeFullName,
+          employeeCpf: event.employeeCpf,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+        }));
+      },
     );
   }
 
-  async findById(id: string): Promise<ContractEvent> {
+  async findById(id: string): Promise<ContractEventResponseDto> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.contractEvents.findById(id),
@@ -45,28 +57,52 @@ export class ContractEventsService {
           throw new NotFoundException(`ContractEvent with id ${id} not found`);
         }
 
-        return contractEvent;
+        return {
+          _id: contractEvent._id,
+          id: contractEvent._id.toString(),
+          type: contractEvent.type,
+          date: contractEvent.date,
+          reason: contractEvent.reason,
+          employeeFullName: contractEvent.employeeFullName,
+          employeeCpf: contractEvent.employeeCpf,
+          createdAt: contractEvent.createdAt,
+          updatedAt: contractEvent.updatedAt,
+        };
       },
     );
   }
 
-  async findAllByEmployeeCpf(employeeCpf: string): Promise<ContractEvent[]> {
+  async findAllByEmployeeCpf(
+    employeeCpf: string,
+  ): Promise<ContractEventResponseDto[]> {
     const parsedCpf = this.parseEmployeeCpf(employeeCpf);
 
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.contractEvents.findAllByEmployeeCpf(parsedCpf),
       async () => {
-        return await this.contractEventModel
+        const contractEvents = await this.contractEventModel
           .find({ employeeCpf: parsedCpf })
           .lean();
+
+        return contractEvents.map((event) => ({
+          _id: event._id,
+          id: event._id.toString(),
+          type: event.type,
+          date: event.date,
+          reason: event.reason,
+          employeeFullName: event.employeeFullName,
+          employeeCpf: event.employeeCpf,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+        }));
       },
     );
   }
 
   async findManyByIds(
     ids: string[] | Types.ObjectId[],
-  ): Promise<ContractEvent[]> {
+  ): Promise<ContractEventResponseDto[]> {
     const idsSet = new Set(ids.map((id) => id.toString()));
 
     if (idsSet.size === 0) {
@@ -79,14 +115,28 @@ export class ContractEventsService {
         [...idsSet].sort((a, b) => a.localeCompare(b)),
       ),
       async () => {
-        return await this.contractEventModel.find({ _id: { $in: ids } }).lean();
+        const contractEvents = await this.contractEventModel
+          .find({ _id: { $in: ids } })
+          .lean();
+
+        return contractEvents.map((event) => ({
+          _id: event._id,
+          id: event._id.toString(),
+          type: event.type,
+          date: event.date,
+          reason: event.reason,
+          employeeFullName: event.employeeFullName,
+          employeeCpf: event.employeeCpf,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+        }));
       },
     );
   }
 
   async create(
     createContractEventDto: CreateContractEventRequestDto,
-  ): Promise<ContractEventDocument> {
+  ): Promise<ContractEventResponseDto> {
     const { type, date, reason, employeeFullName, employeeCpf } =
       createContractEventDto;
 
@@ -116,13 +166,23 @@ export class ContractEventsService {
       cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
     ]);
 
-    return newContractEvent;
+    return {
+      _id: newContractEvent._id,
+      id: newContractEvent._id.toString(),
+      type: newContractEvent.type,
+      date: newContractEvent.date,
+      reason: newContractEvent.reason,
+      employeeFullName: newContractEvent.employeeFullName,
+      employeeCpf: newContractEvent.employeeCpf,
+      createdAt: newContractEvent.createdAt,
+      updatedAt: newContractEvent.updatedAt,
+    };
   }
 
   async update(
     id: string,
     updateContractEventDto: UpdateContractEventRequestDto,
-  ): Promise<ContractEvent> {
+  ): Promise<ContractEventResponseDto> {
     const { type, date, reason, employeeFullName, employeeCpf } =
       updateContractEventDto;
 
@@ -159,6 +219,16 @@ export class ContractEventsService {
       ]),
     ]);
 
-    return updatedContractEvent;
+    return {
+      _id: updatedContractEvent._id,
+      id: updatedContractEvent._id.toString(),
+      type: updatedContractEvent.type,
+      date: updatedContractEvent.date,
+      reason: updatedContractEvent.reason,
+      employeeFullName: updatedContractEvent.employeeFullName,
+      employeeCpf: updatedContractEvent.employeeCpf,
+      createdAt: updatedContractEvent.createdAt,
+      updatedAt: updatedContractEvent.updatedAt,
+    };
   }
 }
