@@ -55,6 +55,7 @@ export class DocumentsService {
         username: document.employee.username,
         contractStatus: document.employee.contractStatus,
         cpf: document.employee.cpf,
+        role: document.employee.role,
         createdAt: document.employee.createdAt,
         updatedAt: document.employee.updatedAt,
       },

@@ -67,6 +67,7 @@ export class EmployeesService {
       fullName: employee.fullName,
       username: employee.username,
       cpf: employee.cpf,
+      role: employee.role,
       contractStatus: employee.contractStatus,
       documentTypes: employee.documentTypes.map((docType) => ({
         _id: docType._id,
@@ -194,6 +195,7 @@ export class EmployeesService {
       fullName: savedEmployee.fullName,
       username: savedEmployee.username,
       cpf: savedEmployee.cpf,
+      role: savedEmployee.role,
       contractStatus: savedEmployee.contractStatus,
       contractEvents: [contractEvent],
       documentTypes: [],
