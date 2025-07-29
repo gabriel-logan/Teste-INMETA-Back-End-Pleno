@@ -285,12 +285,30 @@ export class EmployeesService {
     });
   }
 
+  private employeeIdIsSameAsFromReq(
+    employeeId: string,
+    employeeFromReq: AuthPayload,
+  ): boolean {
+    return employeeFromReq.sub.equals(employeeId);
+  }
+
   @Transactional()
   async fire(
     employeeId: string,
     fireEmployeeDto: FireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
+    const isSameId = this.employeeIdIsSameAsFromReq(
+      employeeId,
+      employeeFromReq,
+    );
+
+    if (isSameId) {
+      throw new BadRequestException(
+        "You cannot fire yourself. Please contact a manager.",
+      );
+    }
+
     if (employeeFromReq.role !== EmployeeRole.MANAGER) {
       // This is a placeholder for the actual role check
       // You can replace this with your actual role checking logic
@@ -329,6 +347,17 @@ export class EmployeesService {
     reHireEmployeeDto: ReHireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
+    const isSameId = this.employeeIdIsSameAsFromReq(
+      employeeId,
+      employeeFromReq,
+    );
+
+    if (isSameId) {
+      throw new BadRequestException(
+        "You cannot rehire yourself. Please contact a manager.",
+      );
+    }
+
     if (employeeFromReq.role !== EmployeeRole.MANAGER) {
       // This is a placeholder for the actual role check
       // You can replace this with your actual role checking logic
