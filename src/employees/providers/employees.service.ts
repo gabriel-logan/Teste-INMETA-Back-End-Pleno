@@ -1,5 +1,11 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { compare } from "bcrypt";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import {
@@ -12,6 +18,8 @@ import { ContractEventType } from "src/contract-events/schemas/contract-event.sc
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { UpdateEmployeePasswordRequestDto } from "../dto/request/update-employee-password.dto";
+import { UpdateEmployeePasswordResponseDto } from "../dto/response/update-employee-password.dto";
 import {
   ContractStatus,
   Employee,
@@ -325,5 +333,49 @@ export class EmployeesService {
     }
 
     return this.genericEmployeeResponseMapper(updatedEmployee);
+  }
+
+  async validatePassword(
+    password: string,
+    passwordHash: string,
+  ): Promise<boolean> {
+    const isPasswordValid = await compare(password, passwordHash);
+
+    return isPasswordValid;
+  }
+
+  @Transactional()
+  async updatePassword(
+    employeeId: Types.ObjectId,
+    updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
+  ): Promise<UpdateEmployeePasswordResponseDto> {
+    const { newPassword, currentPassword } = updateEmployeePasswordRequestDto;
+
+    if (newPassword === currentPassword) {
+      throw new BadRequestException(
+        "New password cannot be the same as the current password",
+      );
+    }
+
+    const employee = await this.findById(employeeId, {
+      lean: false,
+    });
+
+    const isCurrentPasswordValid = await this.validatePassword(
+      currentPassword,
+      employee.password,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new BadRequestException("Current password is incorrect");
+    }
+
+    employee.password = newPassword;
+
+    await employee.save();
+
+    return {
+      message: "Password updated successfully",
+    };
   }
 }
