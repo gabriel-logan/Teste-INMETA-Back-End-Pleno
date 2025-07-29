@@ -24,6 +24,7 @@ import {
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
+import { ParseCpfPipe } from "src/common/pipes/parse-cpf.pipe";
 import { AuthPayload } from "src/common/types";
 
 import {
@@ -65,7 +66,7 @@ export class EmployeesController {
     @Query("byLastName") byLastName?: string,
     @Query("byContractStatus") byContractStatus?: ContractStatus,
     @Query("byDocumentType") byDocumentType?: string,
-    @Query("byCpf") byCpf?: string,
+    @Query("byCpf", new ParseCpfPipe({ optional: true })) byCpf?: string,
   ): Promise<EmployeeWithDocumentTypesResponseDto[]> {
     return await this.employeesService.findAll({
       byFirstName,
