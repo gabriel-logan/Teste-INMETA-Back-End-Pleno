@@ -89,5 +89,24 @@ describe("AuthService", () => {
         }),
       ).rejects.toThrow("Invalid username or password");
     });
+
+    it("should throw UnauthorizedException for inactive contract status", async () => {
+      jest.spyOn(mockEmployeesService, "findOneByUsername").mockResolvedValue({
+        id: 1,
+        username: "testUser",
+        password: "hashedPassword",
+        role: "user",
+        contractStatus: "inactive",
+      });
+
+      jest.spyOn(bcrypt, "compare").mockResolvedValue(true as never);
+
+      await expect(
+        service.signIn({
+          username: "testUser",
+          password: "testPassword",
+        }),
+      ).rejects.toThrow("Employee contract is not active, cannot sign in");
+    });
   });
 });

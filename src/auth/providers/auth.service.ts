@@ -32,6 +32,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid username or password");
     }
 
+    // IF want to allow INACTIVE contracts to sign in, remove this check
     if (employee.contractStatus !== ContractStatus.ACTIVE) {
       throw new UnauthorizedException(
         "Employee contract is not active, cannot sign in",
