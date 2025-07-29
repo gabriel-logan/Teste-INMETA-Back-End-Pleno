@@ -205,6 +205,7 @@ describe("DocumentTypesService", () => {
 
       expect(result).toBeDefined();
       expect(result).toEqual({
+        _id: expect.any(String) as string,
         id: mockDocumentType._id,
         name: createDocumentTypeDto.name,
         createdAt: expect.any(Date) as Date,
