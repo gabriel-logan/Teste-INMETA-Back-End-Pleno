@@ -284,9 +284,9 @@ export class DocumentsService {
     ]);
 
     return {
-      documents: documents.map((doc) =>
-        this.genericDocumentResponseMapper(doc),
-      ),
+      documents: documents.map((doc) => {
+        return this.genericDocumentResponseMapper(doc);
+      }),
       total,
       page,
       limit,
