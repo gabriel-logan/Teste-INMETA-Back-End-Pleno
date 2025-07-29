@@ -3,7 +3,7 @@ import type { Types } from "mongoose";
 import { DocumentStatus } from "src/documents/schemas/document.schema";
 
 import { DocumentTypeResponseDto } from "./document-type.dto";
-import { EmployeeFullSecureResponseDto } from "./employee.dto";
+import { EmployeeBaseResponseDto } from "./employee.dto";
 
 export class DocumentFullResponseDto {
   @ApiProperty({
@@ -27,10 +27,10 @@ export class DocumentFullResponseDto {
   public readonly status: DocumentStatus;
 
   @ApiProperty({
-    type: EmployeeFullSecureResponseDto,
+    type: EmployeeBaseResponseDto,
     description: "The employee associated with the document",
   })
-  public readonly employee: EmployeeFullSecureResponseDto;
+  public readonly employee: EmployeeBaseResponseDto;
 
   @ApiProperty({
     type: DocumentTypeResponseDto,

@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import type { Types } from "mongoose";
-import { EmployeeRole } from "src/employees/schemas/employee.schema";
+import {
+  ContractStatus,
+  EmployeeRole,
+} from "src/employees/schemas/employee.schema";
 
 import { ContractEventResponseDto } from "./contract-event.dto";
 import { DocumentTypeResponseDto } from "./document-type.dto";
@@ -46,10 +49,10 @@ export class EmployeeBaseResponseDto {
   public readonly username: string;
 
   @ApiProperty({
-    type: ContractEventResponseDto,
+    enum: ContractStatus,
     description: "The contract status of the employee",
   })
-  public readonly contractStatus: ContractEventResponseDto;
+  public readonly contractStatus: ContractStatus;
 
   @ApiProperty({
     type: String,
