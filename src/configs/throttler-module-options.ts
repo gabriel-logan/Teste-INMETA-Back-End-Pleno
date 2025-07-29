@@ -1,55 +1,54 @@
-import type { ExecutionContext } from "@nestjs/common";
 import type { ThrottlerModuleOptions } from "@nestjs/throttler";
 import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
-const throttlerModuleOptions: ThrottlerModuleOptions = {
-  throttlers: [
-    {
-      ttl(context: ExecutionContext): number {
-        const request = context.switchToHttp().getRequest<Request>();
-        const method = request.method;
+const throttlerModuleOptions: ThrottlerModuleOptions = [
+  {
+    ttl(context): number {
+      const request = context.switchToHttp().getRequest<Request>();
+      const method = request.method;
 
-        if (method === "GET") {
-          return seconds(25);
-        }
+      if (method === "GET") {
+        return seconds(25);
+      }
 
-        return seconds(15);
-      },
-      limit: 20,
-      blockDuration: (context: ExecutionContext): number => {
-        const request = context.switchToHttp().getRequest<Request>();
-        const method = request.method;
-
-        if (method === "GET") {
-          return seconds(10);
-        }
-
-        return seconds(30);
-      },
+      return seconds(15);
     },
-  ],
 
-  skipIf: (context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest<Request>();
+    limit: 20,
 
-    const cachedEndpoints = [`${apiPrefix}/document-types`];
-    const fileEndpoints = [`${apiPrefix}/files`];
+    blockDuration: (context): number => {
+      const request = context.switchToHttp().getRequest<Request>();
+      const method = request.method;
 
-    const freeEndpoints = [...cachedEndpoints, ...fileEndpoints];
+      if (method === "GET") {
+        return seconds(10);
+      }
 
-    return (
-      request.method === "GET" &&
-      freeEndpoints.some((endpoint) => request.url.startsWith(endpoint))
-    );
+      return seconds(30);
+    },
+
+    skipIf: (context): boolean => {
+      const request = context.switchToHttp().getRequest<Request>();
+
+      const cachedEndpoints = [`${apiPrefix}/document-types`];
+      const fileEndpoints = [`${apiPrefix}/files`];
+
+      const freeEndpoints = [...cachedEndpoints, ...fileEndpoints];
+
+      return (
+        request.method === "GET" &&
+        freeEndpoints.some((endpoint) => request.url.startsWith(endpoint))
+      );
+    },
+
+    getTracker: (req: Request): string => {
+      const deviceId = req.headers["x-device-id"];
+
+      return typeof deviceId === "string" ? deviceId : req.ip || "unknown";
+    },
   },
-
-  getTracker: (req: Request) => {
-    const deviceId = req.headers["x-device-id"];
-
-    return typeof deviceId === "string" ? deviceId : req.ip || "unknown";
-  },
-};
+];
 
 export default throttlerModuleOptions;
