@@ -64,7 +64,19 @@ describe("ContractEventsService", () => {
   describe("findAll", () => {
     it("should return an array of contract events", async () => {
       const mockFind = {
-        lean: jest.fn().mockResolvedValue([]),
+        lean: jest.fn().mockResolvedValue([
+          {
+            _id: mockGenericObjectId,
+            id: mockGenericObjectId.toString(),
+            type: ContractEventType.HIRED,
+            date: new Date(),
+            reason: "Test reason",
+            employeeCpf: "12345678901",
+            employeeFullName: "John Doe",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]),
       };
 
       const spy = jest
@@ -81,7 +93,19 @@ describe("ContractEventsService", () => {
 
     it("should return value from cache if available", async () => {
       const mockFind = {
-        lean: jest.fn().mockResolvedValue([]),
+        lean: jest.fn().mockResolvedValue([
+          {
+            _id: mockGenericObjectId,
+            id: mockGenericObjectId.toString(),
+            type: ContractEventType.HIRED,
+            date: new Date(),
+            reason: "Test reason",
+            employeeCpf: "12345678901",
+            employeeFullName: "John Doe",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]),
       };
 
       const spy = jest
