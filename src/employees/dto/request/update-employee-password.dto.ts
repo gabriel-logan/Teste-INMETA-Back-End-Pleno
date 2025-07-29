@@ -11,13 +11,4 @@ export class UpdateEmployeePasswordRequestDto {
   @IsNotBlankString()
   @MinLength(6)
   public newPassword: string;
-
-  @ApiProperty({
-    type: String,
-    description: "The current password for the employee",
-    example: "currentPassword123",
-  })
-  @IsNotBlankString()
-  @MinLength(6)
-  public currentPassword: string;
 }

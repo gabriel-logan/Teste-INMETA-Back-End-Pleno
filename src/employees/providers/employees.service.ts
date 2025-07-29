@@ -1,11 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { compare } from "bcrypt";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import {
@@ -13,7 +7,6 @@ import {
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
-import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
@@ -25,7 +18,6 @@ import {
   ContractStatus,
   Employee,
   EmployeeDocument,
-  EmployeeRole,
 } from "../schemas/employee.schema";
 
 type EmployeePopulatableFields = "documentTypes" | "contractEvents";
@@ -342,34 +334,12 @@ export class EmployeesService {
   async updatePassword(
     employeeId: Types.ObjectId,
     updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
-    employeeFromReq: AuthPayload,
   ): Promise<UpdateEmployeePasswordResponseDto> {
-    if (employeeFromReq.role === EmployeeRole.COMMON) {
-      if (employeeFromReq.sub !== employeeId.toString()) {
-        throw new BadRequestException("Something went wrong, contact support");
-      }
-    }
-
-    const { newPassword, currentPassword } = updateEmployeePasswordRequestDto;
-
-    if (newPassword === currentPassword) {
-      throw new BadRequestException(
-        "New password cannot be the same as the current password",
-      );
-    }
+    const { newPassword } = updateEmployeePasswordRequestDto;
 
     const employee = await this.findById(employeeId, {
       lean: false,
     });
-
-    const isCurrentPasswordValid = await compare(
-      currentPassword,
-      employee.password,
-    );
-
-    if (!isCurrentPasswordValid) {
-      throw new BadRequestException("Current password is incorrect");
-    }
 
     employee.password = newPassword;
 

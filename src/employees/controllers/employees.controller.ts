@@ -196,12 +196,10 @@ export class EmployeesController {
     @Param("employeeId", new ParseObjectIdPipeLocal())
     employeeId: Types.ObjectId,
     @Body() updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
-    @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<UpdateEmployeePasswordResponseDto> {
     return await this.employeesService.updatePassword(
       employeeId,
       updateEmployeePasswordRequestDto,
-      employeeFromReq,
     );
   }
 
