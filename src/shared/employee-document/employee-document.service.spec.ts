@@ -1,7 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Model } from "mongoose";
+import { type Model, Types } from "mongoose";
 import {
   Document,
   DocumentStatus,
@@ -18,7 +18,7 @@ describe("EmployeeDocumentService", () => {
 
     constructor(data: Partial<Document> = {}) {
       this.data = {
-        _id: "1",
+        _id: new Types.ObjectId("123e4567e89b12d3a4567890"),
         ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -57,16 +57,16 @@ describe("EmployeeDocumentService", () => {
   describe("createDocument", () => {
     it("should create a document", async () => {
       const result = await service.createDocument(
-        "employeeId",
-        "documentTypeId",
+        new Types.ObjectId("123e4567e89b12d3a4567890"),
+        new Types.ObjectId("123e4567e89b12d3a4567890"),
       );
 
       expect(result).toBeDefined();
       expect(result).toEqual({
-        _id: "1",
-        documentType: "documentTypeId",
+        _id: new Types.ObjectId("123e4567e89b12d3a4567890"),
+        documentType: new Types.ObjectId("123e4567e89b12d3a4567890"),
         status: DocumentStatus.MISSING,
-        employee: "employeeId",
+        employee: new Types.ObjectId("123e4567e89b12d3a4567890"),
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
@@ -95,8 +95,8 @@ describe("EmployeeDocumentService", () => {
         );
 
       const result = await service.deleteDocumentByEmployeeIdAndDocumentTypeId(
-        "employeeId",
-        "documentTypeId",
+        new Types.ObjectId("123e4567e89b12d3a4567890"),
+        new Types.ObjectId("123e4567e89b12d3a4567890"),
       );
 
       expect(result).toBeDefined();
@@ -119,11 +119,11 @@ describe("EmployeeDocumentService", () => {
 
       await expect(
         service.deleteDocumentByEmployeeIdAndDocumentTypeId(
-          "employeeId",
-          "documentTypeId",
+          new Types.ObjectId("123e4567e89b12d3a4567890"),
+          new Types.ObjectId("123e4567e89b12d3a4567890"),
         ),
       ).rejects.toThrow(
-        `Document with employeeId employeeId and documentTypeId documentTypeId not found`,
+        `Document with employeeId 123e4567e89b12d3a4567890 and documentTypeId 123e4567e89b12d3a4567890 not found`,
       );
     });
   });

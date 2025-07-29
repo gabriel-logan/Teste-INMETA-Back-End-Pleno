@@ -13,8 +13,8 @@ export class EmployeeDocumentService {
   ) {}
 
   async createDocument(
-    employeeId: string | Types.ObjectId,
-    documentTypeId: string | Types.ObjectId,
+    employeeId: Types.ObjectId,
+    documentTypeId: Types.ObjectId,
   ): Promise<Document> {
     const newDocument = new this.documentModel({
       documentType: documentTypeId,
@@ -28,8 +28,8 @@ export class EmployeeDocumentService {
   }
 
   async deleteDocumentByEmployeeIdAndDocumentTypeId(
-    employeeId: string | Types.ObjectId,
-    documentTypeId: string | Types.ObjectId,
+    employeeId: Types.ObjectId,
+    documentTypeId: Types.ObjectId,
   ): Promise<Document> {
     const document = await this.documentModel
       .findOneAndDelete({
