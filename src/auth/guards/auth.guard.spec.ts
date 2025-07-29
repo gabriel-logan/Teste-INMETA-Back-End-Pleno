@@ -3,6 +3,10 @@ import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import envTests from "src/configs/env.tests";
+import {
+  ContractStatus,
+  EmployeeRole,
+} from "src/employees/schemas/employee.schema";
 
 import { AuthGuard } from "./auth.guard";
 
@@ -92,6 +96,38 @@ describe("AuthGuard", () => {
     );
   });
 
+  it("should throw UnauthorizedException if contract status is not active", async () => {
+    jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
+
+    const context = {
+      getHandler: jest.fn(),
+      getClass: jest.fn(),
+      switchToHttp: () => ({
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+        getRequest: () => ({
+          headers: {
+            authorization: "Bearer validToken",
+          },
+        }),
+      }),
+    } as unknown as ExecutionContext;
+
+    const mockPayload = {
+      contractStatus: ContractStatus.INACTIVE,
+    };
+
+    jest
+      .spyOn(guard["jwtService"], "verifyAsync")
+      .mockResolvedValue(mockPayload);
+
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      "Contract status is not active",
+    );
+  });
+
   it("should set employee in request if token is valid", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
 
@@ -108,7 +144,8 @@ describe("AuthGuard", () => {
       }),
     } as unknown as ExecutionContext;
 
-    const mockPayload = { id: "123", role: ["user"] };
+    const mockPayload = { id: "123", role: EmployeeRole.ADMIN };
+
     jest
       .spyOn(guard["jwtService"], "verifyAsync")
       .mockResolvedValue(mockPayload);
