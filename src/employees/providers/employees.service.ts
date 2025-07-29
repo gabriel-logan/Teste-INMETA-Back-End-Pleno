@@ -56,6 +56,10 @@ export class EmployeesService {
     private readonly contractEventsService: ContractEventsService,
   ) {}
 
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
   private genericEmployeeResponseMapper(
     employee: Employee,
   ): EmployeeWithDocumentTypesResponseDto {
@@ -94,20 +98,42 @@ export class EmployeesService {
     byDocumentType?: string;
     byCpf?: string;
   } = {}): Promise<EmployeeWithDocumentTypesResponseDto[]> {
-    return (
-      await this.employeeModel
-        .find({
-          ...(byFirstName && { firstName: new RegExp(byFirstName, "i") }),
-          ...(byLastName && { lastName: new RegExp(byLastName, "i") }),
-          ...(byContractStatus && { contractStatus: byContractStatus }),
-          ...(byDocumentType && {
-            documentTypes: { $in: [new Types.ObjectId(byDocumentType)] },
-          }),
-          ...(byCpf && { cpf: new RegExp(byCpf, "i") }),
-        })
-        .populate("documentTypes")
-        .lean()
-    ).map((employee) => this.genericEmployeeResponseMapper(employee));
+    const filter: Record<string, any> = {};
+
+    if (byFirstName) {
+      filter.firstName = {
+        $regex: "^" + this.escapeRegex(byFirstName),
+        $options: "i",
+      };
+    }
+
+    if (byLastName) {
+      filter.lastName = {
+        $regex: "^" + this.escapeRegex(byLastName),
+        $options: "i",
+      };
+    }
+
+    if (byContractStatus) {
+      filter.contractStatus = byContractStatus;
+    }
+
+    if (byDocumentType) {
+      filter.documentTypes = new Types.ObjectId(byDocumentType);
+    }
+
+    if (byCpf) {
+      filter.cpf = { $regex: "^" + this.escapeRegex(byCpf), $options: "i" };
+    }
+
+    const employees = await this.employeeModel
+      .find(filter)
+      .populate("documentTypes")
+      .lean();
+
+    return employees.map((employee) => {
+      return this.genericEmployeeResponseMapper(employee);
+    });
   }
 
   async findById(
