@@ -261,7 +261,7 @@ export class EmployeesService {
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
   ): Promise<EmployeeFullResponseDto> {
-    const { firstName, lastName, cpf } = createEmployeeDto;
+    const { firstName, lastName, cpf, password } = createEmployeeDto;
 
     const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
 
@@ -280,7 +280,7 @@ export class EmployeesService {
       cpf: parsedCpf,
       contractEvents: [contractEvent._id],
       username: parsedCpf,
-      password: "123456", // nosonar
+      password,
     });
 
     const savedEmployee = await createdEmployee.save();

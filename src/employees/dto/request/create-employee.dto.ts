@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { MinLength } from "class-validator";
 import { IsCpf } from "src/common/decorators/validation/IsCpf";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 
@@ -18,4 +19,13 @@ export class CreateEmployeeRequestDto {
   })
   @IsCpf()
   public cpf: string;
+
+  @ApiProperty({
+    type: String,
+    description: "The password for the employee's account",
+    example: "securePassword123",
+  })
+  @IsNotBlankString()
+  @MinLength(6)
+  public password: string;
 }
