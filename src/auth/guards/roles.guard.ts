@@ -3,7 +3,7 @@ import { Reflector } from "@nestjs/core";
 import type { Request } from "express";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
-import { ROLES_KEY } from "../decorators/routes/roles.decorator";
+import { ROLES_KEY } from "../../common/decorators/routes/roles.decorator";
 
 @Injectable()
 export class RolesGuard implements CanActivate {

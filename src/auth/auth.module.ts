@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
-import { RolesGuard } from "src/common/guards/roles.guard";
+import { RolesGuard } from "src/auth/guards/roles.guard";
 import envSecrets from "src/configs/env.secrets";
 import { EnvSecretConfig } from "src/configs/types";
 import { EmployeesModule } from "src/employees/employees.module";
