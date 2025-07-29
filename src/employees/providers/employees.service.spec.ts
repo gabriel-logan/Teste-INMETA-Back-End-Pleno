@@ -548,6 +548,7 @@ describe("EmployeesService", () => {
         firstName: "Admin",
         lastName: "User",
         fullName: "Admin User",
+        username: "admin.user",
         contractStatus: ContractStatus.ACTIVE,
         role: EmployeeRole.ADMIN,
         documentTypes: [],

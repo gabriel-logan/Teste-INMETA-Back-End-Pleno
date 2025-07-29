@@ -512,6 +512,7 @@ export class EmployeesService {
       firstName: createdEmployee.firstName,
       lastName: createdEmployee.lastName,
       fullName: createdEmployee.fullName,
+      username: createdEmployee.username,
       contractStatus: createdEmployee.contractStatus,
       documentTypes: [],
       cpf: createdEmployee.cpf,

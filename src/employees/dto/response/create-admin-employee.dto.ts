@@ -25,6 +25,9 @@ export class CreateAdminEmployeeResponseDto {
   @ApiProperty()
   public readonly fullName: string;
 
+  @ApiProperty()
+  public readonly username: string;
+
   @ApiProperty({
     enum: ContractStatus,
     example: ContractStatus.ACTIVE,
