@@ -8,7 +8,10 @@ describe("getAndSetCache", () => {
   let fetchCbFn: jest.Mock;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     fetchCbFn = jest.fn();
+
     cacheManager = {
       get: jest.fn(),
       set: jest.fn(),
