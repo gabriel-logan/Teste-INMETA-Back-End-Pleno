@@ -326,6 +326,7 @@ export class EmployeesService {
         { firstName, lastName, cpf: parsedCpf },
         { new: true, runValidators: true },
       )
+      .populate("documentTypes")
       .lean();
 
     if (!updatedEmployee) {
