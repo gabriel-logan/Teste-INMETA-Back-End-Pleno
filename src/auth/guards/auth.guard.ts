@@ -11,6 +11,7 @@ import type { Request } from "express";
 import { IS_PUBLIC_KEY } from "src/common/decorators/routes/public.decorator";
 import { AuthPayload } from "src/common/types";
 import { EnvSecretConfig } from "src/configs/types";
+import { ContractStatus } from "src/employees/schemas/employee.schema";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -44,6 +45,10 @@ export class AuthGuard implements CanActivate {
       const payload: AuthPayload = await this.jwtService.verifyAsync(token, {
         secret,
       });
+
+      if (payload.contractStatus !== ContractStatus.ACTIVE) {
+        throw new UnauthorizedException("Contract status is not active");
+      }
 
       request["employee"] = payload;
     } catch {
