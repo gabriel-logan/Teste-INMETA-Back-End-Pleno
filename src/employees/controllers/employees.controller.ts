@@ -74,6 +74,7 @@ export class EmployeesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @Get(":employeeId")
   async findByIdWithDocumentTypes(
@@ -94,6 +95,7 @@ export class EmployeesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @Get(":employeeId/contract-events")
   async findByIdWithContractEvents(
@@ -132,6 +134,7 @@ export class EmployeesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @Patch(":employeeId")
   async update(
@@ -154,6 +157,7 @@ export class EmployeesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @Patch(":employeeId/password")
   async updatePassword(

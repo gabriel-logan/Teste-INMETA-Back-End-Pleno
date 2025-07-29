@@ -47,6 +47,7 @@ export class HumanResourcesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
   @Post("fire/:employeeId")
@@ -75,6 +76,7 @@ export class HumanResourcesController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
   @Post("rehire/:employeeId")

@@ -42,6 +42,7 @@ export class DocumentTypeLinkersController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/link")
@@ -68,6 +69,7 @@ export class DocumentTypeLinkersController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/unlink")

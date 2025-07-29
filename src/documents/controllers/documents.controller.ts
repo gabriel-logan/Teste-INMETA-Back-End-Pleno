@@ -56,6 +56,7 @@ export class DocumentsController {
     name: "documentId",
     description: "ID of the document",
     type: String,
+    format: "ObjectId",
   })
   @Get(":documentId")
   async findByIdWithDocumentTypeAndEmployee(
@@ -79,6 +80,7 @@ export class DocumentsController {
     name: "documentId",
     description: "ID of the document",
     type: String,
+    format: "ObjectId",
   })
   @Patch(":documentId")
   async update(
@@ -100,6 +102,7 @@ export class DocumentsController {
     name: "employeeId",
     description: "ID of the employee",
     type: String,
+    format: "ObjectId",
   })
   @ApiQuery({ required: false, name: "status", enum: DocumentStatus })
   @Get("employee/:employeeId/statuses")

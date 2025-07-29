@@ -54,6 +54,7 @@ export class DocumentTypesController {
     name: "documentTypeId",
     description: "ID of the document type",
     type: String,
+    format: "ObjectId",
   })
   @Get("id/:documentTypeId")
   async findById(

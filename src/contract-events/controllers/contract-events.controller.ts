@@ -56,6 +56,7 @@ export class ContractEventsController {
     name: "contractEventId",
     description: "ID of the contract event",
     type: String,
+    format: "ObjectId",
   })
   @Get(":contractEventId")
   async findById(

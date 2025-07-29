@@ -46,6 +46,7 @@ export class DocumentFilesController {
     name: "documentId",
     description: "ID of the document",
     type: String,
+    format: "ObjectId",
   })
   @Post(":documentId/file/send")
   @UseInterceptors(FileInterceptor("documentFile"))
@@ -85,6 +86,7 @@ export class DocumentFilesController {
     name: "documentId",
     description: "ID of the document",
     type: String,
+    format: "ObjectId",
   })
   @Delete(":documentId/file/delete")
   async deleteDocumentFile(
