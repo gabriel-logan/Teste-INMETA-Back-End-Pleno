@@ -45,8 +45,10 @@ import {
   EmployeeRole,
 } from "../schemas/employee.schema";
 
+type EmployeePopulatableFields = "documentTypes" | "contractEvents";
+
 type FindOptions<T extends boolean> = {
-  populates?: string[];
+  populates?: EmployeePopulatableFields[];
   lean?: T;
 };
 
