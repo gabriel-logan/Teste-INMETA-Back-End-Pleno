@@ -150,7 +150,7 @@ describe("EmployeesService", () => {
       expect(spyOnFind).toHaveBeenCalled();
     });
 
-    it("should return an array filtered by contract status", async () => {
+    it("should return an array for filtered employees", async () => {
       const spyOnFind = jest.spyOn(mockEmployeeModel, "find").mockReturnValue({
         populate: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([]),
@@ -158,6 +158,10 @@ describe("EmployeesService", () => {
 
       const result = await service.findAll({
         byContractStatus: ContractStatus.INACTIVE,
+        byCpf: "98765432100",
+        byDocumentTypeId: new Types.ObjectId("123456789012345678901234"),
+        byFirstName: "Jane",
+        byLastName: "Doe",
       });
 
       expect(result).toEqual([]);
