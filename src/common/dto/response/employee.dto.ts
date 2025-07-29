@@ -95,7 +95,7 @@ export class EmployeeFullResponseDto extends EmployeeBaseResponseDto {
   public readonly documentTypes: DocumentTypeResponseDto[];
 }
 
-export class EmployeeWithoutContractEventsResponseDto extends EmployeeBaseResponseDto {
+export class EmployeeWithDocumentTypesResponseDto extends EmployeeBaseResponseDto {
   @ApiProperty({
     type: DocumentTypeResponseDto,
     isArray: true,
@@ -104,7 +104,7 @@ export class EmployeeWithoutContractEventsResponseDto extends EmployeeBaseRespon
   public readonly documentTypes: DocumentTypeResponseDto[];
 }
 
-export class EmployeeWithoutDocumentTypesResponseDto extends EmployeeBaseResponseDto {
+export class EmployeeWithContractEventsResponseDto extends EmployeeBaseResponseDto {
   @ApiProperty({
     type: ContractEventResponseDto,
     isArray: true,
