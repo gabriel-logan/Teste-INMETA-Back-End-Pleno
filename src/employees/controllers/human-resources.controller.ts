@@ -8,7 +8,10 @@ import {
 } from "@nestjs/common";
 import { ApiParam, ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { ApiStandardResponses } from "src/common/decorators/routes/docs.decorator";
+import {
+  ApiGlobalErrorResponses,
+  ApiStandardResponses,
+} from "src/common/decorators/routes/docs.decorator";
 import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
@@ -25,12 +28,13 @@ import {
 import { HumanResourcesService } from "../providers/human-resources.service";
 import { EmployeeRole } from "../schemas/employee.schema";
 
+@ApiSecurity("bearer")
+@ApiGlobalErrorResponses()
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("human-resources")
 export class HumanResourcesController {
   constructor(private readonly humanResourcesService: HumanResourcesService) {}
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Fire an employee",
@@ -59,8 +63,6 @@ export class HumanResourcesController {
     );
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Rehire an employee",

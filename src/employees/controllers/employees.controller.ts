@@ -30,13 +30,13 @@ import { UpdateEmployeePasswordResponseDto } from "../dto/response/update-employ
 import { EmployeesService } from "../providers/employees.service";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 
+@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("employees")
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "List of all employees",
@@ -63,8 +63,6 @@ export class EmployeesController {
     });
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Employee details by ID",
@@ -85,8 +83,6 @@ export class EmployeesController {
     return await this.employeesService.findByIdWithDocumentTypes(employeeId);
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Employee details with contract events",
@@ -107,8 +103,6 @@ export class EmployeesController {
     return await this.employeesService.findByIdWithContractEvents(employeeId);
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Create a new employee",
@@ -125,8 +119,6 @@ export class EmployeesController {
     return await this.employeesService.create(createEmployeeDto);
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Update employee details",
@@ -150,8 +142,6 @@ export class EmployeesController {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN, EmployeeRole.COMMON)
   @ApiStandardResponses({
     ok: {
       description: "Update employee password",

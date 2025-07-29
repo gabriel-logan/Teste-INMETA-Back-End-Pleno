@@ -8,7 +8,10 @@ import {
 } from "@nestjs/common";
 import { ApiParam, ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
-import { ApiStandardResponses } from "src/common/decorators/routes/docs.decorator";
+import {
+  ApiGlobalErrorResponses,
+  ApiStandardResponses,
+} from "src/common/decorators/routes/docs.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 
@@ -18,14 +21,15 @@ import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documen
 import { DocumentTypeLinkersService } from "../providers/document-type-linkers.service";
 import { EmployeeRole } from "../schemas/employee.schema";
 
+@ApiSecurity("bearer")
+@ApiGlobalErrorResponses()
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("document-type-linkers")
 export class DocumentTypeLinkersController {
   constructor(
     private readonly documentTypeLinkersService: DocumentTypeLinkersService,
   ) {}
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Link document types to an employee",
@@ -52,8 +56,6 @@ export class DocumentTypeLinkersController {
     );
   }
 
-  @ApiSecurity("bearer")
-  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
     ok: {
       description: "Unlink document types from an employee",
