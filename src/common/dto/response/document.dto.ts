@@ -5,7 +5,7 @@ import { DocumentStatus } from "src/documents/schemas/document.schema";
 import { DocumentTypeResponseDto } from "./document-type.dto";
 import { EmployeeBaseResponseDto } from "./employee.dto";
 
-export class DocumentFullResponseDto {
+export class DocumentBaseResponseDto {
   @ApiProperty({
     type: String,
     format: "objectId",
@@ -20,23 +20,10 @@ export class DocumentFullResponseDto {
   public readonly id: string;
 
   @ApiProperty({
-    type: String,
-    description: "The status of the document",
     enum: DocumentStatus,
+    description: "The status of the document",
   })
   public readonly status: DocumentStatus;
-
-  @ApiProperty({
-    type: EmployeeBaseResponseDto,
-    description: "The employee associated with the document",
-  })
-  public readonly employee: EmployeeBaseResponseDto;
-
-  @ApiProperty({
-    type: DocumentTypeResponseDto,
-    description: "The type of the document",
-  })
-  public readonly documentType: DocumentTypeResponseDto;
 
   @ApiProperty({
     type: String,
@@ -56,4 +43,34 @@ export class DocumentFullResponseDto {
     description: "The timestamp when the document was last updated",
   })
   public readonly updatedAt: Date;
+}
+
+export class DocumentFullResponseDto extends DocumentBaseResponseDto {
+  @ApiProperty({
+    type: EmployeeBaseResponseDto,
+    description: "The employee associated with the document",
+  })
+  public readonly employee: EmployeeBaseResponseDto;
+
+  @ApiProperty({
+    type: DocumentTypeResponseDto,
+    description: "The type of the document",
+  })
+  public readonly documentType: DocumentTypeResponseDto;
+}
+
+export class DocumentWithEmployeeResponseDto extends DocumentBaseResponseDto {
+  @ApiProperty({
+    type: EmployeeBaseResponseDto,
+    description: "The employee associated with the document",
+  })
+  public readonly employee: EmployeeBaseResponseDto;
+}
+
+export class DocumentWithDocumentTypeResponseDto extends DocumentBaseResponseDto {
+  @ApiProperty({
+    type: DocumentTypeResponseDto,
+    description: "The type of the document",
+  })
+  public readonly documentType: DocumentTypeResponseDto;
 }
