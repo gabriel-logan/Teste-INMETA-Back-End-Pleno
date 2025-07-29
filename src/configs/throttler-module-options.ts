@@ -1,12 +1,22 @@
 import type { ExecutionContext } from "@nestjs/common";
-import { seconds, type ThrottlerModuleOptions } from "@nestjs/throttler";
+import type { ThrottlerModuleOptions } from "@nestjs/throttler";
+import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
 const throttlerModuleOptions: ThrottlerModuleOptions = {
   throttlers: [
     {
-      ttl: seconds(25),
+      ttl(context: ExecutionContext): number {
+        const request = context.switchToHttp().getRequest<Request>();
+        const method = request.method;
+
+        if (method === "GET") {
+          return seconds(25);
+        }
+
+        return seconds(15);
+      },
       limit: 20,
       blockDuration: (context: ExecutionContext): number => {
         const request = context.switchToHttp().getRequest<Request>();
