@@ -83,7 +83,8 @@ describe("DocumentTypesService", () => {
 
       expect(result).toEqual([
         {
-          id: mockDocumentType._id,
+          _id: mockDocumentType._id,
+          id: mockDocumentType._id.toString(),
           name: mockDocumentType.name,
           createdAt: mockDocumentType.createdAt,
           updatedAt: mockDocumentType.updatedAt,
@@ -112,7 +113,8 @@ describe("DocumentTypesService", () => {
       const result = await service.findById(mockDocumentType._id);
 
       expect(result).toEqual({
-        id: mockDocumentType._id,
+        _id: mockDocumentType._id,
+        id: mockDocumentType._id.toString(),
         name: mockDocumentType.name,
         createdAt: mockDocumentType.createdAt,
         updatedAt: mockDocumentType.updatedAt,
@@ -161,7 +163,8 @@ describe("DocumentTypesService", () => {
       const result = await service.findOneByName(mockDocumentType.name);
 
       expect(result).toEqual({
-        id: mockDocumentType._id,
+        _id: mockDocumentType._id,
+        id: mockDocumentType._id.toString(),
         name: mockDocumentType.name,
         createdAt: mockDocumentType.createdAt,
         updatedAt: mockDocumentType.updatedAt,
@@ -246,7 +249,8 @@ describe("DocumentTypesService", () => {
 
       expect(result).toBeDefined();
       expect(result).toEqual({
-        id: mockDocumentType._id,
+        _id: mockDocumentType._id,
+        id: mockDocumentType._id.toString(),
         name: updateDocumentTypeDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
