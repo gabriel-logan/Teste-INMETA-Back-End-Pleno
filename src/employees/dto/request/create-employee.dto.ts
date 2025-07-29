@@ -1,17 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
+import { validationConstraints } from "src/common/constants";
 import { IsCpf } from "src/common/decorators/validation/IsCpf";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 
 export class CreateEmployeeRequestDto {
   @ApiProperty()
   @IsNotBlankString()
-  @MaxLength(30)
+  @MaxLength(validationConstraints.employee.firstName.maxLength)
   public firstName: string;
 
   @ApiProperty()
   @IsNotBlankString()
-  @MaxLength(40)
+  @MaxLength(validationConstraints.employee.lastName.maxLength)
   public lastName: string;
 
   @ApiProperty({
@@ -28,7 +29,7 @@ export class CreateEmployeeRequestDto {
     example: "securePassword123",
   })
   @IsNotBlankString()
-  @MinLength(6)
-  @MaxLength(255)
+  @MinLength(validationConstraints.employee.password.minLength)
+  @MaxLength(validationConstraints.employee.password.maxLength)
   public password: string;
 }
