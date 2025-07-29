@@ -289,7 +289,7 @@ export class EmployeesService {
     employeeId: string,
     employeeFromReq: AuthPayload,
   ): boolean {
-    return employeeFromReq.sub.equals(employeeId);
+    return employeeFromReq.sub === employeeId;
   }
 
   @Transactional()
