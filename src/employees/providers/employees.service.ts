@@ -89,13 +89,13 @@ export class EmployeesService {
     byFirstName,
     byLastName,
     byContractStatus,
-    byDocumentType,
+    byDocumentTypeId,
     byCpf,
   }: {
     byFirstName?: string;
     byLastName?: string;
     byContractStatus?: ContractStatus;
-    byDocumentType?: string;
+    byDocumentTypeId?: string;
     byCpf?: string;
   } = {}): Promise<EmployeeWithDocumentTypesResponseDto[]> {
     const filter: Record<string, any> = {};
@@ -118,8 +118,8 @@ export class EmployeesService {
       filter.contractStatus = byContractStatus;
     }
 
-    if (byDocumentType) {
-      filter.documentTypes = new Types.ObjectId(byDocumentType);
+    if (byDocumentTypeId) {
+      filter.documentTypes = new Types.ObjectId(byDocumentTypeId);
     }
 
     if (byCpf) {

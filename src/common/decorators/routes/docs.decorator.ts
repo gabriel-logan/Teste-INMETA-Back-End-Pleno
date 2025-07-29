@@ -201,7 +201,7 @@ export function ApiGetAllEmployeesQueries(): MethodDecorator & ClassDecorator {
       description: "Filter by employee's contract status",
     }),
     ApiQuery({
-      name: "byDocumentType",
+      name: "byDocumentTypeId",
       required: false,
       type: String,
       format: "ObjectId",
