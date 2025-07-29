@@ -39,7 +39,6 @@ export class EmployeesService {
 
   constructor(
     @InjectModel(Employee.name) private readonly employeeModel: Model<Employee>,
-
     private readonly contractEventsService: ContractEventsService,
   ) {}
 

@@ -28,13 +28,6 @@ export class HumanResourcesService {
     private readonly contractEventsService: ContractEventsService,
   ) {}
 
-  private employeeIdIsSameAsFromReq(
-    employeeId: Types.ObjectId,
-    employeeFromReq: AuthPayload,
-  ): boolean {
-    return employeeFromReq.sub === employeeId.toString();
-  }
-
   private async createContractEvent({
     type,
     reason,
@@ -53,22 +46,33 @@ export class HumanResourcesService {
     });
   }
 
+  private throwErrorIfIsSameId({
+    employeeId,
+    employeeFromReq,
+    errorMessage,
+  }: {
+    employeeId: Types.ObjectId;
+    employeeFromReq: AuthPayload;
+    errorMessage: string;
+  }): void {
+    const isSameId = employeeFromReq.sub === employeeId.toString();
+
+    if (isSameId) {
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
   @Transactional()
   async fire(
     employeeId: Types.ObjectId,
     fireEmployeeDto: FireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
-    const isSameId = this.employeeIdIsSameAsFromReq(
+    this.throwErrorIfIsSameId({
       employeeId,
       employeeFromReq,
-    );
-
-    if (isSameId) {
-      throw new BadRequestException(
-        "You cannot fire yourself. Please contact a manager.",
-      );
-    }
+      errorMessage: "You cannot fire yourself. Please contact a manager.",
+    });
 
     if (employeeFromReq.role !== EmployeeRole.MANAGER) {
       // This is a placeholder for the actual role check
@@ -113,16 +117,11 @@ export class HumanResourcesService {
     reHireEmployeeDto: ReHireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
-    const isSameId = this.employeeIdIsSameAsFromReq(
+    this.throwErrorIfIsSameId({
       employeeId,
       employeeFromReq,
-    );
-
-    if (isSameId) {
-      throw new BadRequestException(
-        "You cannot rehire yourself. Please contact a manager.",
-      );
-    }
+      errorMessage: "You cannot rehire yourself. Please contact a manager.",
+    });
 
     if (employeeFromReq.role !== EmployeeRole.MANAGER) {
       // This is a placeholder for the actual role check
