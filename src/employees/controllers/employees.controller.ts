@@ -19,6 +19,7 @@ import {
 import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Public } from "src/common/decorators/routes/public.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
+import { EmployeeFullResponseDto } from "src/common/dto/response/employee.dto";
 import { AuthPayload } from "src/common/types";
 
 import {
@@ -36,7 +37,6 @@ import {
 import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
-import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 
@@ -50,7 +50,7 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "List of all employees",
-      type: PublicEmployeeResponseDto,
+      type: EmployeeFullResponseDto,
       isArray: true,
     },
   })
@@ -62,7 +62,7 @@ export class EmployeesController {
     @Query("byContractStatus") byContractStatus?: ContractStatus,
     @Query("byDocumentType") byDocumentType?: string,
     @Query("byCpf") byCpf?: string,
-  ): Promise<PublicEmployeeResponseDto[]> {
+  ): Promise<EmployeeFullResponseDto[]> {
     return await this.employeesService.findAll({
       byFirstName,
       byLastName,
@@ -77,14 +77,14 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Employee details by ID",
-      type: PublicEmployeeResponseDto,
+      type: EmployeeFullResponseDto,
     },
     notFound: true,
   })
   @Get(":employeeId")
   async findById(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     return await this.employeesService.findById(employeeId);
   }
 
@@ -93,14 +93,14 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Employee details with contract events",
-      type: PublicEmployeeResponseDto,
+      type: EmployeeFullResponseDto,
     },
     notFound: true,
   })
   @Get(":employeeId/contract-events")
   async findByIdWithContractEvents(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     return await this.employeesService.findByIdWithContractEvents(employeeId);
   }
 
@@ -109,7 +109,7 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Create a new employee",
-      type: PublicEmployeeResponseDto,
+      type: EmployeeFullResponseDto,
       isStatusCodeCreated: true,
     },
     badRequest: true,
@@ -118,7 +118,7 @@ export class EmployeesController {
   @Post()
   async create(
     @Body() createEmployeeDto: CreateEmployeeRequestDto,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     return await this.employeesService.create(createEmployeeDto);
   }
 
@@ -127,7 +127,7 @@ export class EmployeesController {
   @ApiStandardResponses({
     ok: {
       description: "Update employee details",
-      type: PublicEmployeeResponseDto,
+      type: EmployeeFullResponseDto,
     },
     notFound: true,
     badRequest: true,
@@ -137,7 +137,7 @@ export class EmployeesController {
   async update(
     @Param("employeeId", ParseObjectIdPipe) employeeId: string,
     @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
   }
 

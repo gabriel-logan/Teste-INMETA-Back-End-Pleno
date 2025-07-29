@@ -8,6 +8,7 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { EmployeeFullResponseDto } from "src/common/dto/response/employee.dto";
 import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import {
@@ -33,7 +34,6 @@ import {
 import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
-import { PublicEmployeeResponseDto } from "../dto/response/public-employee.dto";
 import {
   ContractStatus,
   Employee,
@@ -54,15 +54,35 @@ export class EmployeesService {
 
   private toPublicEmployeeResponseDto(
     employee: Employee,
-  ): PublicEmployeeResponseDto {
+  ): EmployeeFullResponseDto {
     return {
-      id: employee._id,
+      _id: employee._id,
+      id: employee._id.toString(),
       firstName: employee.firstName,
       lastName: employee.lastName,
       fullName: employee.fullName,
-      contractStatus: employee.contractStatus,
-      documentTypes: employee.documentTypes,
+      username: employee.username,
       cpf: employee.cpf,
+      contractStatus: employee.contractStatus,
+      documentTypes: employee.documentTypes.map((docType) => ({
+        _id: docType._id,
+        id: docType._id.toString(),
+        name: docType.name,
+        createdAt: docType.createdAt,
+        updatedAt: docType.updatedAt,
+      })),
+      contractEvents: employee.contractEvents.map((event) => ({
+        _id: event._id,
+        id: event._id.toString(),
+        type: event.type,
+        date: event.date,
+        reason: event.reason,
+        employeeCpf: event.employeeCpf,
+        employeeFullName: event.employeeFullName,
+        createdAt: event.createdAt,
+        updatedAt: event.updatedAt,
+      })),
+      role: employee.role,
       createdAt: employee.createdAt,
       updatedAt: employee.updatedAt,
     };
@@ -80,7 +100,7 @@ export class EmployeesService {
     byContractStatus?: ContractStatus;
     byDocumentType?: string;
     byCpf?: string;
-  } = {}): Promise<PublicEmployeeResponseDto[]> {
+  } = {}): Promise<EmployeeFullResponseDto[]> {
     return (
       await this.employeeModel
         .find({
@@ -97,7 +117,7 @@ export class EmployeesService {
     ).map((employee) => this.toPublicEmployeeResponseDto(employee));
   }
 
-  async findById(employeeId: string): Promise<PublicEmployeeResponseDto> {
+  async findById(employeeId: string): Promise<EmployeeFullResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
       .populate("documentTypes")
@@ -124,7 +144,7 @@ export class EmployeesService {
 
   async findByIdWithContractEvents(
     employeeId: string,
-  ): Promise<PublicEmployeeResponseDto & { contractEvents: ContractEvent[] }> {
+  ): Promise<EmployeeFullResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
       .populate("contractEvents")
@@ -147,7 +167,7 @@ export class EmployeesService {
   @Transactional()
   async create(
     createEmployeeDto: CreateEmployeeRequestDto,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     const { firstName, lastName, cpf } = createEmployeeDto;
 
     const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
@@ -178,7 +198,7 @@ export class EmployeesService {
   async update(
     employeeId: string,
     updateEmployeeDto: UpdateEmployeeRequestDto,
-  ): Promise<PublicEmployeeResponseDto> {
+  ): Promise<EmployeeFullResponseDto> {
     const { firstName, lastName, cpf } = updateEmployeeDto;
 
     const parsedCpf = cpf?.replace(/\D/g, ""); // Remove non-numeric characters from CPF
