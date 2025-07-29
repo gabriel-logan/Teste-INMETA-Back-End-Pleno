@@ -12,11 +12,13 @@ import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { DocumentFullResponseDto } from "src/common/dto/response/document.dto";
 import { AuthPayload } from "src/common/types";
 import type { EnvGlobalConfig } from "src/configs/types";
+import { DocumentTypeAllowedValues } from "src/document-types/schemas/document-type.schema";
 import { EmployeesService } from "src/employees/providers/employees.service";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import {
   Document,
@@ -223,15 +225,7 @@ export class DocumentsService {
   async getDocumentStatusesByEmployeeId(
     employeeId: string,
     status?: DocumentStatus,
-  ): Promise<
-    Record<
-      string,
-      {
-        documentId: string;
-        status: DocumentStatus;
-      }
-    >
-  > {
+  ): Promise<GetDocumentStatusesByEmployeeIdResponseDto> {
     const employee = await this.employeesService.findById(employeeId);
 
     const documents = await this.documentModel
@@ -273,7 +267,17 @@ export class DocumentsService {
       );
     }
 
-    return documentStatuses;
+    return {
+      documentStatuses: Object.entries(documentStatuses).map(
+        ([documentName, documentStatus]) => ({
+          documentName: documentName as DocumentTypeAllowedValues,
+          documentStatus: {
+            documentId: documentStatus.documentId,
+            status: documentStatus.status,
+          },
+        }),
+      ),
+    };
   }
 
   async getAllMissingDocuments(

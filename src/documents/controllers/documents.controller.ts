@@ -29,6 +29,7 @@ import { AuthPayload } from "src/common/types";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
@@ -139,7 +140,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Returns document statuses by employee ID",
-      type: Object,
+      type: GetDocumentStatusesByEmployeeIdResponseDto,
     },
     notFound: true,
   })
@@ -148,15 +149,7 @@ export class DocumentsController {
   async getDocumentStatusesByEmployeeId(
     @Param("employeeId", new ParseObjectIdPipeLocal()) employeeId: string,
     @Query("status") status?: DocumentStatus,
-  ): Promise<
-    Record<
-      string,
-      {
-        documentId: string;
-        status: DocumentStatus;
-      }
-    >
-  > {
+  ): Promise<GetDocumentStatusesByEmployeeIdResponseDto> {
     return await this.documentsService.getDocumentStatusesByEmployeeId(
       employeeId,
       status,
