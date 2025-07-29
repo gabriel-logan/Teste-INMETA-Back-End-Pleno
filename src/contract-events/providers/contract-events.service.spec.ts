@@ -2,7 +2,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Model } from "mongoose";
+import { type Model, Types } from "mongoose";
 
 import type { CreateContractEventRequestDto } from "../dto/request/create-contract-event.dto";
 import type { UpdateContractEventRequestDto } from "../dto/request/update-contract-event.dto";
@@ -11,6 +11,8 @@ import {
   ContractEventType,
 } from "../schemas/contract-event.schema";
 import { ContractEventsService } from "./contract-events.service";
+
+const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
 
 describe("ContractEventsService", () => {
   let mockContractEventModel: Model<ContractEvent>;
@@ -21,7 +23,7 @@ describe("ContractEventsService", () => {
 
     constructor(data: Partial<ContractEvent> = {}) {
       this.data = {
-        _id: "1",
+        _id: mockGenericObjectId,
         ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -103,7 +105,7 @@ describe("ContractEventsService", () => {
   describe("findById", () => {
     it("should return a contract event", async () => {
       const mockFindById = {
-        lean: jest.fn().mockResolvedValue({ _id: "1" }),
+        lean: jest.fn().mockResolvedValue({ _id: mockGenericObjectId }),
       };
 
       const spy = jest
@@ -114,10 +116,10 @@ describe("ContractEventsService", () => {
           >,
         );
 
-      const result = await service.findById("1");
+      const result = await service.findById(mockGenericObjectId);
 
       expect(result).toBeDefined();
-      expect(result._id).toEqual("1");
+      expect(result._id).toEqual(mockGenericObjectId);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -134,9 +136,9 @@ describe("ContractEventsService", () => {
           >,
         );
 
-      await expect(service.findById("nonexistent")).rejects.toThrow(
-        "ContractEvent with id nonexistent not found",
-      );
+      await expect(
+        service.findById("nonexistent" as unknown as Types.ObjectId),
+      ).rejects.toThrow("ContractEvent with id nonexistent not found");
     });
   });
 
@@ -179,8 +181,11 @@ describe("ContractEventsService", () => {
 
   describe("findManyByIds", () => {
     it("should return an array of contract events", async () => {
+      const id1 = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
+      const id2 = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3b");
+
       const mockFind = {
-        lean: jest.fn().mockResolvedValue([{ _id: "1" }, { _id: "2" }]),
+        lean: jest.fn().mockResolvedValue([{ _id: id1 }, { _id: id2 }]),
       };
 
       jest
@@ -189,12 +194,12 @@ describe("ContractEventsService", () => {
           mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
         );
 
-      const result = await service.findManyByIds(["1", "2"]);
+      const result = await service.findManyByIds([id1, id2]);
 
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(2);
-      expect(result[0]._id).toEqual("1");
-      expect(result[1]._id).toEqual("2");
+      expect(result[0]._id).toEqual(id1);
+      expect(result[1]._id).toEqual(id2);
     });
 
     it("should return an empty array if no contract events found or if no IDs are provided", async () => {
@@ -208,7 +213,9 @@ describe("ContractEventsService", () => {
           mockFind as unknown as ReturnType<typeof mockContractEventModel.find>,
         );
 
-      const result1 = await service.findManyByIds(["nonexistent"]);
+      const result1 = await service.findManyByIds([
+        "nonexistent" as unknown as Types.ObjectId,
+      ]);
       const result2 = await service.findManyByIds([]);
 
       expect(result1).toEqual([]);
@@ -230,8 +237,8 @@ describe("ContractEventsService", () => {
 
       expect(result).toBeDefined();
       expect(result).toEqual({
-        _id: "1",
-        id: "1",
+        _id: mockGenericObjectId,
+        id: mockGenericObjectId.toString(),
         ...mockDto,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
@@ -260,22 +267,22 @@ describe("ContractEventsService", () => {
       const spyFindById = jest
         .spyOn(mockContractEventModel, "findById")
         .mockReturnValue({
-          _id: "1",
+          _id: mockGenericObjectId,
           ...mockOldContractEvent,
           createdAt: new Date(),
           updatedAt: new Date(),
           save: jest.fn().mockResolvedValue({
-            _id: "1",
+            _id: mockGenericObjectId,
             ...mockUpdateDto,
             createdAt: new Date(),
             updatedAt: new Date(),
           }),
         } as unknown as ReturnType<typeof mockContractEventModel.findById>);
 
-      const result = await service.update("1", mockUpdateDto);
+      const result = await service.update(mockGenericObjectId, mockUpdateDto);
 
       expect(result).toBeDefined();
-      expect(result._id).toEqual("1");
+      expect(result._id).toEqual(mockGenericObjectId);
       expect(result.type).toEqual(mockUpdateDto.type);
       expect(spyFindById).toHaveBeenCalledTimes(1);
     });
@@ -284,7 +291,7 @@ describe("ContractEventsService", () => {
       jest.spyOn(mockContractEventModel, "findById").mockResolvedValue(null);
 
       await expect(
-        service.update("nonexistent", {
+        service.update("nonexistent" as unknown as Types.ObjectId, {
           type: ContractEventType.FIRED,
           date: new Date(),
           reason: "Updated reason",

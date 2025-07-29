@@ -1,5 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import { Types } from "mongoose";
 
 import { ContractEventsService } from "../providers/contract-events.service";
 import { ContractEventsController } from "./contract-events.controller";
@@ -57,7 +58,7 @@ describe("ContractEventsController", () => {
   describe("findById", () => {
     it("should return a contract event by id", async () => {
       const mockEvent = { id: "1" };
-      const contractEventId = "1";
+      const contractEventId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
       mockContractEventsService.findById.mockResolvedValue(mockEvent);
 
       const result = await controller.findById(contractEventId);
@@ -67,12 +68,14 @@ describe("ContractEventsController", () => {
       );
     });
     it("should throw an error if contract event not found", async () => {
-      const contractEventId = "1";
+      const contractEventId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
       mockContractEventsService.findById.mockRejectedValue(
-        new Error(`ContractEvent with id ${contractEventId} not found`),
+        new Error(
+          `ContractEvent with id ${contractEventId.toString()} not found`,
+        ),
       );
       await expect(controller.findById(contractEventId)).rejects.toThrow(
-        `ContractEvent with id ${contractEventId} not found`,
+        `ContractEvent with id ${contractEventId.toString()} not found`,
       );
       expect(mockContractEventsService.findById).toHaveBeenCalledWith(
         contractEventId,
