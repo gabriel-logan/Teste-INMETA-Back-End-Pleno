@@ -9,6 +9,7 @@ import { EmployeesService } from "./providers/employees.service";
 import { Employee, EmployeeSchema } from "./schemas/employee.schema";
 import { HumanResourcesService } from './providers/human-resources.service';
 import { AdminEmployeesService } from './providers/admin-employees.service';
+import { DocumentTypeLinkersService } from './providers/document-type-linkers.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { AdminEmployeesService } from './providers/admin-employees.service';
     ContractEventsModule,
   ],
   controllers: [EmployeesController],
-  providers: [EmployeesService, HumanResourcesService, AdminEmployeesService],
+  providers: [EmployeesService, HumanResourcesService, AdminEmployeesService, DocumentTypeLinkersService],
   exports: [EmployeesService],
 })
 export class EmployeesModule {}
