@@ -1,11 +1,11 @@
-import type { ThrottlerModuleOptions } from "@nestjs/throttler";
+import type { ThrottlerOptions } from "@nestjs/throttler";
 import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-const throttlerModuleOptions: ThrottlerModuleOptions = [
+const throttlerModuleOptions: ThrottlerOptions[] = [
   {
     ttl(context): number {
       const request = context.switchToHttp().getRequest<Request>();
