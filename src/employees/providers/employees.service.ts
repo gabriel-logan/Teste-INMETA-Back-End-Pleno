@@ -455,7 +455,7 @@ export class EmployeesService {
     for (const documentType of documentTypes) {
       const newDocument = await this.employeeDocumentService.createDocument(
         employee._id,
-        documentType.id,
+        documentType._id,
       );
       documentsIds.push(newDocument._id);
     }
@@ -515,7 +515,7 @@ export class EmployeesService {
       const deletedDocumentId =
         await this.employeeDocumentService.deleteDocumentByEmployeeIdAndDocumentTypeId(
           employeeId,
-          documentType.id,
+          documentType._id,
         );
 
       deletedDocumentIds.push(deletedDocumentId);
