@@ -9,8 +9,8 @@ describe("ParseObjectIdPipeLocal", () => {
   beforeAll(() => {
     defaultMetadata = {
       type: "query",
-      metatype: String,
-      data: "",
+      metatype: Object,
+      data: "objectIdQuery",
     };
   });
 
@@ -20,13 +20,13 @@ describe("ParseObjectIdPipeLocal", () => {
 
   it("should throw BadRequestException if value is not a string", () => {
     expect(() => pipe.transform(123, defaultMetadata)).toThrow(
-      "Value is required and must be a string.",
+      "Expected a string for ObjectId in query 'objectIdQuery'.",
     );
     expect(() => pipe.transform(null, defaultMetadata)).toThrow(
-      "Value is required and must be a string.",
+      "Expected a string for ObjectId in query 'objectIdQuery'.",
     );
     expect(() => pipe.transform({}, defaultMetadata)).toThrow(
-      "Value is required and must be a string.",
+      "Expected a string for ObjectId in query 'objectIdQuery'.",
     );
   });
 
@@ -49,7 +49,7 @@ describe("ParseObjectIdPipeLocal", () => {
   it("should throw BadRequestException if optional is true but value is not a string or undefined", () => {
     const optionalPipe = new ParseObjectIdPipeLocal({ optional: true });
     expect(() => optionalPipe.transform(123, defaultMetadata)).toThrow(
-      "Value is required and must be a string.",
+      "Expected a string for ObjectId in query 'objectIdQuery'.",
     );
   });
 });

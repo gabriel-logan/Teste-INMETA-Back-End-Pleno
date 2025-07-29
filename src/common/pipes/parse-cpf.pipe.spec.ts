@@ -9,8 +9,8 @@ describe("ParseCpfPipe", () => {
   beforeAll(() => {
     defaultMetadata = {
       type: "query",
-      metatype: String,
-      data: "",
+      metatype: Object,
+      data: "cpfQuery",
     };
   });
 
@@ -20,19 +20,19 @@ describe("ParseCpfPipe", () => {
 
   it("should throw BadRequestException if value is not a string", () => {
     expect(() => pipe.transform(123, defaultMetadata)).toThrow(
-      "The provided value is not a valid CPF.",
+      "Invalid CPF provided in query 'cpfQuery'.",
     );
     expect(() => pipe.transform(null, defaultMetadata)).toThrow(
-      "The provided value is not a valid CPF.",
+      "Invalid CPF provided in query 'cpfQuery'.",
     );
     expect(() => pipe.transform({}, defaultMetadata)).toThrow(
-      "The provided value is not a valid CPF.",
+      "Invalid CPF provided in query 'cpfQuery'.",
     );
   });
 
   it("should throw BadRequestException for invalid CPF string", () => {
     expect(() => pipe.transform("invalid", defaultMetadata)).toThrow(
-      "The provided value is not a valid CPF.",
+      "Invalid CPF provided in query 'cpfQuery'.",
     );
   });
 
@@ -49,7 +49,7 @@ describe("ParseCpfPipe", () => {
   it("should throw BadRequestException if optional is true but value is not a string or undefined", () => {
     const optionalPipe = new ParseCpfPipe({ optional: true });
     expect(() => optionalPipe.transform(123, defaultMetadata)).toThrow(
-      "The provided value is not a valid CPF.",
+      "Invalid CPF provided in query 'cpfQuery'.",
     );
   });
 });
