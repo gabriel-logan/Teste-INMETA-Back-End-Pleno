@@ -2,7 +2,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Model } from "mongoose";
+import { type Model, Types } from "mongoose";
 
 import type { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import type { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -12,12 +12,14 @@ import {
 } from "../schemas/document-type.schema";
 import { DocumentTypesService } from "./document-types.service";
 
+const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
+
 describe("DocumentTypesService", () => {
   let service: DocumentTypesService;
   let mockDocumentTypeModel: Model<DocumentType>;
 
   const mockDocumentType = {
-    _id: "1",
+    _id: mockGenericObjectId,
     name: "Test Document Type",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -28,7 +30,7 @@ describe("DocumentTypesService", () => {
 
     constructor(data: Partial<DocumentType> = {}) {
       this.data = {
-        _id: "1",
+        _id: mockGenericObjectId,
         ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -138,7 +140,7 @@ describe("DocumentTypesService", () => {
         );
 
       await expect(service.findById(mockDocumentType._id)).rejects.toThrow(
-        "DocumentType with id 1 not found",
+        "DocumentType with id 60c72b2f9b1e8b001c8e4d3a not found",
       );
 
       expect(mockFindById.lean).toHaveBeenCalled();
@@ -208,8 +210,8 @@ describe("DocumentTypesService", () => {
 
       expect(result).toBeDefined();
       expect(result).toEqual({
-        _id: expect.any(String) as string,
-        id: mockDocumentType._id,
+        _id: expect.any(Types.ObjectId) as Types.ObjectId,
+        id: mockDocumentType._id.toString(),
         name: createDocumentTypeDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
@@ -230,12 +232,12 @@ describe("DocumentTypesService", () => {
       const spyFindById = jest
         .spyOn(mockDocumentTypeModel, "findById")
         .mockReturnValue({
-          _id: "1",
+          _id: mockGenericObjectId,
           ...mockOldDocumentType,
           createdAt: new Date(),
           updatedAt: new Date(),
           save: jest.fn().mockResolvedValue({
-            _id: "1",
+            _id: mockGenericObjectId,
             ...updateDocumentTypeDto,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -268,7 +270,7 @@ describe("DocumentTypesService", () => {
       await expect(
         service.update(mockDocumentType._id, updateDocumentTypeDto),
       ).rejects.toThrow(
-        `DocumentType with id ${mockDocumentType._id} not found`,
+        `DocumentType with id ${mockDocumentType._id.toString()} not found`,
       );
     });
   });
