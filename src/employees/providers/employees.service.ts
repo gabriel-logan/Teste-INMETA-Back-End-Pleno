@@ -95,7 +95,7 @@ export class EmployeesService {
     byFirstName?: string;
     byLastName?: string;
     byContractStatus?: ContractStatus;
-    byDocumentTypeId?: string;
+    byDocumentTypeId?: Types.ObjectId;
     byCpf?: string;
   } = {}): Promise<EmployeeWithDocumentTypesResponseDto[]> {
     const filter: Record<string, any> = {};
@@ -119,7 +119,7 @@ export class EmployeesService {
     }
 
     if (byDocumentTypeId) {
-      filter.documentTypes = new Types.ObjectId(byDocumentTypeId);
+      filter.documentTypes = byDocumentTypeId;
     }
 
     if (byCpf) {
@@ -137,7 +137,7 @@ export class EmployeesService {
   }
 
   async findById(
-    employeeId: string,
+    employeeId: Types.ObjectId,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
@@ -145,7 +145,9 @@ export class EmployeesService {
       .lean();
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     return this.genericEmployeeResponseMapper(employee);
@@ -164,7 +166,7 @@ export class EmployeesService {
   }
 
   async findByIdWithContractEvents(
-    employeeId: string,
+    employeeId: Types.ObjectId,
   ): Promise<EmployeeWithContractEventsResponseDto> {
     const employee = await this.employeeModel
       .findById(employeeId)
@@ -172,7 +174,9 @@ export class EmployeesService {
       .lean();
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     const contractEvents = await this.contractEventsService.findManyByIds(
@@ -231,7 +235,7 @@ export class EmployeesService {
   }
 
   async update(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
     const { firstName, lastName, cpf } = updateEmployeeDto;
@@ -247,21 +251,25 @@ export class EmployeesService {
       .lean();
 
     if (!updatedEmployee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     return this.genericEmployeeResponseMapper(updatedEmployee);
   }
 
   private async getEmployeeWithContractEvents(
-    employeeId: string,
+    employeeId: Types.ObjectId,
   ): Promise<EmployeeDocument> {
     const employee = await this.employeeModel
       .findById(employeeId)
       .populate("contractEvents");
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     return employee;
@@ -286,15 +294,15 @@ export class EmployeesService {
   }
 
   private employeeIdIsSameAsFromReq(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     employeeFromReq: AuthPayload,
   ): boolean {
-    return employeeFromReq.sub === employeeId;
+    return employeeFromReq.sub === employeeId.toString();
   }
 
   @Transactional()
   async fire(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     fireEmployeeDto: FireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
@@ -320,7 +328,7 @@ export class EmployeesService {
 
     if (employeeToFire.contractStatus === ContractStatus.INACTIVE) {
       throw new BadRequestException(
-        `Employee with id ${employeeId} is already inactive`,
+        `Employee with id ${employeeId.toString()} is already inactive`,
       );
     }
 
@@ -337,13 +345,13 @@ export class EmployeesService {
 
     return {
       reason: fireEmployeeDto.reason,
-      message: `Successfully terminated contract for employee with id ${employeeId}`,
+      message: `Successfully terminated contract for employee with id ${employeeId.toString()}`,
     };
   }
 
   @Transactional()
   async reHire(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     reHireEmployeeDto: ReHireEmployeeRequestDto,
     employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
@@ -369,7 +377,7 @@ export class EmployeesService {
 
     if (employee.contractStatus === ContractStatus.ACTIVE) {
       throw new BadRequestException(
-        `Employee with id ${employeeId} is already active`,
+        `Employee with id ${employeeId.toString()} is already active`,
       );
     }
 
@@ -386,13 +394,13 @@ export class EmployeesService {
 
     return {
       reason: reHireEmployeeDto.reason,
-      message: `Successfully rehired employee with id ${employeeId}`,
+      message: `Successfully rehired employee with id ${employeeId.toString()}`,
     };
   }
 
   @Transactional()
   async linkDocumentTypes(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     linkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     const { documentTypeIds } = linkDocumentTypesDto;
@@ -404,7 +412,9 @@ export class EmployeesService {
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     // Prevent duplicate document types
@@ -421,7 +431,7 @@ export class EmployeesService {
       if (duplicates.length > 0) {
         const msg = `Document types ${duplicates.join(
           ", ",
-        )} are already linked to employee ${employeeId}`;
+        )} are already linked to employee ${employeeId.toString()}`;
 
         this.logger.warn(msg);
 
@@ -462,7 +472,7 @@ export class EmployeesService {
 
   @Transactional()
   async unlinkDocumentTypes(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     unlinkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     const { documentTypeIds } = unlinkDocumentTypesDto;
@@ -474,7 +484,9 @@ export class EmployeesService {
     const employee = await this.employeeModel.findById(employeeId);
 
     if (!employee) {
-      throw new NotFoundException(`Employee with id ${employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with id ${employeeId.toString()} not found`,
+      );
     }
 
     // Check if the document types are linked to the employee
@@ -484,7 +496,7 @@ export class EmployeesService {
 
     if (linkedDocumentTypes.length === 0) {
       throw new BadRequestException(
-        `No linked document types found for employee ${employeeId}`,
+        `No linked document types found for employee ${employeeId.toString()}`,
       );
     }
 
@@ -512,7 +524,7 @@ export class EmployeesService {
     await employee.save();
 
     return {
-      documentTypeIdsUnlinked: documentTypeIds.map((doc) => doc),
+      documentTypeIdsUnlinked: documentTypeIds.map((doc) => doc.toString()),
       documentIdsDeleted: deletedDocumentIds.map((doc) => doc._id.toString()),
     };
   }

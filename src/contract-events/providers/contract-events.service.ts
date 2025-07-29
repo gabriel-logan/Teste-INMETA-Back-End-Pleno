@@ -74,15 +74,19 @@ export class ContractEventsService {
     );
   }
 
-  async findById(id: string): Promise<ContractEventResponseDto> {
+  async findById(id: Types.ObjectId): Promise<ContractEventResponseDto> {
+    const stringId = id.toString();
+
     return await getAndSetCache(
       this.cacheManager,
-      cacheKeys.contractEvents.findById(id),
+      cacheKeys.contractEvents.findById(stringId),
       async () => {
         const contractEvent = await this.contractEventModel.findById(id).lean();
 
         if (!contractEvent) {
-          throw new NotFoundException(`ContractEvent with id ${id} not found`);
+          throw new NotFoundException(
+            `ContractEvent with id ${stringId} not found`,
+          );
         }
 
         return this.genericContractEventResponseMapper(contractEvent);
@@ -111,7 +115,7 @@ export class ContractEventsService {
   }
 
   async findManyByIds(
-    ids: string[] | Types.ObjectId[],
+    ids: Types.ObjectId[],
   ): Promise<ContractEventResponseDto[]> {
     const idsSet = new Set(ids.map((id) => id.toString()));
 
@@ -167,7 +171,7 @@ export class ContractEventsService {
   }
 
   async update(
-    id: string,
+    id: Types.ObjectId,
     updateContractEventDto: UpdateContractEventRequestDto,
   ): Promise<ContractEventResponseDto> {
     const { type, date, reason, employeeFullName, employeeCpf } =
@@ -176,7 +180,9 @@ export class ContractEventsService {
     const existingContractEvent = await this.contractEventModel.findById(id);
 
     if (!existingContractEvent) {
-      throw new NotFoundException(`ContractEvent with id ${id} not found`);
+      throw new NotFoundException(
+        `ContractEvent with id ${id.toString()} not found`,
+      );
     }
 
     existingContractEvent.type = type;

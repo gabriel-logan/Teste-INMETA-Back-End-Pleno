@@ -1,7 +1,7 @@
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { cacheKeys } from "src/common/constants";
 import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
 import { invalidateKeys, setMultipleKeys } from "src/common/utils/cache-utils";
@@ -63,10 +63,14 @@ export class DocumentTypesService {
     );
   }
 
-  async findById(documentTypeId: string): Promise<DocumentTypeResponseDto> {
+  async findById(
+    documentTypeId: Types.ObjectId,
+  ): Promise<DocumentTypeResponseDto> {
+    const stringId = documentTypeId.toString();
+
     return await getAndSetCache(
       this.cacheManager,
-      cacheKeys.documentTypes.findById(documentTypeId),
+      cacheKeys.documentTypes.findById(stringId),
       async () => {
         const docType = await this.documentTypeModel
           .findById(documentTypeId)
@@ -74,7 +78,7 @@ export class DocumentTypesService {
 
         if (!docType) {
           throw new NotFoundException(
-            `DocumentType with id ${documentTypeId} not found`,
+            `DocumentType with id ${stringId} not found`,
           );
         }
 
@@ -131,7 +135,7 @@ export class DocumentTypesService {
   }
 
   async update(
-    documentTypeId: string,
+    documentTypeId: Types.ObjectId,
     updateDocumentTypeDto: UpdateDocumentTypeRequestDto,
   ): Promise<DocumentTypeResponseDto> {
     const { name } = updateDocumentTypeDto;
@@ -141,7 +145,7 @@ export class DocumentTypesService {
 
     if (!existingDocumentType) {
       throw new NotFoundException(
-        `DocumentType with id ${documentTypeId} not found`,
+        `DocumentType with id ${documentTypeId.toString()} not found`,
       );
     }
 

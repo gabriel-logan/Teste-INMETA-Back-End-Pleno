@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { DocumentFullResponseDto } from "src/common/dto/response/document.dto";
 import { AuthPayload } from "src/common/types";
@@ -83,7 +83,7 @@ export class DocumentsService {
     ).map((doc) => this.genericDocumentResponseMapper(doc));
   }
 
-  async findById(documentId: string): Promise<DocumentFullResponseDto> {
+  async findById(documentId: Types.ObjectId): Promise<DocumentFullResponseDto> {
     const document = await this.documentModel
       .findById(documentId)
       .populate("documentType")
@@ -91,14 +91,16 @@ export class DocumentsService {
       .lean();
 
     if (!document) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
+      throw new NotFoundException(
+        `Document with id ${documentId.toString()} not found`,
+      );
     }
 
     return this.genericDocumentResponseMapper(document);
   }
 
   async update(
-    documentId: string,
+    documentId: Types.ObjectId,
     updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<DocumentFullResponseDto> {
     const { status } = updateDocumentDto;
@@ -115,7 +117,9 @@ export class DocumentsService {
       .lean();
 
     if (!updatedDocument) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
+      throw new NotFoundException(
+        `Document with id ${documentId.toString()} not found`,
+      );
     }
 
     return this.genericDocumentResponseMapper(updatedDocument);
@@ -130,14 +134,16 @@ export class DocumentsService {
   }
 
   private async getDocumentByIdWithEmployee(
-    documentId: string,
+    documentId: Types.ObjectId,
   ): Promise<DocumentDocument> {
     const document = await this.documentModel
       .findById(documentId)
       .populate("employee");
 
     if (!document) {
-      throw new NotFoundException(`Document with id ${documentId} not found`);
+      throw new NotFoundException(
+        `Document with id ${documentId.toString()} not found`,
+      );
     }
 
     return document;
@@ -147,7 +153,7 @@ export class DocumentsService {
   // Replace it with the actual type used for document files
   @Transactional()
   async sendDocumentFile(
-    documentId: string,
+    documentId: Types.ObjectId,
     documentFile: Express.Multer.File,
     employee: AuthPayload,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
@@ -156,7 +162,7 @@ export class DocumentsService {
     // Check if the document is already sent
     if (document.documentUrl) {
       throw new BadRequestException(
-        `Document with id ${documentId} has already been sent. If you want to resend it, please delete the existing document and create a new one.`,
+        `Document with id ${documentId.toString()} has already been sent. If you want to resend it, please delete the existing document and create a new one.`,
       );
     }
 
@@ -166,7 +172,7 @@ export class DocumentsService {
     if (employee.role === EmployeeRole.COMMON) {
       if (!document.employee._id.equals(employee.sub)) {
         throw new ForbiddenException(
-          `Employee ${employee.username} is not the owner of document ${documentId}`,
+          `Employee ${employee.username} is not the owner of document ${documentId.toString()}`,
         );
       }
     }
@@ -195,13 +201,13 @@ export class DocumentsService {
 
   @Transactional()
   async deleteDocumentFile(
-    documentId: string,
+    documentId: Types.ObjectId,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
     const document = await this.getDocumentByIdWithEmployee(documentId);
 
     if (!document.documentUrl) {
       throw new BadRequestException(
-        `Document with id ${documentId} does not have a file to delete.`,
+        `Document with id ${documentId.toString()} does not have a file to delete.`,
       );
     }
 
@@ -224,7 +230,7 @@ export class DocumentsService {
   }
 
   async getDocumentStatusesByEmployeeId(
-    employeeId: string,
+    employeeId: Types.ObjectId,
     status?: DocumentStatus,
   ): Promise<GetDocumentStatusesByEmployeeIdResponseDto> {
     const employee = await this.employeesService.findById(employeeId);
@@ -236,7 +242,7 @@ export class DocumentsService {
 
     if (documents.length === 0) {
       throw new NotFoundException(
-        `No documents found for employee with id ${employeeId}`,
+        `No documents found for employee with id ${employeeId.toString()}`,
       );
     }
 
@@ -264,7 +270,7 @@ export class DocumentsService {
     // If no documents match the requested status, throw an error
     if (Object.keys(documentStatuses).length === 0) {
       throw new NotFoundException(
-        `No documents found for employee with id ${employeeId} with status ${status}`,
+        `No documents found for employee with id ${employeeId.toString()} with status ${status}`,
       );
     }
 
@@ -284,8 +290,8 @@ export class DocumentsService {
   async getAllMissingDocuments(
     page = 1,
     limit = 10,
-    employeeId?: string,
-    documentTypeId?: string,
+    employeeId?: Types.ObjectId,
+    documentTypeId?: Types.ObjectId,
   ): Promise<{
     documents: DocumentFullResponseDto[];
     total: number;
