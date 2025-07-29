@@ -14,6 +14,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { Types } from "mongoose";
 import { fileValidation } from "src/common/constants";
 import {
   ApiGetAllMissingDocumentsQueries,
@@ -63,7 +64,8 @@ export class DocumentsController {
   })
   @Get(":documentId")
   async findById(
-    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal())
+    documentId: Types.ObjectId,
   ): Promise<DocumentFullResponseDto> {
     return await this.documentsService.findById(documentId);
   }
@@ -79,7 +81,8 @@ export class DocumentsController {
   })
   @Patch(":documentId")
   async update(
-    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal())
+    documentId: Types.ObjectId,
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
   ): Promise<DocumentFullResponseDto> {
     return await this.documentsService.update(documentId, updateDocumentDto);
@@ -99,7 +102,8 @@ export class DocumentsController {
   @Post(":documentId/file/send")
   @UseInterceptors(FileInterceptor("documentFile"))
   async sendDocumentFile(
-    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal())
+    documentId: Types.ObjectId,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
@@ -131,7 +135,8 @@ export class DocumentsController {
   })
   @Delete(":documentId/file/delete")
   async deleteDocumentFile(
-    @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
+    @Param("documentId", new ParseObjectIdPipeLocal())
+    documentId: Types.ObjectId,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
     return await this.documentsService.deleteDocumentFile(documentId);
   }
@@ -147,7 +152,8 @@ export class DocumentsController {
   @ApiQuery({ required: false, name: "status", enum: DocumentStatus })
   @Get("employee/:employeeId/statuses")
   async getDocumentStatusesByEmployeeId(
-    @Param("employeeId", new ParseObjectIdPipeLocal()) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Query("status") status?: DocumentStatus,
   ): Promise<GetDocumentStatusesByEmployeeIdResponseDto> {
     return await this.documentsService.getDocumentStatusesByEmployeeId(
@@ -170,9 +176,9 @@ export class DocumentsController {
     @Query("page", new ParseIntPipe({ optional: true })) page: number = 1,
     @Query("limit", new ParseIntPipe({ optional: true })) limit: number = 10,
     @Query("employeeId", new ParseObjectIdPipeLocal({ optional: true }))
-    employeeId?: string,
+    employeeId?: Types.ObjectId,
     @Query("documentTypeId", new ParseObjectIdPipeLocal({ optional: true }))
-    documentTypeId?: string,
+    documentTypeId?: Types.ObjectId,
   ): Promise<{
     documents: DocumentFullResponseDto[];
     total: number;

@@ -9,8 +9,8 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { ApiSecurity } from "@nestjs/swagger";
+import { Types } from "mongoose";
 import {
   ApiGetAllEmployeesQueries,
   ApiGlobalErrorResponses,
@@ -67,7 +67,7 @@ export class EmployeesController {
     @Query("byLastName") byLastName?: string,
     @Query("byContractStatus") byContractStatus?: ContractStatus,
     @Query("byDocumentTypeId", new ParseObjectIdPipeLocal({ optional: true }))
-    byDocumentTypeId?: string,
+    byDocumentTypeId?: Types.ObjectId,
     @Query("byCpf", new ParseCpfPipe({ optional: true })) byCpf?: string,
   ): Promise<EmployeeWithDocumentTypesResponseDto[]> {
     return await this.employeesService.findAll({
@@ -90,7 +90,8 @@ export class EmployeesController {
   })
   @Get(":employeeId")
   async findById(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
     return await this.employeesService.findById(employeeId);
   }
@@ -106,7 +107,8 @@ export class EmployeesController {
   })
   @Get(":employeeId/contract-events")
   async findByIdWithContractEvents(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
   ): Promise<EmployeeWithContractEventsResponseDto> {
     return await this.employeesService.findByIdWithContractEvents(employeeId);
   }
@@ -142,7 +144,8 @@ export class EmployeesController {
   })
   @Patch(":employeeId")
   async update(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
@@ -161,7 +164,8 @@ export class EmployeesController {
   @HttpCode(HttpStatus.OK)
   @Post("fire/:employeeId")
   async fire(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Body() fireEmployeeDto: FireEmployeeRequestDto,
     @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<FireEmployeeResponseDto> {
@@ -185,7 +189,8 @@ export class EmployeesController {
   @HttpCode(HttpStatus.OK)
   @Post("rehire/:employeeId")
   async reHire(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Body() reHireEmployeeDto: ReHireEmployeeRequestDto,
     @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<ReHireEmployeeResponseDto> {
@@ -209,7 +214,8 @@ export class EmployeesController {
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/link")
   async linkDocumentTypes(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Body() linkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeLinkedResponseDto> {
     return await this.employeesService.linkDocumentTypes(
@@ -231,7 +237,8 @@ export class EmployeesController {
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/unlink")
   async unlinkDocumentTypes(
-    @Param("employeeId", ParseObjectIdPipe) employeeId: string,
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
     @Body() unlinkDocumentTypesDto: LinkDocumentTypesRequestDto,
   ): Promise<DocumentTypeEmployeeUnlinkedResponseDto> {
     return await this.employeesService.unlinkDocumentTypes(

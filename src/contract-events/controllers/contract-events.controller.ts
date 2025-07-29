@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -54,7 +55,7 @@ export class ContractEventsController {
   @Get(":contractEventId")
   async findById(
     @Param("contractEventId", new ParseObjectIdPipeLocal())
-    contractEventId: string,
+    contractEventId: Types.ObjectId,
   ): Promise<ContractEventResponseDto> {
     return await this.contractEventsService.findById(contractEventId);
   }

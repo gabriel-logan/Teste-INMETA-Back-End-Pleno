@@ -9,6 +9,7 @@ import {
   Put,
 } from "@nestjs/common";
 import { ApiParam, ApiSecurity } from "@nestjs/swagger";
+import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
@@ -52,7 +53,7 @@ export class DocumentTypesController {
   @Get("id/:documentTypeId")
   async findById(
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
-    documentTypeId: string,
+    documentTypeId: Types.ObjectId,
   ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.findById(documentTypeId);
   }
@@ -113,7 +114,7 @@ export class DocumentTypesController {
   @Put(":documentTypeId")
   async update(
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
-    documentTypeId: string,
+    documentTypeId: Types.ObjectId,
     @Body() updateDocumentsTypeDto: UpdateDocumentTypeRequestDto,
   ): Promise<DocumentTypeResponseDto> {
     return await this.documentTypesService.update(
