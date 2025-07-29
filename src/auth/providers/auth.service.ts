@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import type { AuthPayload } from "src/common/types";
 import { EmployeesService } from "src/employees/providers/employees.service";
+import { ContractStatus } from "src/employees/schemas/employee.schema";
 
 import { CreateAuthRequestDto } from "../dto/request/create-auth.dto";
 import { SignInAuthResponseDto } from "../dto/response/sign-in-auth.dto";
@@ -29,6 +30,12 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid username or password");
+    }
+
+    if (employee.contractStatus !== ContractStatus.ACTIVE) {
+      throw new UnauthorizedException(
+        "Employee contract is not active, cannot sign in",
+      );
     }
 
     const payload: AuthPayload = {
