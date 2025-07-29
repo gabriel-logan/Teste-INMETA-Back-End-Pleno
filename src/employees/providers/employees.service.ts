@@ -354,22 +354,6 @@ export class EmployeesService {
     return this.genericEmployeeResponseMapper(updatedEmployee);
   }
 
-  private async getEmployeeWithContractEvents(
-    employeeId: Types.ObjectId,
-  ): Promise<EmployeeDocument> {
-    const employee = await this.employeeModel
-      .findById(employeeId)
-      .populate("contractEvents");
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Employee with id ${employeeId.toString()} not found`,
-      );
-    }
-
-    return employee;
-  }
-
   private async createContractEvent({
     type,
     reason,
@@ -419,7 +403,10 @@ export class EmployeesService {
       this.logger.warn("Only managers can fire employees");
     }
 
-    const employeeToFire = await this.getEmployeeWithContractEvents(employeeId);
+    const employeeToFire = await this.findById(employeeId, {
+      populates: ["contractEvents"],
+      lean: false,
+    });
 
     if (employeeToFire.contractStatus === ContractStatus.INACTIVE) {
       throw new BadRequestException(
@@ -468,7 +455,10 @@ export class EmployeesService {
       this.logger.warn("Only managers can rehire employees");
     }
 
-    const employee = await this.getEmployeeWithContractEvents(employeeId);
+    const employee = await this.findById(employeeId, {
+      populates: ["contractEvents"],
+      lean: false,
+    });
 
     if (employee.contractStatus === ContractStatus.ACTIVE) {
       throw new BadRequestException(
@@ -504,13 +494,9 @@ export class EmployeesService {
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
     );
 
-    const employee = await this.employeeModel.findById(employeeId);
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Employee with id ${employeeId.toString()} not found`,
-      );
-    }
+    const employee = await this.findById(employeeId, {
+      lean: false,
+    });
 
     // Prevent duplicate document types
     if (employee.documentTypes.length > 0) {
@@ -576,13 +562,9 @@ export class EmployeesService {
       documentTypeIds.map((id) => this.documentTypesService.findById(id)),
     );
 
-    const employee = await this.employeeModel.findById(employeeId);
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Employee with id ${employeeId.toString()} not found`,
-      );
-    }
+    const employee = await this.findById(employeeId, {
+      lean: false,
+    });
 
     // Check if the document types are linked to the employee
     const linkedDocumentTypes = employee.documentTypes.filter((doc) =>
