@@ -16,7 +16,7 @@ export class ParseCpfPipe implements PipeTransform<unknown, string> {
     }
 
     if (isCpf(value)) {
-      return (value as string).replace(/\D/g, ""); // Remove non-numeric characters
+      return (value as string).replace(/\D/g, "").trim(); // Remove non-numeric characters and trim whitespace
     }
 
     throw new BadRequestException("The provided value is not a valid CPF.");
