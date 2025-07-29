@@ -335,15 +335,6 @@ export class EmployeesService {
     return this.genericEmployeeResponseMapper(updatedEmployee);
   }
 
-  async validatePassword(
-    password: string,
-    passwordHash: string,
-  ): Promise<boolean> {
-    const isPasswordValid = await compare(password, passwordHash);
-
-    return isPasswordValid;
-  }
-
   @Transactional()
   async updatePassword(
     employeeId: Types.ObjectId,
@@ -361,7 +352,7 @@ export class EmployeesService {
       lean: false,
     });
 
-    const isCurrentPasswordValid = await this.validatePassword(
+    const isCurrentPasswordValid = await compare(
       currentPassword,
       employee.password,
     );
