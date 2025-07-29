@@ -3,11 +3,13 @@ import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
+type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
 const throttlerModuleOptions: ThrottlerModuleOptions = [
   {
     ttl(context): number {
       const request = context.switchToHttp().getRequest<Request>();
-      const method = request.method;
+      const method = request.method as Method;
 
       if (method === "GET") {
         return seconds(25);
@@ -20,7 +22,7 @@ const throttlerModuleOptions: ThrottlerModuleOptions = [
 
     blockDuration: (context): number => {
       const request = context.switchToHttp().getRequest<Request>();
-      const method = request.method;
+      const method = request.method as Method;
 
       if (method === "GET") {
         return seconds(10);
@@ -37,8 +39,10 @@ const throttlerModuleOptions: ThrottlerModuleOptions = [
 
       const freeEndpoints = [...cachedEndpoints, ...fileEndpoints];
 
+      const method = request.method as Method;
+
       return (
-        request.method === "GET" &&
+        method === "GET" &&
         freeEndpoints.some((endpoint) => request.url.startsWith(endpoint))
       );
     },
