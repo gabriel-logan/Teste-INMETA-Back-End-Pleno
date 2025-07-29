@@ -1,27 +1,28 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Length, MaxLength, MinLength } from "class-validator";
+import { MaxLength, MinLength } from "class-validator";
+import { IsCpf } from "src/common/decorators/validation/IsCpf";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 
 export class CreateAdminEmployeeRequestDto {
   @ApiProperty({
     description: "First name of the employee",
     example: "John",
-    maxLength: 255,
+    maxLength: 30,
     minLength: 3,
   })
   @IsNotBlankString()
-  @MaxLength(255)
+  @MaxLength(30)
   @MinLength(3)
   public firstName: string;
 
   @ApiProperty({
     description: "Last name of the employee",
     example: "Doe",
-    maxLength: 255,
+    maxLength: 40,
     minLength: 3,
   })
   @IsNotBlankString()
-  @MaxLength(255)
+  @MaxLength(40)
   @MinLength(3)
   public lastName: string;
 
@@ -48,10 +49,8 @@ export class CreateAdminEmployeeRequestDto {
   @ApiProperty({
     description: "CPF of the employee",
     example: "12345678909",
-    maxLength: 11,
-    minLength: 11,
   })
   @IsNotBlankString()
-  @Length(11, 11)
+  @IsCpf()
   public cpf: string;
 }

@@ -1,15 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { MinLength } from "class-validator";
+import { MaxLength, MinLength } from "class-validator";
 import { IsCpf } from "src/common/decorators/validation/IsCpf";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 
 export class CreateEmployeeRequestDto {
   @ApiProperty()
   @IsNotBlankString()
+  @MaxLength(30)
   public firstName: string;
 
   @ApiProperty()
   @IsNotBlankString()
+  @MaxLength(40)
   public lastName: string;
 
   @ApiProperty({
@@ -27,5 +29,6 @@ export class CreateEmployeeRequestDto {
   })
   @IsNotBlankString()
   @MinLength(6)
+  @MaxLength(255)
   public password: string;
 }

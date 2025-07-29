@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { ArrayMaxSize } from "class-validator";
 import { Types } from "mongoose";
 import { IsObjectIdArrayString } from "src/common/decorators/validation/IsObjectIdArrayString";
 import { IsUniqueArray } from "src/common/decorators/validation/IsUniqueArray";
@@ -12,5 +13,6 @@ export class LinkDocumentTypesRequestDto {
   })
   @IsObjectIdArrayString()
   @IsUniqueArray()
+  @ArrayMaxSize(30)
   public documentTypeIds: Types.ObjectId[];
 }

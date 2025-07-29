@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { MinLength } from "class-validator";
+import { MaxLength, MinLength } from "class-validator";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 
 export class UpdateEmployeePasswordRequestDto {
@@ -10,5 +10,6 @@ export class UpdateEmployeePasswordRequestDto {
   })
   @IsNotBlankString()
   @MinLength(6)
+  @MaxLength(255)
   public newPassword: string;
 }

@@ -1,4 +1,4 @@
-import { IsDate, IsEnum } from "class-validator";
+import { IsDate, IsEnum, MaxLength } from "class-validator";
 import { IsCpf } from "src/common/decorators/validation/IsCpf";
 import { IsNotBlankString } from "src/common/decorators/validation/IsNotBlankString";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
@@ -10,9 +10,11 @@ export class CreateContractEventRequestDto {
   @IsDate()
   public date: Date;
 
+  @MaxLength(255)
   @IsNotBlankString()
   public reason: string;
 
+  @MaxLength(70)
   @IsNotBlankString()
   public employeeFullName: string;
 
