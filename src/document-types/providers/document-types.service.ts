@@ -20,7 +20,7 @@ export class DocumentTypesService {
     private readonly cacheManager: Cache,
   ) {}
 
-  private toPublicDocumentTypeResponseDto(
+  private genericResponseMapper(
     documentType: DocumentType,
   ): DocumentTypeResponseDto {
     return {
@@ -32,13 +32,32 @@ export class DocumentTypesService {
     };
   }
 
+  private async invalidateDocumentTypeCaches(
+    documentType: DocumentTypeResponseDto,
+  ): Promise<void> {
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.documentTypes.findAll,
+      cacheKeys.documentTypes.findById(documentType._id.toString()),
+      cacheKeys.documentTypes.findOneByName(documentType.name),
+    ]);
+  }
+
+  private async setDocumentTypeCaches(
+    documentType: DocumentTypeResponseDto,
+  ): Promise<void> {
+    await setMultipleKeys(this.cacheManager, documentType, [
+      cacheKeys.documentTypes.findById(documentType._id.toString()),
+      cacheKeys.documentTypes.findOneByName(documentType.name),
+    ]);
+  }
+
   async findAll(): Promise<DocumentTypeResponseDto[]> {
     return await getAndSetCache(
       this.cacheManager,
       cacheKeys.documentTypes.findAll,
       async () => {
         return (await this.documentTypeModel.find().lean()).map((docType) =>
-          this.toPublicDocumentTypeResponseDto(docType),
+          this.genericResponseMapper(docType),
         );
       },
     );
@@ -59,7 +78,7 @@ export class DocumentTypesService {
           );
         }
 
-        return this.toPublicDocumentTypeResponseDto(docType);
+        return this.genericResponseMapper(docType);
       },
     );
   }
@@ -81,7 +100,7 @@ export class DocumentTypesService {
           );
         }
 
-        return this.toPublicDocumentTypeResponseDto(docType);
+        return this.genericResponseMapper(docType);
       },
     );
   }
@@ -97,19 +116,14 @@ export class DocumentTypesService {
 
     const createdDocumentType = await newDocumentType.save();
 
-    // Invalidate cache for findAll, findById, and findOneByName
-    await invalidateKeys(this.cacheManager, [
-      cacheKeys.documentTypes.findAll,
-      cacheKeys.documentTypes.findById(createdDocumentType._id.toString()),
-      cacheKeys.documentTypes.findOneByName(name),
-    ]);
+    const result = this.genericResponseMapper(createdDocumentType);
 
-    const result = this.toPublicDocumentTypeResponseDto(createdDocumentType);
+    await Promise.all([
+      // Invalidate cache for findAll, findById, and findOneByName
+      this.invalidateDocumentTypeCaches(result),
 
-    // Set cache for the newly created document type
-    await setMultipleKeys(this.cacheManager, result, [
-      cacheKeys.documentTypes.findById(result.id.toString()),
-      cacheKeys.documentTypes.findOneByName(result.name),
+      // Set cache for the newly created document type
+      this.setDocumentTypeCaches(result),
     ]);
 
     return result;
@@ -138,19 +152,17 @@ export class DocumentTypesService {
 
     const updatedDocumentType = await existingDocumentType.save();
 
-    // Invalidate cache for findAll, findById, and findOneByName
-    await invalidateKeys(this.cacheManager, [
-      cacheKeys.documentTypes.findAll,
-      cacheKeys.documentTypes.findById(documentTypeId),
-      cacheKeys.documentTypes.findOneByName(previousName),
-    ]);
+    const result = this.genericResponseMapper(updatedDocumentType);
 
-    const result = this.toPublicDocumentTypeResponseDto(updatedDocumentType);
+    await Promise.all([
+      // Invalidate cache for findAll, findById, and findOneByName
+      this.invalidateDocumentTypeCaches(result),
+      invalidateKeys(this.cacheManager, [
+        cacheKeys.documentTypes.findOneByName(previousName),
+      ]),
 
-    // Set cache for the updated document type
-    await setMultipleKeys(this.cacheManager, result, [
-      cacheKeys.documentTypes.findById(result.id.toString()),
-      cacheKeys.documentTypes.findOneByName(result.name),
+      // Set cache for the updated document type
+      this.setDocumentTypeCaches(result),
     ]);
 
     return result;
