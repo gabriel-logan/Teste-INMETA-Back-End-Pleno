@@ -110,7 +110,7 @@ export class EmployeesController {
     ok: {
       description: "Create a new employee",
       type: PublicEmployeeResponseDto,
-      statusCode: HttpStatus.CREATED,
+      isStatusCodeCreated: true,
     },
     badRequest: true,
     conflict: true,
@@ -239,7 +239,7 @@ export class EmployeesController {
       description:
         "Create a new admin employee - for internal use only - not exposed to public",
       type: CreateAdminEmployeeResponseDto,
-      statusCode: HttpStatus.CREATED,
+      isStatusCodeCreated: true,
     },
     badRequest: true,
     isPublic: true,

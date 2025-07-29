@@ -1,5 +1,5 @@
 import type { Type } from "@nestjs/common";
-import { applyDecorators, HttpStatus } from "@nestjs/common";
+import { applyDecorators } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -35,7 +35,7 @@ export type ResponseOptions = {
     description: string;
     type: typeOkResponse;
     isArray?: boolean;
-    statusCode?: HttpStatus;
+    isStatusCodeCreated?: boolean;
   };
   badRequest?: boolean;
   conflict?: boolean;
@@ -50,7 +50,7 @@ export function ApiStandardResponses(
 ): MethodDecorator & ClassDecorator {
   const decorators: (MethodDecorator | ClassDecorator)[] = [];
 
-  if (options.ok.statusCode === HttpStatus.CREATED) {
+  if (options.ok.isStatusCodeCreated) {
     decorators.push(
       ApiCreatedResponse({
         description: options.ok.description,

@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Param,
   ParseEnumPipe,
   Post,
@@ -92,7 +91,7 @@ export class DocumentTypesController {
     ok: {
       description: "Creates a new document type.",
       type: PublicDocumentTypeResponseDto,
-      statusCode: HttpStatus.CREATED,
+      isStatusCodeCreated: true,
     },
     badRequest: true,
   })

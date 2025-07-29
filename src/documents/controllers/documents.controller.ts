@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseFilePipeBuilder,
   ParseIntPipe,
@@ -90,7 +89,7 @@ export class DocumentsController {
     ok: {
       description: "Sends a document file",
       type: SendDeleteDocumentFileResponseDto,
-      statusCode: HttpStatus.CREATED,
+      isStatusCodeCreated: true,
     },
     notFound: true,
     badRequest: true,
