@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { EmployeesModule } from "src/employees/employees.module";
 
+import { DocumentFilesController } from "./controllers/document-files.controller";
 import { DocumentsController } from "./controllers/documents.controller";
 import { DocumentFilesService } from "./providers/document-files.service";
 import { DocumentsService } from "./providers/documents.service";
@@ -19,7 +20,7 @@ import { Document, DocumentSchema } from "./schemas/document.schema";
     ]),
     EmployeesModule,
   ],
-  controllers: [DocumentsController],
+  controllers: [DocumentsController, DocumentFilesController],
   providers: [DocumentsService, DocumentFilesService],
 })
 export class DocumentsModule {}
