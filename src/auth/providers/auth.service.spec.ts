@@ -2,19 +2,28 @@ import { JwtModule } from "@nestjs/jwt";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import * as bcrypt from "bcrypt";
+import { Types } from "mongoose";
 import { EmployeesService } from "src/employees/providers/employees.service";
+import {
+  ContractStatus,
+  EmployeeRole,
+} from "src/employees/schemas/employee.schema";
 
 import { AuthService } from "./auth.service";
 
 describe("AuthService", () => {
   let service: AuthService;
 
+  const mockEmployeesId = new Types.ObjectId("507f1f77bcf86cd799439011");
+
   const mockEmployeesService = {
     findOneByUsername: jest.fn().mockResolvedValue({
-      id: 1,
+      _id: mockEmployeesId,
+      id: mockEmployeesId.toString(),
       username: "testUser",
       password: "hashedPassword",
-      role: "user",
+      role: EmployeeRole.ADMIN,
+      contractStatus: ContractStatus.ACTIVE,
     }),
   };
 
