@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
-  NotFoundException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Types } from "mongoose";
@@ -14,7 +13,7 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
 
 import { SendOrDeleteDocumentFileResponseDto } from "../dto/response/send-or-delete-document-file.dto";
-import { DocumentDocument, DocumentStatus } from "../schemas/document.schema";
+import { DocumentStatus } from "../schemas/document.schema";
 import { DocumentsService } from "./documents.service";
 
 @Injectable()
@@ -38,22 +37,6 @@ export class DocumentFilesService {
     return `${this.baseUrl}/files/${newFileName}`;
   }
 
-  private async getDocumentByIdWithEmployee(
-    documentId: Types.ObjectId,
-  ): Promise<DocumentDocument> {
-    const document = await this.documentModel
-      .findById(documentId)
-      .populate("employee");
-
-    if (!document) {
-      throw new NotFoundException(
-        `Document with id ${documentId.toString()} not found`,
-      );
-    }
-
-    return document;
-  }
-
   // DocumentFile is a placeholder for the actual file type
   // Replace it with the actual type used for document files
   @Transactional()
@@ -62,8 +45,10 @@ export class DocumentFilesService {
     documentFile: Express.Multer.File,
     employee: AuthPayload,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
-    const document =
-      await this.documentsService.getDocumentByIdWithEmployee(documentId);
+    const document = await this.documentsService.findById(documentId, {
+      populates: ["employee"],
+      lean: false,
+    });
 
     // Check if the document is already sent
     if (document.documentUrl) {
@@ -109,7 +94,10 @@ export class DocumentFilesService {
   async deleteDocumentFile(
     documentId: Types.ObjectId,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
-    const document = await this.getDocumentByIdWithEmployee(documentId);
+    const document = await this.documentsService.findById(documentId, {
+      populates: ["employee"],
+      lean: false,
+    });
 
     if (!document.documentUrl) {
       throw new BadRequestException(

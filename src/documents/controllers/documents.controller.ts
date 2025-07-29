@@ -32,6 +32,7 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
 import { SendOrDeleteDocumentFileResponseDto } from "../dto/response/send-or-delete-document-file.dto";
+import { DocumentFilesService } from "../providers/document-files.service";
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
@@ -39,7 +40,10 @@ import { DocumentStatus } from "../schemas/document.schema";
 @ApiGlobalErrorResponses()
 @Controller("documents")
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(
+    private readonly documentsService: DocumentsService,
+    private readonly documentFilesService: DocumentFilesService,
+  ) {}
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
   @ApiStandardResponses({
@@ -50,8 +54,10 @@ export class DocumentsController {
     },
   })
   @Get()
-  async findAll(): Promise<DocumentFullResponseDto[]> {
-    return await this.documentsService.findAll();
+  async findAllWithDocumentTypeAndEmployee(): Promise<
+    DocumentFullResponseDto[]
+  > {
+    return await this.documentsService.findAllWithDocumentTypeAndEmployee();
   }
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
@@ -68,11 +74,13 @@ export class DocumentsController {
     type: String,
   })
   @Get(":documentId")
-  async findById(
+  async findByIdWithDocumentTypeAndEmployee(
     @Param("documentId", new ParseObjectIdPipeLocal())
     documentId: Types.ObjectId,
   ): Promise<DocumentFullResponseDto> {
-    return await this.documentsService.findById(documentId);
+    return await this.documentsService.findByIdWithDocumentTypeAndEmployee(
+      documentId,
+    );
   }
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
@@ -132,7 +140,7 @@ export class DocumentsController {
     documentFile: Express.Multer.File,
     @EmployeeFromReq() employee: AuthPayload,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
-    return await this.documentsService.sendDocumentFile(
+    return await this.documentFilesService.sendDocumentFile(
       documentId,
       documentFile,
       employee,
@@ -158,7 +166,7 @@ export class DocumentsController {
     @Param("documentId", new ParseObjectIdPipeLocal())
     documentId: Types.ObjectId,
   ): Promise<SendOrDeleteDocumentFileResponseDto> {
-    return await this.documentsService.deleteDocumentFile(documentId);
+    return await this.documentFilesService.deleteDocumentFile(documentId);
   }
 
   @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
