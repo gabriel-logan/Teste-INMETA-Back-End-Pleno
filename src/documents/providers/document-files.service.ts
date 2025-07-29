@@ -77,10 +77,10 @@ export class DocumentFilesService {
 
     await document.save();
 
-    // Logic to send the document (e.g., via email)
+    // Logic to send the document (e.g., via cloud storage)
     // This is a placeholder for the actual implementation
     this.logger.log(
-      `Sending document to employee ${document.employee.firstName}`,
+      `Sending document file for employee ${document.employee.firstName}`,
     );
     // Implement the actual
 
