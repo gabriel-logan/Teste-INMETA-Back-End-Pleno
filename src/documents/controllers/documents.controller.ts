@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiQuery, ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { fileValidation } from "src/common/constants";
 import {
@@ -62,6 +62,11 @@ export class DocumentsController {
     },
     notFound: true,
   })
+  @ApiParam({
+    name: "documentId",
+    description: "ID of the document",
+    type: String,
+  })
   @Get(":documentId")
   async findById(
     @Param("documentId", new ParseObjectIdPipeLocal())
@@ -78,6 +83,11 @@ export class DocumentsController {
     },
     notFound: true,
     badRequest: true,
+  })
+  @ApiParam({
+    name: "documentId",
+    description: "ID of the document",
+    type: String,
   })
   @Patch(":documentId")
   async update(
@@ -99,6 +109,11 @@ export class DocumentsController {
     badRequest: true,
   })
   @ApiTypeFormData()
+  @ApiParam({
+    name: "documentId",
+    description: "ID of the document",
+    type: String,
+  })
   @Post(":documentId/file/send")
   @UseInterceptors(FileInterceptor("documentFile"))
   async sendDocumentFile(
@@ -133,6 +148,11 @@ export class DocumentsController {
     notFound: true,
     badRequest: true,
   })
+  @ApiParam({
+    name: "documentId",
+    description: "ID of the document",
+    type: String,
+  })
   @Delete(":documentId/file/delete")
   async deleteDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal())
@@ -148,6 +168,11 @@ export class DocumentsController {
       type: GetDocumentStatusesByEmployeeIdResponseDto,
     },
     notFound: true,
+  })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
   })
   @ApiQuery({ required: false, name: "status", enum: DocumentStatus })
   @Get("employee/:employeeId/statuses")

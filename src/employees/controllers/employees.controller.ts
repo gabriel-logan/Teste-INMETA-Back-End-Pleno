@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGetAllEmployeesQueries,
@@ -88,6 +88,11 @@ export class EmployeesController {
     },
     notFound: true,
   })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
+  })
   @Get(":employeeId")
   async findByIdWithDocumentTypes(
     @Param("employeeId", new ParseObjectIdPipeLocal())
@@ -104,6 +109,11 @@ export class EmployeesController {
       type: EmployeeWithContractEventsResponseDto,
     },
     notFound: true,
+  })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
   })
   @Get(":employeeId/contract-events")
   async findByIdWithContractEvents(
@@ -142,6 +152,11 @@ export class EmployeesController {
     badRequest: true,
     conflict: true,
   })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
+  })
   @Patch(":employeeId")
   async update(
     @Param("employeeId", new ParseObjectIdPipeLocal())
@@ -160,6 +175,11 @@ export class EmployeesController {
     },
     notFound: true,
     badRequest: true,
+  })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
   })
   @HttpCode(HttpStatus.OK)
   @Post("fire/:employeeId")
@@ -186,6 +206,11 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
+  })
   @HttpCode(HttpStatus.OK)
   @Post("rehire/:employeeId")
   async reHire(
@@ -211,6 +236,11 @@ export class EmployeesController {
     notFound: true,
     badRequest: true,
   })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
+  })
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/link")
   async linkDocumentTypes(
@@ -233,6 +263,11 @@ export class EmployeesController {
     },
     notFound: true,
     badRequest: true,
+  })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
   })
   @HttpCode(HttpStatus.OK)
   @Post(":employeeId/document-types/unlink")

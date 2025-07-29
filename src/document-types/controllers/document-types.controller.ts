@@ -50,6 +50,11 @@ export class DocumentTypesController {
     },
     notFound: true,
   })
+  @ApiParam({
+    name: "documentTypeId",
+    description: "ID of the document type",
+    type: String,
+  })
   @Get("id/:documentTypeId")
   async findById(
     @Param("documentTypeId", new ParseObjectIdPipeLocal())
@@ -110,6 +115,11 @@ export class DocumentTypesController {
     },
     notFound: true,
     badRequest: true,
+  })
+  @ApiParam({
+    name: "documentTypeId",
+    description: "ID of the document type",
+    type: String,
   })
   @Put(":documentTypeId")
   async update(

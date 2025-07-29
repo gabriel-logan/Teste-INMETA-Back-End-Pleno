@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiQuery, ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
@@ -51,6 +51,11 @@ export class ContractEventsController {
       type: ContractEventResponseDto,
     },
     notFound: true,
+  })
+  @ApiParam({
+    name: "contractEventId",
+    description: "ID of the contract event",
+    type: String,
   })
   @Get(":contractEventId")
   async findById(
