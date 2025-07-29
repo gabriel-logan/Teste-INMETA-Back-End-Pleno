@@ -62,7 +62,7 @@ export class EmployeesController {
   })
   @ApiGetAllEmployeesQueries()
   @Get()
-  async findAll(
+  async findAllWithDocumentTypes(
     @Query("byFirstName") byFirstName?: string,
     @Query("byLastName") byLastName?: string,
     @Query("byContractStatus") byContractStatus?: ContractStatus,
@@ -70,7 +70,7 @@ export class EmployeesController {
     byDocumentTypeId?: Types.ObjectId,
     @Query("byCpf", new ParseCpfPipe({ optional: true })) byCpf?: string,
   ): Promise<EmployeeWithDocumentTypesResponseDto[]> {
-    return await this.employeesService.findAll({
+    return await this.employeesService.findAllWithDocumentTypes({
       byFirstName,
       byLastName,
       byContractStatus,

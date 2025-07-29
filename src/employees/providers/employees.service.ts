@@ -45,9 +45,17 @@ import {
   EmployeeRole,
 } from "../schemas/employee.schema";
 
-type FindByIdOptions<T extends boolean> = {
+type FindOptions<T extends boolean> = {
   populates?: string[];
   lean?: T;
+};
+
+type EmployeeFilters = {
+  byFirstName?: string;
+  byLastName?: string;
+  byContractStatus?: ContractStatus;
+  byDocumentTypeId?: Types.ObjectId;
+  byCpf?: string;
 };
 
 @Injectable()
@@ -90,19 +98,30 @@ export class EmployeesService {
     };
   }
 
-  async findAll({
-    byFirstName,
-    byLastName,
-    byContractStatus,
-    byDocumentTypeId,
-    byCpf,
-  }: {
-    byFirstName?: string;
-    byLastName?: string;
-    byContractStatus?: ContractStatus;
-    byDocumentTypeId?: Types.ObjectId;
-    byCpf?: string;
-  } = {}): Promise<EmployeeWithDocumentTypesResponseDto[]> {
+  async findAll(
+    filters?: EmployeeFilters,
+    options?: FindOptions<true>,
+  ): Promise<Employee[]>;
+
+  async findAll(
+    filters?: EmployeeFilters,
+    options?: FindOptions<false>,
+  ): Promise<EmployeeDocument[]>;
+
+  async findAll(
+    filters: EmployeeFilters = {},
+    options: FindOptions<boolean> = {},
+  ): Promise<(Employee | EmployeeDocument)[]> {
+    const {
+      byFirstName,
+      byLastName,
+      byContractStatus,
+      byDocumentTypeId,
+      byCpf,
+    } = filters;
+
+    const { populates = [], lean = true } = options;
+
     const filter: Record<string, any> = {};
 
     if (byFirstName) {
@@ -128,32 +147,33 @@ export class EmployeesService {
     }
 
     if (byCpf) {
-      filter.cpf = byCpf; // Already sanitized by ParseCpfPipe
+      filter.cpf = byCpf;
     }
 
-    const employees = await this.employeeModel
-      .find(filter)
-      .populate("documentTypes")
-      .lean();
+    let query = this.employeeModel.find(filter);
 
-    return employees.map((employee) => {
-      return this.genericEmployeeResponseMapper(employee);
-    });
+    for (const populate of populates) {
+      query = query.populate(populate);
+    }
+
+    const employees = await (lean ? query.lean() : query);
+
+    return employees;
   }
 
   async findById(
     employeeId: Types.ObjectId,
-    options?: FindByIdOptions<true>,
+    options?: FindOptions<true>,
   ): Promise<Employee>;
 
   async findById(
     employeeId: Types.ObjectId,
-    options?: FindByIdOptions<false>,
+    options?: FindOptions<false>,
   ): Promise<EmployeeDocument>;
 
   async findById(
     employeeId: Types.ObjectId,
-    options: FindByIdOptions<boolean> = {},
+    options: FindOptions<boolean> = {},
   ): Promise<Employee | EmployeeDocument> {
     const { populates = [], lean = true } = options;
 
@@ -172,6 +192,35 @@ export class EmployeesService {
     }
 
     return employee;
+  }
+
+  async findAllWithDocumentTypes({
+    byFirstName,
+    byLastName,
+    byContractStatus,
+    byDocumentTypeId,
+    byCpf,
+  }: {
+    byFirstName?: string;
+    byLastName?: string;
+    byContractStatus?: ContractStatus;
+    byDocumentTypeId?: Types.ObjectId;
+    byCpf?: string;
+  } = {}): Promise<EmployeeWithDocumentTypesResponseDto[]> {
+    const employees = await this.findAll(
+      {
+        byFirstName,
+        byLastName,
+        byContractStatus,
+        byDocumentTypeId,
+        byCpf,
+      },
+      { populates: ["documentTypes"], lean: true },
+    );
+
+    return employees.map((employee) =>
+      this.genericEmployeeResponseMapper(employee),
+    );
   }
 
   async findByIdWithDocumentTypes(
