@@ -1,150 +1,115 @@
+import { ApiProperty } from "@nestjs/swagger";
 import type { Types } from "mongoose";
-import type {
-  ContractStatus,
-  EmployeeRole,
-} from "src/employees/schemas/employee.schema";
+import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
-import type { ContractEventResponseDto } from "./contract-event.dto";
-import type { DocumentTypeResponseDto } from "./document-type.dto";
+import { ContractEventResponseDto } from "./contract-event.dto";
+import { DocumentTypeResponseDto } from "./document-type.dto";
 
-export class EmployeeFullResponseDto {
+export class EmployeeBaseResponseDto {
+  @ApiProperty({
+    type: String,
+    format: "objectId",
+    description: "The unique identifier of the employee",
+    example: "60c72b2f9b1e8d3f48b4567",
+  })
   public readonly _id: Types.ObjectId;
 
+  @ApiProperty({
+    type: String,
+    description: "The unique identifier of the employee",
+    example: "60c72b2f9b1e8d3f48b4567",
+  })
   public readonly id: string;
 
+  @ApiProperty({
+    type: String,
+    description: "The first name of the employee",
+  })
   public readonly firstName: string;
 
+  @ApiProperty({
+    type: String,
+    description: "The last name of the employee",
+  })
   public readonly lastName: string;
 
+  @ApiProperty({
+    type: String,
+    description: "The full name of the employee",
+  })
   public readonly fullName: string;
 
+  @ApiProperty({
+    type: String,
+    description: "The username of the employee",
+  })
   public readonly username: string;
 
+  @ApiProperty({
+    type: ContractEventResponseDto,
+    description: "The contract status of the employee",
+  })
+  public readonly contractStatus: ContractEventResponseDto;
+
+  @ApiProperty({
+    type: String,
+    description: "The CPF of the employee",
+  })
+  public readonly cpf: string;
+
+  @ApiProperty({
+    enum: EmployeeRole,
+    description: "The role of the employee",
+  })
+  public readonly role: EmployeeRole;
+
+  @ApiProperty({
+    type: Date,
+    description: "The creation date of the employee",
+  })
+  public readonly createdAt: Date;
+
+  @ApiProperty({
+    type: Date,
+    description: "The last update date of the employee",
+  })
+  public readonly updatedAt: Date;
+}
+
+export class EmployeeFullResponseDto extends EmployeeBaseResponseDto {
+  @ApiProperty({
+    type: ContractEventResponseDto,
+    isArray: true,
+    description: "The contract events of the employee",
+  })
+  public readonly contractEvents: ContractEventResponseDto[];
+
+  @ApiProperty({
+    type: DocumentTypeResponseDto,
+    isArray: true,
+    description: "The document types associated with the employee",
+  })
+  public readonly documentTypes: DocumentTypeResponseDto[];
+}
+
+export class EmployeeWithoutContractEventsResponseDto extends EmployeeBaseResponseDto {
+  @ApiProperty({
+    type: DocumentTypeResponseDto,
+    isArray: true,
+    description: "The document types associated with the employee",
+  })
+  public readonly documentTypes: DocumentTypeResponseDto[];
+}
+
+export class EmployeeWithoutDocumentTypesResponseDto extends EmployeeBaseResponseDto {
+  @ApiProperty({
+    type: ContractEventResponseDto,
+    isArray: true,
+    description: "The contract events of the employee",
+  })
+  public readonly contractEvents: ContractEventResponseDto[];
+}
+
+export class EmployeeInternalResponseDto extends EmployeeFullResponseDto {
   public readonly password: string;
-
-  public readonly contractStatus: ContractStatus;
-
-  public readonly contractEvents: ContractEventResponseDto[];
-
-  public readonly cpf: string;
-
-  public readonly role: EmployeeRole;
-
-  public readonly documentTypes: DocumentTypeResponseDto[];
-
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
-}
-
-export class EmployeeFullSecureResponseDto
-  implements Omit<EmployeeFullResponseDto, "password">
-{
-  public readonly _id: Types.ObjectId;
-
-  public readonly id: string;
-
-  public readonly firstName: string;
-
-  public readonly lastName: string;
-
-  public readonly fullName: string;
-
-  public readonly username: string;
-
-  public readonly contractStatus: ContractStatus;
-
-  public readonly contractEvents: ContractEventResponseDto[];
-
-  public readonly cpf: string;
-
-  public readonly role: EmployeeRole;
-
-  public readonly documentTypes: DocumentTypeResponseDto[];
-
-  public readonly createdAt: Date;
-
-  public readonly updatedAt: Date;
-}
-
-export class EmployeeSecureWithoutDocumentTypesResponseDto
-  implements Omit<EmployeeFullSecureResponseDto, "documentTypes">
-{
-  public readonly _id: Types.ObjectId;
-
-  public readonly id: string;
-
-  public readonly firstName: string;
-
-  public readonly lastName: string;
-
-  public readonly fullName: string;
-
-  public readonly username: string;
-
-  public readonly contractStatus: ContractStatus;
-
-  public readonly contractEvents: ContractEventResponseDto[];
-
-  public readonly cpf: string;
-
-  public readonly role: EmployeeRole;
-
-  public readonly createdAt: Date;
-
-  public readonly updatedAt: Date;
-}
-
-export class EmployeeSecureWithoutContractEventsResponseDto
-  implements Omit<EmployeeFullSecureResponseDto, "contractEvents">
-{
-  public readonly _id: Types.ObjectId;
-
-  public readonly id: string;
-
-  public readonly firstName: string;
-
-  public readonly lastName: string;
-
-  public readonly fullName: string;
-
-  public readonly username: string;
-
-  public readonly contractStatus: ContractStatus;
-
-  public readonly cpf: string;
-
-  public readonly role: EmployeeRole;
-
-  public readonly documentTypes: DocumentTypeResponseDto[];
-
-  public readonly createdAt: Date;
-
-  public readonly updatedAt: Date;
-}
-
-export class EmployeeSecureRawResponseDto
-  implements
-    Omit<EmployeeFullSecureResponseDto, "documentTypes" | "contractEvents">
-{
-  public readonly _id: Types.ObjectId;
-
-  public readonly id: string;
-
-  public readonly firstName: string;
-
-  public readonly lastName: string;
-
-  public readonly fullName: string;
-
-  public readonly username: string;
-
-  public readonly contractStatus: ContractStatus;
-
-  public readonly cpf: string;
-
-  public readonly role: EmployeeRole;
-
-  public readonly createdAt: Date;
-
-  public readonly updatedAt: Date;
 }
