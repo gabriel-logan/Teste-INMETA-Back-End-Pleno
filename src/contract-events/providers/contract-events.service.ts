@@ -40,6 +40,24 @@ export class ContractEventsService {
     };
   }
 
+  private async invalidateContractEventCaches(
+    event: ContractEvent,
+  ): Promise<void> {
+    await invalidateKeys(this.cacheManager, [
+      cacheKeys.contractEvents.findAll,
+      cacheKeys.contractEvents.findById(event._id.toString()),
+      cacheKeys.contractEvents.findAllByEmployeeCpf(event.employeeCpf),
+      cacheKeys.contractEvents.findManyByIds([event._id.toString()]),
+    ]);
+  }
+
+  private async setContractEventCaches(event: ContractEvent): Promise<void> {
+    await setMultipleKeys(this.cacheManager, event, [
+      cacheKeys.contractEvents.findById(event._id.toString()),
+      cacheKeys.contractEvents.findManyByIds([event._id.toString()]),
+    ]);
+  }
+
   async findAll(): Promise<ContractEventResponseDto[]> {
     return await getAndSetCache(
       this.cacheManager,
@@ -126,20 +144,13 @@ export class ContractEventsService {
 
     const newContractEvent = await createdContractEvent.save();
 
-    // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
-    await invalidateKeys(this.cacheManager, [
-      cacheKeys.contractEvents.findAll,
-      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
-      cacheKeys.contractEvents.findAllByEmployeeCpf(
-        newContractEvent.employeeCpf,
-      ),
-      cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
-    ]);
+    // Invalidate and set caches after creation
+    await Promise.all([
+      // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
+      this.invalidateContractEventCaches(newContractEvent),
 
-    // Set cache for the newly created contract event
-    await setMultipleKeys(this.cacheManager, newContractEvent, [
-      cacheKeys.contractEvents.findById(newContractEvent._id.toString()),
-      cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
+      // Set cache for the newly created contract event
+      this.setContractEventCaches(newContractEvent),
     ]);
 
     return this.genericResponseMapper(newContractEvent);
@@ -169,20 +180,16 @@ export class ContractEventsService {
 
     const updatedContractEvent = await existingContractEvent.save();
 
-    // Invalidate cache for findById and findAll, findAllByEmployeeCpf
-    await invalidateKeys(this.cacheManager, [
-      cacheKeys.contractEvents.findById(id),
-      cacheKeys.contractEvents.findAll,
-      cacheKeys.contractEvents.findAllByEmployeeCpf(previousEmployeeCpf),
-      cacheKeys.contractEvents.findManyByIds([id]),
-    ]);
-
-    // Set cache for the updated contract event
-    await setMultipleKeys(this.cacheManager, updatedContractEvent, [
-      cacheKeys.contractEvents.findById(updatedContractEvent._id.toString()),
-      cacheKeys.contractEvents.findManyByIds([
-        updatedContractEvent._id.toString(),
+    // Invalidate and set caches after update
+    await Promise.all([
+      // Invalidate cache for findById and findAll, findAllByEmployeeCpf
+      this.invalidateContractEventCaches(existingContractEvent),
+      invalidateKeys(this.cacheManager, [
+        cacheKeys.contractEvents.findAllByEmployeeCpf(previousEmployeeCpf),
       ]),
+
+      // Set cache for the updated contract event
+      this.setContractEventCaches(updatedContractEvent),
     ]);
 
     return this.genericResponseMapper(updatedContractEvent);
