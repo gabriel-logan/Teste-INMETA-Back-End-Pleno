@@ -4,7 +4,10 @@ import { ContractEventsModule } from "src/contract-events/contract-events.module
 import { DocumentTypesModule } from "src/document-types/document-types.module";
 import { EmployeeDocumentModule } from "src/shared/employee-document/employee-document.module";
 
+import { AdminEmployeesController } from "./controllers/admin-employees.controller";
+import { DocumentTypeLinkersController } from "./controllers/document-type-linkers.controller";
 import { EmployeesController } from "./controllers/employees.controller";
+import { HumanResourcesController } from "./controllers/human-resources.controller";
 import { AdminEmployeesService } from "./providers/admin-employees.service";
 import { DocumentTypeLinkersService } from "./providers/document-type-linkers.service";
 import { EmployeesService } from "./providers/employees.service";
@@ -23,7 +26,12 @@ import { Employee, EmployeeSchema } from "./schemas/employee.schema";
     DocumentTypesModule,
     ContractEventsModule,
   ],
-  controllers: [EmployeesController],
+  controllers: [
+    EmployeesController,
+    HumanResourcesController,
+    DocumentTypeLinkersController,
+    AdminEmployeesController,
+  ],
   providers: [
     EmployeesService,
     HumanResourcesService,
