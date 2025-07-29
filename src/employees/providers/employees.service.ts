@@ -207,7 +207,7 @@ export class EmployeesService {
   async findOneByUsername(
     username: string,
     options: FindOptions<boolean> = {},
-  ): Promise<Employee> {
+  ): Promise<Employee | EmployeeDocument> {
     const { populates = [], lean = true } = options;
 
     let query = this.employeeModel.findOne({ username });
