@@ -144,7 +144,11 @@ describe("AuthGuard", () => {
       }),
     } as unknown as ExecutionContext;
 
-    const mockPayload = { id: "123", role: EmployeeRole.ADMIN };
+    const mockPayload = {
+      id: "123",
+      role: EmployeeRole.ADMIN,
+      contractStatus: ContractStatus.ACTIVE,
+    };
 
     jest
       .spyOn(guard["jwtService"], "verifyAsync")
