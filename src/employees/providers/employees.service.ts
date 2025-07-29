@@ -123,7 +123,7 @@ export class EmployeesService {
     }
 
     if (byCpf) {
-      filter.cpf = { $regex: "^" + this.escapeRegex(byCpf), $options: "i" };
+      filter.cpf = byCpf; // Already sanitized by ParseCpfPipe
     }
 
     const employees = await this.employeeModel
