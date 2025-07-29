@@ -194,6 +194,39 @@ export class EmployeesService {
     return employee;
   }
 
+  async findOneByUsername(
+    username: string,
+    options?: FindOptions<true>,
+  ): Promise<Employee>;
+
+  async findOneByUsername(
+    username: string,
+    options?: FindOptions<false>,
+  ): Promise<EmployeeDocument>;
+
+  async findOneByUsername(
+    username: string,
+    options: FindOptions<boolean> = {},
+  ): Promise<Employee> {
+    const { populates = [], lean = true } = options;
+
+    let query = this.employeeModel.findOne({ username });
+
+    for (const populate of populates) {
+      query = query.populate(populate);
+    }
+
+    const employee = await (lean ? query.lean() : query);
+
+    if (!employee) {
+      throw new NotFoundException(
+        `Employee with username ${username} not found`,
+      );
+    }
+
+    return employee;
+  }
+
   async findAllWithDocumentTypes({
     byFirstName,
     byLastName,
@@ -249,18 +282,6 @@ export class EmployeesService {
       ...this.genericEmployeeResponseMapper(employee),
       contractEvents,
     };
-  }
-
-  async findOneByUsername(username: string): Promise<Employee> {
-    const employee = await this.employeeModel.findOne({ username }).lean();
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Employee with username ${username} not found`,
-      );
-    }
-
-    return employee;
   }
 
   @Transactional()
