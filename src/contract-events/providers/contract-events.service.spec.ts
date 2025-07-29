@@ -231,6 +231,7 @@ describe("ContractEventsService", () => {
       expect(result).toBeDefined();
       expect(result).toEqual({
         _id: "1",
+        id: "1",
         ...mockDto,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
