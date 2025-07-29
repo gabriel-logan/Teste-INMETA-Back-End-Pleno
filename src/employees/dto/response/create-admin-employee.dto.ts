@@ -1,13 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
 import type { Types } from "mongoose";
 import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
-import type { ContractStatus } from "src/employees/schemas/employee.schema";
+import {
+  ContractStatus,
+  EmployeeRole,
+} from "src/employees/schemas/employee.schema";
 
 export class CreateAdminEmployeeResponseDto {
   @ApiProperty({
     type: String,
+    format: "objectId",
   })
-  public readonly id: Types.ObjectId;
+  public readonly _id: Types.ObjectId;
+
+  @ApiProperty()
+  public readonly id: string;
 
   @ApiProperty()
   public readonly firstName: string;
@@ -18,8 +25,14 @@ export class CreateAdminEmployeeResponseDto {
   @ApiProperty()
   public readonly fullName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: ContractStatus,
+    example: ContractStatus.ACTIVE,
+  })
   public readonly contractStatus: ContractStatus;
+
+  @ApiProperty({ enum: EmployeeRole, example: EmployeeRole.ADMIN })
+  public readonly role: EmployeeRole;
 
   @ApiProperty({
     type: DocumentTypeResponseDto,
@@ -30,16 +43,21 @@ export class CreateAdminEmployeeResponseDto {
   })
   public readonly documentTypes: DocumentTypeResponseDto[];
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    format: "CPF",
+    example: "12345678900",
+    description: "The CPF (Cadastro de Pessoas Físicas) of the employee",
+  })
   public readonly cpf: string;
 
   @ApiProperty({
-    type: String,
+    type: Date,
   })
   public readonly createdAt: Date;
 
   @ApiProperty({
-    type: String,
+    type: Date,
   })
   public readonly updatedAt: Date;
 }
