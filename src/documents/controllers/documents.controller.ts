@@ -30,7 +30,7 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
-import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
+import { SendOrDeleteDocumentFileResponseDto } from "../dto/response/send-or-delete-document-file.dto";
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
@@ -89,7 +89,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Sends a document file",
-      type: SendDeleteDocumentFileResponseDto,
+      type: SendOrDeleteDocumentFileResponseDto,
       isStatusCodeCreated: true,
     },
     notFound: true,
@@ -112,7 +112,7 @@ export class DocumentsController {
     )
     documentFile: Express.Multer.File,
     @EmployeeFromReq() employee: AuthPayload,
-  ): Promise<SendDeleteDocumentFileResponseDto> {
+  ): Promise<SendOrDeleteDocumentFileResponseDto> {
     return await this.documentsService.sendDocumentFile(
       documentId,
       documentFile,
@@ -124,7 +124,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Deletes a document file",
-      type: SendDeleteDocumentFileResponseDto,
+      type: SendOrDeleteDocumentFileResponseDto,
     },
     notFound: true,
     badRequest: true,
@@ -132,7 +132,7 @@ export class DocumentsController {
   @Delete(":documentId/file/delete")
   async deleteDocumentFile(
     @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
-  ): Promise<SendDeleteDocumentFileResponseDto> {
+  ): Promise<SendOrDeleteDocumentFileResponseDto> {
     return await this.documentsService.deleteDocumentFile(documentId);
   }
 

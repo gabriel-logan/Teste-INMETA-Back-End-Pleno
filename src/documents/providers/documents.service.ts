@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
-import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
+import { SendOrDeleteDocumentFileResponseDto } from "../dto/response/send-or-delete-document-file.dto";
 import {
   Document,
   DocumentDocument,
@@ -149,7 +149,7 @@ export class DocumentsService {
     documentId: string,
     documentFile: Express.Multer.File,
     employee: AuthPayload,
-  ): Promise<SendDeleteDocumentFileResponseDto> {
+  ): Promise<SendOrDeleteDocumentFileResponseDto> {
     const document = await this.getDocumentByIdWithEmployee(documentId);
 
     // Check if the document is already sent
@@ -195,7 +195,7 @@ export class DocumentsService {
   @Transactional()
   async deleteDocumentFile(
     documentId: string,
-  ): Promise<SendDeleteDocumentFileResponseDto> {
+  ): Promise<SendOrDeleteDocumentFileResponseDto> {
     const document = await this.getDocumentByIdWithEmployee(documentId);
 
     if (!document.documentUrl) {

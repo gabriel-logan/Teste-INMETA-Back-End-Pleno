@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class SendDeleteDocumentFileResponseDto {
+export class SendOrDeleteDocumentFileResponseDto {
   @ApiProperty({
     description: "Message indicating the result of the operation",
     example: "Document file deleted successfully",
