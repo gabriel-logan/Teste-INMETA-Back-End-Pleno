@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -13,36 +12,21 @@ import {
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
-import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
-import {
-  ContractEvent,
-  ContractEventType,
-} from "src/contract-events/schemas/contract-event.schema";
+import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { DocumentType } from "src/document-types/schemas/document-type.schema";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
-import {
-  FireEmployeeRequestDto,
-  ReHireEmployeeRequestDto,
-} from "../dto/request/action-reason-employee.dto";
-import { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
-import {
-  FireEmployeeResponseDto,
-  ReHireEmployeeResponseDto,
-} from "../dto/response/action-reason-employee.dto";
-import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
 import {
   ContractStatus,
   Employee,
   EmployeeDocument,
-  EmployeeRole,
 } from "../schemas/employee.schema";
 
 type EmployeePopulatableFields = "documentTypes" | "contractEvents";
@@ -356,135 +340,6 @@ export class EmployeesService {
     return this.genericEmployeeResponseMapper(updatedEmployee);
   }
 
-  private async createContractEvent({
-    type,
-    reason,
-    employee,
-  }: {
-    type: ContractEventType;
-    reason: string;
-    employee: { cpf: string; fullName: string };
-  }): Promise<ContractEvent> {
-    return await this.contractEventsService.create({
-      type,
-      date: new Date(),
-      reason,
-      employeeCpf: employee.cpf,
-      employeeFullName: employee.fullName,
-    });
-  }
-
-  private employeeIdIsSameAsFromReq(
-    employeeId: Types.ObjectId,
-    employeeFromReq: AuthPayload,
-  ): boolean {
-    return employeeFromReq.sub === employeeId.toString();
-  }
-
-  @Transactional()
-  async fire(
-    employeeId: Types.ObjectId,
-    fireEmployeeDto: FireEmployeeRequestDto,
-    employeeFromReq: AuthPayload,
-  ): Promise<FireEmployeeResponseDto> {
-    const isSameId = this.employeeIdIsSameAsFromReq(
-      employeeId,
-      employeeFromReq,
-    );
-
-    if (isSameId) {
-      throw new BadRequestException(
-        "You cannot fire yourself. Please contact a manager.",
-      );
-    }
-
-    if (employeeFromReq.role !== EmployeeRole.MANAGER) {
-      // This is a placeholder for the actual role check
-      // You can replace this with your actual role checking logic
-      // For demonstration purposes, we are letting it pass
-      this.logger.warn("Only managers can fire employees");
-    }
-
-    const employeeToFire = await this.findById(employeeId, {
-      populates: ["contractEvents"],
-      lean: false,
-    });
-
-    if (employeeToFire.contractStatus === ContractStatus.INACTIVE) {
-      throw new BadRequestException(
-        `Employee with id ${employeeId.toString()} is already inactive`,
-      );
-    }
-
-    const contractEvent = await this.createContractEvent({
-      type: ContractEventType.FIRED,
-      reason: fireEmployeeDto.reason,
-      employee: employeeToFire,
-    });
-
-    employeeToFire.contractStatus = ContractStatus.INACTIVE;
-    employeeToFire.contractEvents.push(contractEvent);
-
-    await employeeToFire.save();
-
-    return {
-      reason: fireEmployeeDto.reason,
-      message: `Successfully terminated contract for employee with id ${employeeId.toString()}`,
-    };
-  }
-
-  @Transactional()
-  async reHire(
-    employeeId: Types.ObjectId,
-    reHireEmployeeDto: ReHireEmployeeRequestDto,
-    employeeFromReq: AuthPayload,
-  ): Promise<ReHireEmployeeResponseDto> {
-    const isSameId = this.employeeIdIsSameAsFromReq(
-      employeeId,
-      employeeFromReq,
-    );
-
-    if (isSameId) {
-      throw new BadRequestException(
-        "You cannot rehire yourself. Please contact a manager.",
-      );
-    }
-
-    if (employeeFromReq.role !== EmployeeRole.MANAGER) {
-      // This is a placeholder for the actual role check
-      // You can replace this with your actual role checking logic
-      // For demonstration purposes, we are letting it pass
-      this.logger.warn("Only managers can rehire employees");
-    }
-
-    const employee = await this.findById(employeeId, {
-      populates: ["contractEvents"],
-      lean: false,
-    });
-
-    if (employee.contractStatus === ContractStatus.ACTIVE) {
-      throw new BadRequestException(
-        `Employee with id ${employeeId.toString()} is already active`,
-      );
-    }
-
-    const contractEvent = await this.createContractEvent({
-      type: ContractEventType.REHIRED,
-      reason: reHireEmployeeDto.reason,
-      employee,
-    });
-
-    employee.contractStatus = ContractStatus.ACTIVE;
-    employee.contractEvents.push(contractEvent);
-
-    await employee.save();
-
-    return {
-      reason: reHireEmployeeDto.reason,
-      message: `Successfully rehired employee with id ${employeeId.toString()}`,
-    };
-  }
-
   @Transactional()
   async linkDocumentTypes(
     employeeId: Types.ObjectId,
@@ -605,66 +460,6 @@ export class EmployeesService {
     return {
       documentTypeIdsUnlinked: documentTypeIds.map((doc) => doc.toString()),
       documentIdsDeleted: deletedDocumentIds.map((doc) => doc._id.toString()),
-    };
-  }
-
-  @Transactional()
-  async createAdminEmployee(
-    createAdminEmployeeDto: CreateAdminEmployeeRequestDto,
-  ): Promise<CreateAdminEmployeeResponseDto> {
-    const { username, password, cpf, firstName, lastName } =
-      createAdminEmployeeDto;
-
-    const parsedCpf = cpf.replace(/\D/g, ""); // Remove non-numeric characters from CPF
-
-    // FindByUsername or CPF to ensure uniqueness
-    const existingEmployee = await this.employeeModel.findOne({
-      $or: [{ username }, { cpf: parsedCpf }],
-    });
-
-    if (
-      existingEmployee?.username === username ||
-      existingEmployee?.cpf === parsedCpf
-    ) {
-      throw new ConflictException(
-        `An employee with username ${username} or CPF ${parsedCpf} already exists`,
-      );
-    }
-
-    const contractEvent = await this.createContractEvent({
-      type: ContractEventType.HIRED,
-      reason: "New admin employee hired successfully cpf: " + parsedCpf,
-      employee: {
-        cpf: parsedCpf,
-        fullName: `${firstName} ${lastName}`,
-      },
-    });
-
-    const newEmployee = new this.employeeModel({
-      firstName,
-      lastName,
-      cpf: parsedCpf,
-      contractEvents: [contractEvent._id],
-      username,
-      password,
-      role: EmployeeRole.ADMIN,
-    });
-
-    const createdEmployee = await newEmployee.save();
-
-    return {
-      _id: createdEmployee._id,
-      id: createdEmployee._id.toString(),
-      firstName: createdEmployee.firstName,
-      lastName: createdEmployee.lastName,
-      fullName: createdEmployee.fullName,
-      username: createdEmployee.username,
-      contractStatus: createdEmployee.contractStatus,
-      documentTypes: [],
-      cpf: createdEmployee.cpf,
-      role: createdEmployee.role,
-      createdAt: createdEmployee.createdAt,
-      updatedAt: createdEmployee.updatedAt,
     };
   }
 }

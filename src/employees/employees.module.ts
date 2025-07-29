@@ -7,6 +7,8 @@ import { EmployeeDocumentModule } from "src/shared/employee-document/employee-do
 import { EmployeesController } from "./controllers/employees.controller";
 import { EmployeesService } from "./providers/employees.service";
 import { Employee, EmployeeSchema } from "./schemas/employee.schema";
+import { HumanResourcesService } from './providers/human-resources.service';
+import { AdminEmployeesService } from './providers/admin-employees.service';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { Employee, EmployeeSchema } from "./schemas/employee.schema";
     ContractEventsModule,
   ],
   controllers: [EmployeesController],
-  providers: [EmployeesService],
+  providers: [EmployeesService, HumanResourcesService, AdminEmployeesService],
   exports: [EmployeesService],
 })
 export class EmployeesModule {}
