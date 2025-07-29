@@ -1,17 +1,20 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import { Types } from "mongoose";
 
 import type { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import { DocumentTypesService } from "../providers/document-types.service";
 import { DocumentTypeAllowedValues } from "../schemas/document-type.schema";
 import { DocumentTypesController } from "./document-types.controller";
 
+const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
+
 describe("DocumentTypesController", () => {
   let controller: DocumentTypesController;
 
   const mockDocumentTypesService = {
     findAll: jest.fn(() => Promise.resolve([])),
-    findById: jest.fn((id: string) =>
+    findById: jest.fn((id: Types.ObjectId) =>
       Promise.resolve({
         id,
         name: "Mocked Document Type",
@@ -35,7 +38,7 @@ describe("DocumentTypesController", () => {
         updatedAt: new Date(),
       }),
     ),
-    update: jest.fn((id: string, dto: CreateDocumentTypeRequestDto) =>
+    update: jest.fn((id: Types.ObjectId, dto: CreateDocumentTypeRequestDto) =>
       Promise.resolve({
         id,
         name: dto.name,
@@ -73,17 +76,18 @@ describe("DocumentTypesController", () => {
 
   describe("findById", () => {
     it("should return a document type by id", async () => {
-      const id = "mocked-isd";
-      const result = await controller.findById(id);
+      const result = await controller.findById(mockGenericObjectId);
 
       expect(result).toEqual({
-        id,
+        id: mockGenericObjectId,
         name: "Mocked Document Type",
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
 
-      expect(mockDocumentTypesService.findById).toHaveBeenCalledWith(id);
+      expect(mockDocumentTypesService.findById).toHaveBeenCalledWith(
+        mockGenericObjectId,
+      );
     });
   });
 
@@ -123,21 +127,20 @@ describe("DocumentTypesController", () => {
 
   describe("update", () => {
     it("should update an existing document type", async () => {
-      const id = "mocked-id";
       const updateDto: CreateDocumentTypeRequestDto = {
         name: DocumentTypeAllowedValues.CPF,
       };
-      const result = await controller.update(id, updateDto);
+      const result = await controller.update(mockGenericObjectId, updateDto);
 
       expect(result).toEqual({
-        id,
+        id: mockGenericObjectId,
         name: updateDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
 
       expect(mockDocumentTypesService.update).toHaveBeenCalledWith(
-        id,
+        mockGenericObjectId,
         updateDto,
       );
     });
