@@ -49,8 +49,10 @@ describe("EmployeesService", () => {
     firstName: "Jane",
     lastName: "Doe",
     fullName: "Jane Doe",
+    username: "jane.doe",
     contractStatus: ContractStatus.ACTIVE,
     documentTypes: [],
+    role: EmployeeRole.COMMON,
     cpf: "987.654.321-00",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -139,15 +141,8 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual([
         {
+          ...mockEmployee,
           id: "1",
-          firstName: "Jane",
-          lastName: "Doe",
-          fullName: "Jane Doe",
-          contractStatus: ContractStatus.ACTIVE,
-          documentTypes: [],
-          cpf: "987.654.321-00",
-          createdAt: expect.any(Date) as Date,
-          updatedAt: expect.any(Date) as Date,
         },
       ]);
       expect(spyOnFind).toHaveBeenCalled();
@@ -166,15 +161,8 @@ describe("EmployeesService", () => {
       const result = await service.findById("1");
 
       expect(result).toEqual({
+        ...mockEmployee,
         id: "1",
-        firstName: "Jane",
-        lastName: "Doe",
-        fullName: "Jane Doe",
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        cpf: "987.654.321-00",
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
       });
       expect(spyOnFindById).toHaveBeenCalled();
     });
@@ -223,15 +211,7 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual({
         id: "1",
-        firstName: "Jane",
-        lastName: "Doe",
-        fullName: "Jane Doe",
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        cpf: "987.654.321-00",
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
-        contractEvents: mockContractEvents,
+        ...mockEmployeeWithEvents,
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
       expect(spyOnFindManyByIds).toHaveBeenCalledTimes(1);
@@ -259,15 +239,11 @@ describe("EmployeesService", () => {
       const result = await service.create(createDto);
 
       expect(result).toEqual({
+        ...mockEmployee,
         id: "1",
-        firstName: "Jane",
-        lastName: "Doe",
-        fullName: "Jane Doe",
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
         cpf: "98765432100",
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
+        username: "98765432100",
+        contractEvents: [mockContractEvents],
       });
       expect(spyOnCreateContractEvent).toHaveBeenCalledTimes(1);
     });
@@ -289,8 +265,11 @@ describe("EmployeesService", () => {
             fullName: "Jane Smith",
             contractStatus: ContractStatus.ACTIVE,
             documentTypes: [],
+            contractEvents: [],
             firstName: updateDto.firstName,
             lastName: updateDto.lastName,
+            username: updateDto.cpf?.replace(/\D/g, ""),
+            role: EmployeeRole.COMMON,
             cpf: updateDto.cpf?.replace(/\D/g, ""),
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -300,13 +279,13 @@ describe("EmployeesService", () => {
       const result = await service.update("1", updateDto);
 
       expect(result).toEqual({
+        ...mockEmployee,
         id: "1",
-        firstName: "Jane",
-        lastName: "Smith",
-        fullName: "Jane Smith",
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        cpf: "12345678900",
+        firstName: updateDto.firstName,
+        lastName: updateDto.lastName,
+        cpf: updateDto.cpf?.replace(/\D/g, ""),
+        fullName: `${updateDto.firstName} ${updateDto.lastName}`,
+        username: updateDto.cpf?.replace(/\D/g, ""),
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
@@ -466,6 +445,13 @@ describe("EmployeesService", () => {
           id: docId,
           name: `Document Type ${docId}`,
         } as never);
+
+        jest
+          .spyOn(mockEmployeeDocumentService, "createDocument")
+          .mockResolvedValue({
+            _id: "doc1FromEmployeeDocumentService",
+            name: `Document Type ${docId}`,
+          } as never);
       });
 
       const employeeId = "1";
@@ -477,6 +463,10 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual({
         documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
+        documentIdsCreated: [
+          "doc1FromEmployeeDocumentService",
+          "doc1FromEmployeeDocumentService",
+        ],
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
@@ -513,6 +503,16 @@ describe("EmployeesService", () => {
           id: docId,
           name: `Document Type ${docId}`,
         } as never);
+
+        jest
+          .spyOn(
+            mockEmployeeDocumentService,
+            "deleteDocumentByEmployeeIdAndDocumentTypeId",
+          )
+          .mockResolvedValue({
+            _id: docId,
+            name: `Document Type ${docId}`,
+          } as never);
       });
 
       const employeeId = "1";
@@ -524,6 +524,7 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual({
         documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds,
+        documentIdsDeleted: ["doc1"],
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
@@ -542,11 +543,13 @@ describe("EmployeesService", () => {
       const result = await service.createAdminEmployee(createDto);
 
       expect(result).toEqual({
+        _id: expect.any(String) as string,
         id: expect.any(String) as string,
         firstName: "Admin",
         lastName: "User",
         fullName: "Admin User",
         contractStatus: ContractStatus.ACTIVE,
+        role: EmployeeRole.ADMIN,
         documentTypes: [],
         cpf: "12345678900",
         createdAt: expect.any(Date) as Date,
