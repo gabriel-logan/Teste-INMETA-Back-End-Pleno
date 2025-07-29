@@ -13,6 +13,7 @@ import {
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
+import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
@@ -24,6 +25,7 @@ import {
   ContractStatus,
   Employee,
   EmployeeDocument,
+  EmployeeRole,
 } from "../schemas/employee.schema";
 
 type EmployeePopulatableFields = "documentTypes" | "contractEvents";
@@ -339,7 +341,14 @@ export class EmployeesService {
   async updatePassword(
     employeeId: Types.ObjectId,
     updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
+    employeeFromReq: AuthPayload,
   ): Promise<UpdateEmployeePasswordResponseDto> {
+    if (employeeFromReq.role === EmployeeRole.COMMON) {
+      if (employeeFromReq.sub !== employeeId.toString()) {
+        throw new BadRequestException("Something went wrong, contact support");
+      }
+    }
+
     const { newPassword, currentPassword } = updateEmployeePasswordRequestDto;
 
     if (newPassword === currentPassword) {

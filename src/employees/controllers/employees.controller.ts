@@ -36,6 +36,7 @@ import { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-emplo
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
+import { UpdateEmployeePasswordRequestDto } from "../dto/request/update-employee-password.dto";
 import {
   FireEmployeeResponseDto,
   ReHireEmployeeResponseDto,
@@ -43,6 +44,7 @@ import {
 import { CreateAdminEmployeeResponseDto } from "../dto/response/create-admin-employee.dto";
 import { DocumentTypeEmployeeLinkedResponseDto } from "../dto/response/documentType-employee-linked.dto";
 import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documentType-employee-unlinked.dto";
+import { UpdateEmployeePasswordResponseDto } from "../dto/response/update-employee-password.dto";
 import { AdminEmployeesService } from "../providers/admin-employees.service";
 import { DocumentTypeLinkersService } from "../providers/document-type-linkers.service";
 import { EmployeesService } from "../providers/employees.service";
@@ -172,6 +174,35 @@ export class EmployeesController {
     @Body() updateEmployeeDto: UpdateEmployeeRequestDto,
   ): Promise<EmployeeWithDocumentTypesResponseDto> {
     return await this.employeesService.update(employeeId, updateEmployeeDto);
+  }
+
+  @ApiSecurity("bearer")
+  @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN, EmployeeRole.COMMON)
+  @ApiStandardResponses({
+    ok: {
+      description: "Update employee password",
+      type: UpdateEmployeePasswordResponseDto,
+    },
+    notFound: true,
+    badRequest: true,
+  })
+  @ApiParam({
+    name: "employeeId",
+    description: "ID of the employee",
+    type: String,
+  })
+  @Patch(":employeeId/password")
+  async updatePassword(
+    @Param("employeeId", new ParseObjectIdPipeLocal())
+    employeeId: Types.ObjectId,
+    @Body() updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
+    @EmployeeFromReq() employeeFromReq: AuthPayload,
+  ): Promise<UpdateEmployeePasswordResponseDto> {
+    return await this.employeesService.updatePassword(
+      employeeId,
+      updateEmployeePasswordRequestDto,
+      employeeFromReq,
+    );
   }
 
   @ApiSecurity("bearer")
