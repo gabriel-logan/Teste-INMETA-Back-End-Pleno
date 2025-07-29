@@ -24,6 +24,22 @@ export class ContractEventsService {
     return cpf.replace(/\D/g, ""); // Remove non-numeric characters
   }
 
+  private genericResponseMapper(
+    contractEvent: ContractEvent,
+  ): ContractEventResponseDto {
+    return {
+      _id: contractEvent._id,
+      id: contractEvent._id.toString(),
+      type: contractEvent.type,
+      date: contractEvent.date,
+      reason: contractEvent.reason,
+      employeeFullName: contractEvent.employeeFullName,
+      employeeCpf: contractEvent.employeeCpf,
+      createdAt: contractEvent.createdAt,
+      updatedAt: contractEvent.updatedAt,
+    };
+  }
+
   async findAll(): Promise<ContractEventResponseDto[]> {
     return await getAndSetCache(
       this.cacheManager,
@@ -31,17 +47,7 @@ export class ContractEventsService {
       async () => {
         const contractEvents = await this.contractEventModel.find().lean();
 
-        return contractEvents.map((event) => ({
-          _id: event._id,
-          id: event._id.toString(),
-          type: event.type,
-          date: event.date,
-          reason: event.reason,
-          employeeFullName: event.employeeFullName,
-          employeeCpf: event.employeeCpf,
-          createdAt: event.createdAt,
-          updatedAt: event.updatedAt,
-        }));
+        return contractEvents.map((event) => this.genericResponseMapper(event));
       },
     );
   }
@@ -57,17 +63,7 @@ export class ContractEventsService {
           throw new NotFoundException(`ContractEvent with id ${id} not found`);
         }
 
-        return {
-          _id: contractEvent._id,
-          id: contractEvent._id.toString(),
-          type: contractEvent.type,
-          date: contractEvent.date,
-          reason: contractEvent.reason,
-          employeeFullName: contractEvent.employeeFullName,
-          employeeCpf: contractEvent.employeeCpf,
-          createdAt: contractEvent.createdAt,
-          updatedAt: contractEvent.updatedAt,
-        };
+        return this.genericResponseMapper(contractEvent);
       },
     );
   }
@@ -85,17 +81,7 @@ export class ContractEventsService {
           .find({ employeeCpf: parsedCpf })
           .lean();
 
-        return contractEvents.map((event) => ({
-          _id: event._id,
-          id: event._id.toString(),
-          type: event.type,
-          date: event.date,
-          reason: event.reason,
-          employeeFullName: event.employeeFullName,
-          employeeCpf: event.employeeCpf,
-          createdAt: event.createdAt,
-          updatedAt: event.updatedAt,
-        }));
+        return contractEvents.map((event) => this.genericResponseMapper(event));
       },
     );
   }
@@ -119,17 +105,7 @@ export class ContractEventsService {
           .find({ _id: { $in: ids } })
           .lean();
 
-        return contractEvents.map((event) => ({
-          _id: event._id,
-          id: event._id.toString(),
-          type: event.type,
-          date: event.date,
-          reason: event.reason,
-          employeeFullName: event.employeeFullName,
-          employeeCpf: event.employeeCpf,
-          createdAt: event.createdAt,
-          updatedAt: event.updatedAt,
-        }));
+        return contractEvents.map((event) => this.genericResponseMapper(event));
       },
     );
   }
@@ -166,17 +142,7 @@ export class ContractEventsService {
       cacheKeys.contractEvents.findManyByIds([newContractEvent._id.toString()]),
     ]);
 
-    return {
-      _id: newContractEvent._id,
-      id: newContractEvent._id.toString(),
-      type: newContractEvent.type,
-      date: newContractEvent.date,
-      reason: newContractEvent.reason,
-      employeeFullName: newContractEvent.employeeFullName,
-      employeeCpf: newContractEvent.employeeCpf,
-      createdAt: newContractEvent.createdAt,
-      updatedAt: newContractEvent.updatedAt,
-    };
+    return this.genericResponseMapper(newContractEvent);
   }
 
   async update(
@@ -219,16 +185,6 @@ export class ContractEventsService {
       ]),
     ]);
 
-    return {
-      _id: updatedContractEvent._id,
-      id: updatedContractEvent._id.toString(),
-      type: updatedContractEvent.type,
-      date: updatedContractEvent.date,
-      reason: updatedContractEvent.reason,
-      employeeFullName: updatedContractEvent.employeeFullName,
-      employeeCpf: updatedContractEvent.employeeCpf,
-      createdAt: updatedContractEvent.createdAt,
-      updatedAt: updatedContractEvent.updatedAt,
-    };
+    return this.genericResponseMapper(updatedContractEvent);
   }
 }
