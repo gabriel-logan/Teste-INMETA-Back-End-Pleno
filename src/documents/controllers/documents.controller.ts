@@ -23,12 +23,12 @@ import {
 } from "src/common/decorators/routes/docs.decorator";
 import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
+import { DocumentFullResponseDto } from "src/common/dto/response/document.dto";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
 import { AuthPayload } from "src/common/types";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
-import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
@@ -43,12 +43,12 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Returns all documents",
-      type: PublicDocumentResponseDto,
+      type: DocumentFullResponseDto,
       isArray: true,
     },
   })
   @Get()
-  async findAll(): Promise<PublicDocumentResponseDto[]> {
+  async findAll(): Promise<DocumentFullResponseDto[]> {
     return await this.documentsService.findAll();
   }
 
@@ -56,14 +56,14 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Returns a document by ID",
-      type: PublicDocumentResponseDto,
+      type: DocumentFullResponseDto,
     },
     notFound: true,
   })
   @Get(":documentId")
   async findById(
     @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
-  ): Promise<PublicDocumentResponseDto> {
+  ): Promise<DocumentFullResponseDto> {
     return await this.documentsService.findById(documentId);
   }
 
@@ -71,7 +71,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Updates a document by ID",
-      type: PublicDocumentResponseDto,
+      type: DocumentFullResponseDto,
     },
     notFound: true,
     badRequest: true,
@@ -80,7 +80,7 @@ export class DocumentsController {
   async update(
     @Param("documentId", new ParseObjectIdPipeLocal()) documentId: string,
     @Body() updateDocumentDto: UpdateDocumentRequestDto,
-  ): Promise<PublicDocumentResponseDto> {
+  ): Promise<DocumentFullResponseDto> {
     return await this.documentsService.update(documentId, updateDocumentDto);
   }
 
@@ -167,7 +167,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Returns all missing documents",
-      type: PublicDocumentResponseDto,
+      type: DocumentFullResponseDto,
       isArray: true,
     },
   })
@@ -181,7 +181,7 @@ export class DocumentsController {
     @Query("documentTypeId", new ParseObjectIdPipeLocal({ optional: true }))
     documentTypeId?: string,
   ): Promise<{
-    documents: PublicDocumentResponseDto[];
+    documents: DocumentFullResponseDto[];
     total: number;
     page: number;
     limit: number;

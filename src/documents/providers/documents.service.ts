@@ -9,6 +9,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
+import { DocumentFullResponseDto } from "src/common/dto/response/document.dto";
 import { AuthPayload } from "src/common/types";
 import type { EnvGlobalConfig } from "src/configs/types";
 import { EmployeesService } from "src/employees/providers/employees.service";
@@ -16,7 +17,6 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { v4 as uuidv4 } from "uuid";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
-import { PublicDocumentResponseDto } from "../dto/response/public-document.dto";
 import { SendDeleteDocumentFileResponseDto } from "../dto/response/send-delete-document-file.dto";
 import {
   Document,
@@ -40,11 +40,48 @@ export class DocumentsService {
 
   private toPublicDocumentResponseDto(
     document: Document,
-  ): PublicDocumentResponseDto {
+  ): DocumentFullResponseDto {
     return {
-      id: document._id,
-      employee: document.employee,
-      documentType: document.documentType,
+      _id: document._id,
+      id: document._id.toString(),
+      employee: {
+        _id: document.employee._id,
+        id: document.employee._id.toString(),
+        firstName: document.employee.firstName,
+        lastName: document.employee.lastName,
+        fullName: document.employee.fullName,
+        username: document.employee.username,
+        contractStatus: document.employee.contractStatus,
+        contractEvents: document.employee.contractEvents.map((event) => ({
+          _id: event._id,
+          id: event._id.toString(),
+          type: event.type,
+          date: event.date,
+          employeeCpf: event.employeeCpf,
+          employeeFullName: event.employeeFullName,
+          reason: event.reason,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+        })),
+        documentTypes: document.employee.documentTypes.map((type) => ({
+          _id: type._id,
+          id: type._id.toString(),
+          name: type.name,
+          createdAt: type.createdAt,
+          updatedAt: type.updatedAt,
+        })),
+        cpf: document.employee.cpf,
+        role: document.employee.role,
+        createdAt: document.employee.createdAt,
+        updatedAt: document.employee.updatedAt,
+      },
+      documentType: {
+        _id: document.documentType._id,
+        id: document.documentType._id.toString(),
+        name: document.documentType.name,
+        createdAt: document.documentType.createdAt,
+        updatedAt: document.documentType.updatedAt,
+      },
       status: document.status,
       documentUrl: document.documentUrl,
       createdAt: document.createdAt,
@@ -52,7 +89,7 @@ export class DocumentsService {
     };
   }
 
-  async findAll(): Promise<PublicDocumentResponseDto[]> {
+  async findAll(): Promise<DocumentFullResponseDto[]> {
     return (
       await this.documentModel
         .find()
@@ -62,7 +99,7 @@ export class DocumentsService {
     ).map((doc) => this.toPublicDocumentResponseDto(doc));
   }
 
-  async findById(documentId: string): Promise<PublicDocumentResponseDto> {
+  async findById(documentId: string): Promise<DocumentFullResponseDto> {
     const document = await this.documentModel
       .findById(documentId)
       .populate("documentType")
@@ -79,7 +116,7 @@ export class DocumentsService {
   async update(
     documentId: string,
     updateDocumentDto: UpdateDocumentRequestDto,
-  ): Promise<PublicDocumentResponseDto> {
+  ): Promise<DocumentFullResponseDto> {
     const { status } = updateDocumentDto;
 
     const updatedDocument = await this.documentModel
@@ -264,7 +301,7 @@ export class DocumentsService {
     employeeId?: string,
     documentTypeId?: string,
   ): Promise<{
-    documents: PublicDocumentResponseDto[];
+    documents: DocumentFullResponseDto[];
     total: number;
     page: number;
     limit: number;
