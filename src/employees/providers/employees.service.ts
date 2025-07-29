@@ -45,6 +45,11 @@ import {
   EmployeeRole,
 } from "../schemas/employee.schema";
 
+type FindByIdOptions<T extends boolean> = {
+  populates?: string[];
+  lean?: T;
+};
+
 @Injectable()
 export class EmployeesService {
   private readonly logger = new Logger(EmployeesService.name);
@@ -138,11 +143,27 @@ export class EmployeesService {
 
   async findById(
     employeeId: Types.ObjectId,
-  ): Promise<EmployeeWithDocumentTypesResponseDto> {
-    const employee = await this.employeeModel
-      .findById(employeeId)
-      .populate("documentTypes")
-      .lean();
+    options?: FindByIdOptions<true>,
+  ): Promise<Employee>;
+
+  async findById(
+    employeeId: Types.ObjectId,
+    options?: FindByIdOptions<false>,
+  ): Promise<EmployeeDocument>;
+
+  async findById(
+    employeeId: Types.ObjectId,
+    options: FindByIdOptions<boolean> = {},
+  ): Promise<Employee | EmployeeDocument> {
+    const { populates = [], lean = true } = options;
+
+    let query = this.employeeModel.findById(employeeId);
+
+    for (const populate of populates) {
+      query = query.populate(populate);
+    }
+
+    const employee = await (lean ? query.lean() : query);
 
     if (!employee) {
       throw new NotFoundException(
@@ -150,7 +171,32 @@ export class EmployeesService {
       );
     }
 
+    return employee;
+  }
+
+  async findByIdWithDocumentTypes(
+    employeeId: Types.ObjectId,
+  ): Promise<EmployeeWithDocumentTypesResponseDto> {
+    const employee = await this.findById(employeeId);
+
     return this.genericEmployeeResponseMapper(employee);
+  }
+
+  async findByIdWithContractEvents(
+    employeeId: Types.ObjectId,
+  ): Promise<EmployeeWithContractEventsResponseDto> {
+    const employee = await this.findById(employeeId, {
+      populates: ["contractEvents"],
+    });
+
+    const contractEvents = await this.contractEventsService.findManyByIds(
+      employee.contractEvents.map((event) => event._id),
+    );
+
+    return {
+      ...this.genericEmployeeResponseMapper(employee),
+      contractEvents,
+    };
   }
 
   async findOneByUsername(username: string): Promise<Employee> {
@@ -163,30 +209,6 @@ export class EmployeesService {
     }
 
     return employee;
-  }
-
-  async findByIdWithContractEvents(
-    employeeId: Types.ObjectId,
-  ): Promise<EmployeeWithContractEventsResponseDto> {
-    const employee = await this.employeeModel
-      .findById(employeeId)
-      .populate("contractEvents")
-      .lean();
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Employee with id ${employeeId.toString()} not found`,
-      );
-    }
-
-    const contractEvents = await this.contractEventsService.findManyByIds(
-      employee.contractEvents.map((event) => event._id),
-    );
-
-    return {
-      ...this.genericEmployeeResponseMapper(employee),
-      contractEvents,
-    };
   }
 
   @Transactional()
