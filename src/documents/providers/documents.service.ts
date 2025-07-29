@@ -40,7 +40,7 @@ export class DocumentsService {
       this.configService.get<EnvGlobalConfig["server"]>("server").baseUrl;
   }
 
-  private toPublicDocumentResponseDto(
+  private genericDocumentResponseMapper(
     document: Document,
   ): DocumentFullResponseDto {
     return {
@@ -80,7 +80,7 @@ export class DocumentsService {
         .populate("documentType")
         .populate("employee")
         .lean()
-    ).map((doc) => this.toPublicDocumentResponseDto(doc));
+    ).map((doc) => this.genericDocumentResponseMapper(doc));
   }
 
   async findById(documentId: string): Promise<DocumentFullResponseDto> {
@@ -94,7 +94,7 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${documentId} not found`);
     }
 
-    return this.toPublicDocumentResponseDto(document);
+    return this.genericDocumentResponseMapper(document);
   }
 
   async update(
@@ -118,7 +118,7 @@ export class DocumentsService {
       throw new NotFoundException(`Document with id ${documentId} not found`);
     }
 
-    return this.toPublicDocumentResponseDto(updatedDocument);
+    return this.genericDocumentResponseMapper(updatedDocument);
   }
 
   private generateDocumentUrl(mimeType: string | undefined): string {
@@ -316,7 +316,9 @@ export class DocumentsService {
     ]);
 
     return {
-      documents: documents.map((doc) => this.toPublicDocumentResponseDto(doc)),
+      documents: documents.map((doc) =>
+        this.genericDocumentResponseMapper(doc),
+      ),
       total,
       page,
       limit,

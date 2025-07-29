@@ -56,7 +56,7 @@ export class EmployeesService {
     private readonly contractEventsService: ContractEventsService,
   ) {}
 
-  private toPublicEmployeeResponseDto(
+  private genericEmployeeResponseMapper(
     employee: Employee,
   ): EmployeeWithDocumentTypesResponseDto {
     return {
@@ -107,7 +107,7 @@ export class EmployeesService {
         })
         .populate("documentTypes")
         .lean()
-    ).map((employee) => this.toPublicEmployeeResponseDto(employee));
+    ).map((employee) => this.genericEmployeeResponseMapper(employee));
   }
 
   async findById(
@@ -122,7 +122,7 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
-    return this.toPublicEmployeeResponseDto(employee);
+    return this.genericEmployeeResponseMapper(employee);
   }
 
   async findOneByUsername(username: string): Promise<Employee> {
@@ -154,7 +154,7 @@ export class EmployeesService {
     );
 
     return {
-      ...this.toPublicEmployeeResponseDto(employee),
+      ...this.genericEmployeeResponseMapper(employee),
       contractEvents,
     };
   }
@@ -224,7 +224,7 @@ export class EmployeesService {
       throw new NotFoundException(`Employee with id ${employeeId} not found`);
     }
 
-    return this.toPublicEmployeeResponseDto(updatedEmployee);
+    return this.genericEmployeeResponseMapper(updatedEmployee);
   }
 
   private async getEmployeeWithContractEvents(
