@@ -34,15 +34,15 @@ export type ResponseOptions = {
   ok: {
     description: string;
     type: typeOkResponse;
-    isArray?: boolean;
-    isStatusCodeCreated?: boolean;
+    isArray?: true;
+    isStatusCodeCreated?: true;
   };
-  badRequest?: boolean;
-  conflict?: boolean;
-  notFound?: boolean;
-  unauthorized?: boolean;
-  forbidden?: boolean;
-  isPublic?: boolean;
+  badRequest?: true;
+  conflict?: true;
+  notFound?: true;
+  unauthorized?: true;
+  forbidden?: true;
+  isPublic?: true;
 };
 
 export function ApiStandardResponses(
