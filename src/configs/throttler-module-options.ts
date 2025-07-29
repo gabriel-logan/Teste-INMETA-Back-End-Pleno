@@ -39,10 +39,8 @@ const throttlerModuleOptions: ThrottlerModuleOptions = [
 
       const freeEndpoints = [...cachedEndpoints, ...fileEndpoints];
 
-      const method = request.method as Method;
-
       return (
-        method === "GET" &&
+        (request.method as Method) === "GET" &&
         freeEndpoints.some((endpoint) => request.url.startsWith(endpoint))
       );
     },
