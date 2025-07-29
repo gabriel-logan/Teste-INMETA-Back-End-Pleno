@@ -118,6 +118,7 @@ export class DocumentTypesService {
 
     const result = this.genericDocumentTypeResponseMapper(createdDocumentType);
 
+    // Invalidate and set caches for the new document type
     await Promise.all([
       // Invalidate cache for findAll, findById, and findOneByName
       this.invalidateDocumentTypeCaches(result),
@@ -154,6 +155,7 @@ export class DocumentTypesService {
 
     const result = this.genericDocumentTypeResponseMapper(updatedDocumentType);
 
+    // Invalidate and set caches after update
     await Promise.all([
       // Invalidate cache for findAll, findById, and findOneByName
       this.invalidateDocumentTypeCaches(result),
