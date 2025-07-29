@@ -20,7 +20,7 @@ export class DocumentTypesService {
     private readonly cacheManager: Cache,
   ) {}
 
-  private genericResponseMapper(
+  private genericDocumentTypeResponseMapper(
     documentType: DocumentType,
   ): DocumentTypeResponseDto {
     return {
@@ -57,7 +57,7 @@ export class DocumentTypesService {
       cacheKeys.documentTypes.findAll,
       async () => {
         return (await this.documentTypeModel.find().lean()).map((docType) =>
-          this.genericResponseMapper(docType),
+          this.genericDocumentTypeResponseMapper(docType),
         );
       },
     );
@@ -78,7 +78,7 @@ export class DocumentTypesService {
           );
         }
 
-        return this.genericResponseMapper(docType);
+        return this.genericDocumentTypeResponseMapper(docType);
       },
     );
   }
@@ -100,7 +100,7 @@ export class DocumentTypesService {
           );
         }
 
-        return this.genericResponseMapper(docType);
+        return this.genericDocumentTypeResponseMapper(docType);
       },
     );
   }
@@ -116,7 +116,7 @@ export class DocumentTypesService {
 
     const createdDocumentType = await newDocumentType.save();
 
-    const result = this.genericResponseMapper(createdDocumentType);
+    const result = this.genericDocumentTypeResponseMapper(createdDocumentType);
 
     await Promise.all([
       // Invalidate cache for findAll, findById, and findOneByName
@@ -152,7 +152,7 @@ export class DocumentTypesService {
 
     const updatedDocumentType = await existingDocumentType.save();
 
-    const result = this.genericResponseMapper(updatedDocumentType);
+    const result = this.genericDocumentTypeResponseMapper(updatedDocumentType);
 
     await Promise.all([
       // Invalidate cache for findAll, findById, and findOneByName

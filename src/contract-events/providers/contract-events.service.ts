@@ -24,7 +24,7 @@ export class ContractEventsService {
     return cpf.replace(/\D/g, ""); // Remove non-numeric characters
   }
 
-  private genericResponseMapper(
+  private genericContractEventResponseMapper(
     contractEvent: ContractEvent,
   ): ContractEventResponseDto {
     return {
@@ -67,7 +67,9 @@ export class ContractEventsService {
       async () => {
         const contractEvents = await this.contractEventModel.find().lean();
 
-        return contractEvents.map((event) => this.genericResponseMapper(event));
+        return contractEvents.map((event) =>
+          this.genericContractEventResponseMapper(event),
+        );
       },
     );
   }
@@ -83,7 +85,7 @@ export class ContractEventsService {
           throw new NotFoundException(`ContractEvent with id ${id} not found`);
         }
 
-        return this.genericResponseMapper(contractEvent);
+        return this.genericContractEventResponseMapper(contractEvent);
       },
     );
   }
@@ -101,7 +103,9 @@ export class ContractEventsService {
           .find({ employeeCpf: parsedCpf })
           .lean();
 
-        return contractEvents.map((event) => this.genericResponseMapper(event));
+        return contractEvents.map((event) =>
+          this.genericContractEventResponseMapper(event),
+        );
       },
     );
   }
@@ -125,7 +129,9 @@ export class ContractEventsService {
           .find({ _id: { $in: ids } })
           .lean();
 
-        return contractEvents.map((event) => this.genericResponseMapper(event));
+        return contractEvents.map((event) =>
+          this.genericContractEventResponseMapper(event),
+        );
       },
     );
   }
@@ -146,7 +152,7 @@ export class ContractEventsService {
 
     const newContractEvent = await createdContractEvent.save();
 
-    const result = this.genericResponseMapper(newContractEvent);
+    const result = this.genericContractEventResponseMapper(newContractEvent);
 
     // Invalidate and set caches after creation
     await Promise.all([
@@ -184,7 +190,8 @@ export class ContractEventsService {
 
     const updatedContractEvent = await existingContractEvent.save();
 
-    const result = this.genericResponseMapper(updatedContractEvent);
+    const result =
+      this.genericContractEventResponseMapper(updatedContractEvent);
 
     // Invalidate and set caches after update
     await Promise.all([
