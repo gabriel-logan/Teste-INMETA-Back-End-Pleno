@@ -23,6 +23,8 @@ import {
 } from "../schemas/employee.schema";
 import { EmployeesService } from "./employees.service";
 
+const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
+
 describe("EmployeesService", () => {
   let service: EmployeesService;
   let mockEmployeeModel: Model<Employee>;
@@ -45,7 +47,7 @@ describe("EmployeesService", () => {
   };
 
   const mockEmployee = {
-    _id: "1",
+    _id: mockGenericObjectId,
     firstName: "Jane",
     lastName: "Doe",
     fullName: "Jane Doe",
@@ -142,7 +144,7 @@ describe("EmployeesService", () => {
       expect(result).toEqual([
         {
           ...mockEmployee,
-          id: "1",
+          id: mockGenericObjectId.toString(),
         },
       ]);
       expect(spyOnFind).toHaveBeenCalled();
@@ -151,7 +153,7 @@ describe("EmployeesService", () => {
     it("should return an array filtered by contract status", async () => {
       const spyOnFind = jest.spyOn(mockEmployeeModel, "find").mockReturnValue({
         populate: jest.fn().mockReturnThis(),
-        lean: jest.fn().mockResolvedValue([mockEmployee]),
+        lean: jest.fn().mockResolvedValue([]),
       } as unknown as ReturnType<typeof mockEmployeeModel.find>);
 
       const result = await service.findAll({
@@ -174,11 +176,11 @@ describe("EmployeesService", () => {
           lean: jest.fn().mockResolvedValue(mockEmployee),
         } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
 
-      const result = await service.findById("1");
+      const result = await service.findById(mockGenericObjectId);
 
       expect(result).toEqual({
         ...mockEmployee,
-        id: "1",
+        id: mockGenericObjectId.toString(),
       });
       expect(spyOnFindById).toHaveBeenCalled();
     });
@@ -223,11 +225,12 @@ describe("EmployeesService", () => {
           lean: jest.fn().mockResolvedValue(mockEmployeeWithEvents),
         } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
 
-      const result = await service.findByIdWithContractEvents("1");
+      const result =
+        await service.findByIdWithContractEvents(mockGenericObjectId);
 
       expect(result).toEqual({
-        id: "1",
         ...mockEmployeeWithEvents,
+        id: mockGenericObjectId.toString(),
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
       expect(spyOnFindManyByIds).toHaveBeenCalledTimes(1);
@@ -256,7 +259,7 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual({
         ...mockEmployee,
-        id: "1",
+        id: mockGenericObjectId.toString(),
         cpf: "98765432100",
         username: "98765432100",
         contractEvents: [mockContractEvents],
@@ -277,7 +280,7 @@ describe("EmployeesService", () => {
         .spyOn(mockEmployeeModel, "findByIdAndUpdate")
         .mockReturnValue({
           lean: jest.fn().mockResolvedValue({
-            _id: "1",
+            _id: mockGenericObjectId,
             fullName: "Jane Smith",
             contractStatus: ContractStatus.ACTIVE,
             documentTypes: [],
@@ -292,11 +295,11 @@ describe("EmployeesService", () => {
           }),
         } as unknown as ReturnType<typeof mockEmployeeModel.findByIdAndUpdate>);
 
-      const result = await service.update("1", updateDto);
+      const result = await service.update(mockGenericObjectId, updateDto);
 
       expect(result).toEqual({
         ...mockEmployee,
-        id: "1",
+        id: mockGenericObjectId.toString(),
         firstName: updateDto.firstName,
         lastName: updateDto.lastName,
         cpf: updateDto.cpf?.replace(/\D/g, ""),
@@ -342,12 +345,13 @@ describe("EmployeesService", () => {
       };
 
       const mockAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a"),
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
         username: "admin",
         role: EmployeeRole.ADMIN,
+        contractStatus: ContractStatus.ACTIVE,
       };
 
-      const employeeId = "1";
+      const employeeId = mockGenericObjectId;
 
       const result = await service.fire(
         employeeId,
@@ -357,7 +361,7 @@ describe("EmployeesService", () => {
 
       expect(result).toEqual({
         reason: fireEmployeeDto.reason,
-        message: `Successfully terminated contract for employee with id ${employeeId}`,
+        message: `Successfully terminated contract for employee with id ${employeeId.toString()}`,
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
@@ -399,12 +403,13 @@ describe("EmployeesService", () => {
         } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
 
       const mockAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a"),
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
         username: "admin",
         role: EmployeeRole.ADMIN,
+        contractStatus: ContractStatus.ACTIVE,
       };
 
-      const employeeId = "1";
+      const employeeId = mockGenericObjectId;
 
       const reHireEmployeeDto: ReHireEmployeeRequestDto = {
         reason: "Rehired for new project",
@@ -417,7 +422,7 @@ describe("EmployeesService", () => {
       );
 
       expect(result).toEqual({
-        message: `Successfully rehired employee with id ${employeeId}`,
+        message: `Successfully rehired employee with id ${employeeId.toString()}`,
         reason: reHireEmployeeDto.reason,
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
@@ -426,10 +431,15 @@ describe("EmployeesService", () => {
 
   describe("linkDocumentTypes", () => {
     it("should link document types to an employee", async () => {
+      const linkDocumentTypesObjectIds = [
+        new Types.ObjectId("123456789012345678901234"),
+        new Types.ObjectId("123456789012345678901235"),
+      ];
+
       const spyOnFindById = jest
         .spyOn(mockEmployeeModel, "findById")
         .mockReturnValue({
-          _id: "1",
+          _id: mockGenericObjectId,
           fullName: "Jane Smith",
           contractStatus: ContractStatus.ACTIVE,
           documentTypes: [],
@@ -441,11 +451,11 @@ describe("EmployeesService", () => {
           save: jest.fn().mockResolvedValue({
             documentTypes: [
               {
-                _id: "doc1",
+                _id: linkDocumentTypesObjectIds[0],
                 name: "Document Type 1",
               },
               {
-                _id: "doc2",
+                _id: linkDocumentTypesObjectIds[1],
                 name: "Document Type 2",
               },
             ],
@@ -453,24 +463,24 @@ describe("EmployeesService", () => {
         } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
 
       const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
-        documentTypeIds: ["doc1", "doc2"],
+        documentTypeIds: linkDocumentTypesObjectIds,
       };
 
       linkDocumentTypesDto.documentTypeIds.forEach((docId) => {
         jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
           id: docId,
-          name: `Document Type ${docId}`,
+          name: `Document Type ${docId.toString()}`,
         } as never);
 
         jest
           .spyOn(mockEmployeeDocumentService, "createDocument")
           .mockResolvedValue({
             _id: "doc1FromEmployeeDocumentService",
-            name: `Document Type ${docId}`,
+            name: `Document Type ${docId.toString()}`,
           } as never);
       });
 
-      const employeeId = "1";
+      const employeeId = mockGenericObjectId;
 
       const result = await service.linkDocumentTypes(
         employeeId,
@@ -478,7 +488,9 @@ describe("EmployeesService", () => {
       );
 
       expect(result).toEqual({
-        documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
+        documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds.map((id) =>
+          id.toString(),
+        ),
         documentIdsCreated: [
           "doc1FromEmployeeDocumentService",
           "doc1FromEmployeeDocumentService",
@@ -490,15 +502,28 @@ describe("EmployeesService", () => {
 
   describe("unlinkDocumentTypes", () => {
     it("should unlink document types from an employee", async () => {
+      const documentTypeIdsToUnlink: LinkDocumentTypesRequestDto = {
+        documentTypeIds: [
+          new Types.ObjectId("123456789012345678901234"),
+          new Types.ObjectId("123456789012345678901235"),
+        ],
+      };
+
       const spyOnFindById = jest
         .spyOn(mockEmployeeModel, "findById")
         .mockReturnValue({
-          _id: "1",
+          _id: mockGenericObjectId,
           fullName: "Jane Smith",
           contractStatus: ContractStatus.ACTIVE,
           documentTypes: [
-            { _id: "doc1", name: "Document Type 1" },
-            { _id: "doc2", name: "Document Type 2" },
+            {
+              _id: documentTypeIdsToUnlink.documentTypeIds[0],
+              name: "Document Type 1",
+            },
+            {
+              _id: documentTypeIdsToUnlink.documentTypeIds[1],
+              name: "Document Type 2",
+            },
           ],
           firstName: "Jane",
           lastName: "Smith",
@@ -510,14 +535,10 @@ describe("EmployeesService", () => {
           }),
         } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
 
-      const documentTypeIdsToUnlink: LinkDocumentTypesRequestDto = {
-        documentTypeIds: ["doc1"],
-      };
-
       documentTypeIdsToUnlink.documentTypeIds.forEach((docId) => {
         jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
           id: docId,
-          name: `Document Type ${docId}`,
+          name: `Document Type ${docId.toString()}`,
         } as never);
 
         jest
@@ -527,11 +548,11 @@ describe("EmployeesService", () => {
           )
           .mockResolvedValue({
             _id: docId,
-            name: `Document Type ${docId}`,
+            name: `Document Type ${docId.toString()}`,
           } as never);
       });
 
-      const employeeId = "1";
+      const employeeId = mockGenericObjectId;
 
       const result = await service.unlinkDocumentTypes(
         employeeId,
@@ -539,8 +560,13 @@ describe("EmployeesService", () => {
       );
 
       expect(result).toEqual({
-        documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds,
-        documentIdsDeleted: ["doc1"],
+        documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds.map(
+          (id) => id.toString(),
+        ),
+        documentIdsDeleted: [
+          documentTypeIdsToUnlink.documentTypeIds[1].toString(),
+          documentTypeIdsToUnlink.documentTypeIds[1].toString(),
+        ],
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
     });
@@ -559,7 +585,7 @@ describe("EmployeesService", () => {
       const result = await service.createAdminEmployee(createDto);
 
       expect(result).toEqual({
-        _id: expect.any(String) as string,
+        _id: expect.any(Types.ObjectId) as Types.ObjectId,
         id: expect.any(String) as string,
         firstName: "Admin",
         lastName: "User",

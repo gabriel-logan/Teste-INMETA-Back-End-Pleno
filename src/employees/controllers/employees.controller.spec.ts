@@ -151,10 +151,11 @@ describe("EmployeesController", () => {
 
   describe("findById", () => {
     it("should return a single employee", async () => {
-      const result = await controller.findById("60c72b2f9b1e8c001c8f8e1d");
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+      const result = await controller.findById(id);
 
       expect(result).toEqual({
-        id: "60c72b2f9b1e8c001c8f8e1d",
+        id,
         firstName: "John",
         lastName: "Doe",
         fullName: "John Doe",
@@ -164,20 +165,17 @@ describe("EmployeesController", () => {
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
-      expect(mockEmployeesService.findById).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
-      );
+      expect(mockEmployeesService.findById).toHaveBeenCalledWith(id);
     });
   });
 
   describe("findByIdWithContractEvents", () => {
     it("should return a single employee with contract events", async () => {
-      const result = await controller.findByIdWithContractEvents(
-        "60c72b2f9b1e8c001c8f8e1d",
-      );
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+      const result = await controller.findByIdWithContractEvents(id);
 
       expect(result).toEqual({
-        id: "60c72b2f9b1e8c001c8f8e1d",
+        id,
         firstName: "John",
         lastName: "Doe",
         fullName: "John Doe",
@@ -196,7 +194,7 @@ describe("EmployeesController", () => {
       });
       expect(
         mockEmployeesService.findByIdWithContractEvents,
-      ).toHaveBeenCalledWith("60c72b2f9b1e8c001c8f8e1d");
+      ).toHaveBeenCalledWith(id);
     });
   });
 
@@ -231,10 +229,13 @@ describe("EmployeesController", () => {
         lastName: "Doe",
         cpf: "987.654.321-00",
       };
-      const result = await controller.update("60c72b2f9b1e8c001c8f8e1d", dto);
+
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
+      const result = await controller.update(id, dto);
 
       expect(result).toEqual({
-        id: "60c72b2f9b1e8c001c8f8e1d",
+        id,
         firstName: "Jane",
         lastName: "Doe",
         fullName: "Jane Doe",
@@ -244,10 +245,7 @@ describe("EmployeesController", () => {
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
-      expect(mockEmployeesService.update).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
-        dto,
-      );
+      expect(mockEmployeesService.update).toHaveBeenCalledWith(id, dto);
     });
   });
 
@@ -256,16 +254,15 @@ describe("EmployeesController", () => {
       const dto: FireEmployeeRequestDto = { reason: "Performance issues" };
 
       const fakeAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d"),
+        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d").toString(),
         role: EmployeeRole.ADMIN,
         username: "adminUser",
+        contractStatus: ContractStatus.ACTIVE,
       };
 
-      const result = await controller.fire(
-        "60c72b2f9b1e8c001c8f8e1d",
-        dto,
-        fakeAuthPayload,
-      );
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
+      const result = await controller.fire(id, dto, fakeAuthPayload);
 
       expect(result).toEqual({
         reason: "Performance issues",
@@ -273,7 +270,7 @@ describe("EmployeesController", () => {
           "Successfully terminated contract for employee with id 60c72b2f9b1e8c001c8f8e1d",
       });
       expect(mockEmployeesService.fire).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         dto,
         fakeAuthPayload,
       );
@@ -285,16 +282,15 @@ describe("EmployeesController", () => {
       const dto: ReHireEmployeeRequestDto = { reason: "Business needs" };
 
       const fakeAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d"),
+        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d").toString(),
         role: EmployeeRole.ADMIN,
         username: "adminUser",
+        contractStatus: ContractStatus.ACTIVE,
       };
 
-      const result = await controller.reHire(
-        "60c72b2f9b1e8c001c8f8e1d",
-        dto,
-        fakeAuthPayload,
-      );
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
+      const result = await controller.reHire(id, dto, fakeAuthPayload);
 
       expect(result).toEqual({
         reason: "Business needs",
@@ -302,7 +298,7 @@ describe("EmployeesController", () => {
           "Successfully rehired employee with id 60c72b2f9b1e8c001c8f8e1d",
       });
       expect(mockEmployeesService.reHire).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         dto,
         fakeAuthPayload,
       );
@@ -311,14 +307,19 @@ describe("EmployeesController", () => {
 
   describe("linkDocumentTypes", () => {
     it("should link document types to an employee", async () => {
+      const docTypesIds = [
+        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d"),
+        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1e"),
+      ];
+
       const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
-        documentTypeIds: [
-          "60c72b2f9b1e8c001c8f8e1d",
-          "60c72b2f9b1e8c001c8f8e1e",
-        ],
+        documentTypeIds: docTypesIds,
       };
+
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
       const result = await controller.linkDocumentTypes(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         linkDocumentTypesDto,
       );
 
@@ -326,7 +327,7 @@ describe("EmployeesController", () => {
         documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
       });
       expect(mockEmployeesService.linkDocumentTypes).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         linkDocumentTypesDto,
       );
     });
@@ -334,14 +335,19 @@ describe("EmployeesController", () => {
 
   describe("unlinkDocumentTypes", () => {
     it("should unlink document types from an employee", async () => {
+      const docTypesIds = [
+        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d"),
+        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1e"),
+      ];
+
       const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
-        documentTypeIds: [
-          "60c72b2f9b1e8c001c8f8e1d",
-          "60c72b2f9b1e8c001c8f8e1e",
-        ],
+        documentTypeIds: docTypesIds,
       };
+
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
       const result = await controller.unlinkDocumentTypes(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         linkDocumentTypesDto,
       );
 
@@ -349,7 +355,7 @@ describe("EmployeesController", () => {
         documentTypeIdsUnlinked: linkDocumentTypesDto.documentTypeIds,
       });
       expect(mockEmployeesService.unlinkDocumentTypes).toHaveBeenCalledWith(
-        "60c72b2f9b1e8c001c8f8e1d",
+        id,
         linkDocumentTypesDto,
       );
     });
