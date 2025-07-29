@@ -61,12 +61,6 @@ export class EmployeeBaseResponseDto {
   public readonly cpf: string;
 
   @ApiProperty({
-    enum: EmployeeRole,
-    description: "The role of the employee",
-  })
-  public readonly role: EmployeeRole;
-
-  @ApiProperty({
     type: Date,
     description: "The creation date of the employee",
   })
@@ -114,5 +108,7 @@ export class EmployeeWithContractEventsResponseDto extends EmployeeBaseResponseD
 }
 
 export class EmployeeInternalResponseDto extends EmployeeFullResponseDto {
+  public readonly role: EmployeeRole;
+
   public readonly password: string;
 }
