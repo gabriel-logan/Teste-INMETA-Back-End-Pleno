@@ -14,8 +14,8 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { ContractEventsService } from "../providers/contract-events.service";
 
 @ApiSecurity("bearer")
-@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("contract-events")
 export class ContractEventsController {
   constructor(private readonly contractEventsService: ContractEventsService) {}

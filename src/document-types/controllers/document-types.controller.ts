@@ -25,8 +25,8 @@ import { DocumentTypesService } from "../providers/document-types.service";
 import { DocumentTypeAllowedValues } from "../schemas/document-type.schema";
 
 @ApiSecurity("bearer")
-@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @ApiGlobalErrorResponses()
+@Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("document-types")
 export class DocumentTypesController {
   constructor(private readonly documentTypesService: DocumentTypesService) {}
