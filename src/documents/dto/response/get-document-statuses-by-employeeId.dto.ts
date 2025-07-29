@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { DocumentTypeAllowedValues } from "src/document-types/schemas/document-type.schema";
 import { DocumentStatus } from "src/documents/schemas/document.schema";
 
-class DocumentStatusItemDto {
+class DocumentStatusInfoDto {
   @ApiProperty({
     type: String,
     format: "objectId",
@@ -14,22 +14,22 @@ class DocumentStatusItemDto {
   public readonly status: DocumentStatus;
 }
 
-class DocumentStatusesByEmployeeIdDto {
+class DocumentStatusEntryDto {
   @ApiProperty({
     enum: DocumentTypeAllowedValues,
     description: "The name of the document type",
   })
   public readonly documentName: DocumentTypeAllowedValues;
 
-  @ApiProperty({ type: DocumentStatusItemDto })
-  public readonly documentStatus: DocumentStatusItemDto;
+  @ApiProperty({ type: DocumentStatusInfoDto })
+  public readonly documentStatus: DocumentStatusInfoDto;
 }
 
 export class GetDocumentStatusesByEmployeeIdResponseDto {
   @ApiProperty({
-    type: DocumentStatusesByEmployeeIdDto,
+    type: DocumentStatusEntryDto,
     isArray: true,
     description: "List of document statuses by employee ID",
   })
-  public readonly documentStatuses: DocumentStatusesByEmployeeIdDto[];
+  public readonly documentStatuses: DocumentStatusEntryDto[];
 }
