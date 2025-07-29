@@ -19,13 +19,13 @@ export class ContractEvent {
   @Prop({ required: true })
   public date: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 255 })
   public reason: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 100 })
   public employeeFullName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 11 })
   public employeeCpf: string;
 
   public readonly createdAt: Date;

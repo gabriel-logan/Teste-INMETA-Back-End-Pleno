@@ -32,7 +32,7 @@ export class Document {
   })
   public documentType: DocumentType;
 
-  @Prop({ type: String, default: null })
+  @Prop({ type: String, default: null, maxlength: 255 })
   public documentUrl: string | null;
 
   public readonly createdAt: Date;

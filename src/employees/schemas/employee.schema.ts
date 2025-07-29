@@ -21,10 +21,10 @@ export enum EmployeeRole {
 export class Employee {
   public readonly _id: mongoose.Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 100 })
   public firstName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 100 })
   public lastName: string;
 
   @Virtual({
@@ -34,10 +34,10 @@ export class Employee {
   })
   public fullName: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, maxlength: 100 })
   public username: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, maxlength: 255 })
   public password: string;
 
   @Prop({ enum: ContractStatus, default: ContractStatus.ACTIVE })
@@ -49,7 +49,7 @@ export class Employee {
   })
   public contractEvents: ContractEvent[];
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, maxlength: 11 })
   public cpf: string;
 
   @Prop({ enum: EmployeeRole, default: EmployeeRole.COMMON })
