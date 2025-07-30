@@ -1,15 +1,39 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import { Types } from "mongoose";
 
+import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
+import { DocumentTypeLinkersService } from "../providers/document-type-linkers.service";
 import { DocumentTypeLinkersController } from "./document-type-linkers.controller";
 
 describe("DocumentTypeLinkersController", () => {
   let controller: DocumentTypeLinkersController;
 
+  const mockDocumentTypeLinkersService = {
+    linkDocumentTypes: jest.fn(
+      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
+        Promise.resolve({
+          documentTypeIdsLinked: dto.documentTypeIds,
+        }),
+    ),
+    unlinkDocumentTypes: jest.fn(
+      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
+        Promise.resolve({
+          documentTypeIdsUnlinked: dto.documentTypeIds,
+        }),
+    ),
+  };
+
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DocumentTypeLinkersController],
-    }).compile();
+      providers: [DocumentTypeLinkersService],
+    })
+      .overrideProvider(DocumentTypeLinkersService)
+      .useValue(mockDocumentTypeLinkersService)
+      .compile();
 
     controller = module.get<DocumentTypeLinkersController>(
       DocumentTypeLinkersController,
@@ -41,10 +65,9 @@ describe("DocumentTypeLinkersController", () => {
       expect(result).toEqual({
         documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
       });
-      expect(mockEmployeesService.linkDocumentTypes).toHaveBeenCalledWith(
-        id,
-        linkDocumentTypesDto,
-      );
+      expect(
+        mockDocumentTypeLinkersService.linkDocumentTypes,
+      ).toHaveBeenCalledWith(id, linkDocumentTypesDto);
     });
   });
 
@@ -69,10 +92,9 @@ describe("DocumentTypeLinkersController", () => {
       expect(result).toEqual({
         documentTypeIdsUnlinked: linkDocumentTypesDto.documentTypeIds,
       });
-      expect(mockEmployeesService.unlinkDocumentTypes).toHaveBeenCalledWith(
-        id,
-        linkDocumentTypesDto,
-      );
+      expect(
+        mockDocumentTypeLinkersService.unlinkDocumentTypes,
+      ).toHaveBeenCalledWith(id, linkDocumentTypesDto);
     });
   });
 });
