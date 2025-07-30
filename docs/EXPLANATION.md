@@ -160,6 +160,9 @@ Para entender melhor o projeto:
 2. **Suba a aplicação localmente** para ter acesso ao **Swagger UI**
 
 > O Swagger UI mostra todos os schemas esperados nas requisições e respostas.
+> Isso facilita a compreensão do fluxo e dos dados envolvidos.
+> IMPORTANTE: O Swagger não está disponível no ambiente de produção, apenas localmente.
+> IMPORTANTE: A aplicação só funciona com o banco de dados MongoDB, então é necessário ter o MongoDB rodando localmente ou em um servidor.
 
 ---
 
