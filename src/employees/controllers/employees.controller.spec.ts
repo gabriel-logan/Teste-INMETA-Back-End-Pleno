@@ -1,11 +1,12 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { Types } from "mongoose";
+import type { AuthPayload } from "src/common/types";
 
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
-import { ContractStatus } from "../schemas/employee.schema";
+import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 import { EmployeesController } from "./employees.controller";
 
 describe("EmployeesController", () => {
@@ -72,6 +73,7 @@ describe("EmployeesController", () => {
         updatedAt: new Date(),
       }),
     ),
+    updatePassword: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -201,6 +203,29 @@ describe("EmployeesController", () => {
         updatedAt: expect.any(Date) as Date,
       });
       expect(mockEmployeesService.update).toHaveBeenCalledWith(id, dto);
+    });
+  });
+
+  describe("updatePassword", () => {
+    it("should update the employee's password", async () => {
+      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
+
+      const newPassword = "newSecurePassword";
+
+      const mockEmployeeFromReq: AuthPayload = {
+        sub: id.toString(),
+        contractStatus: ContractStatus.ACTIVE,
+        role: EmployeeRole.ADMIN,
+        username: "admin",
+      };
+
+      await controller.updatePassword(id, { newPassword }, mockEmployeeFromReq);
+
+      expect(mockEmployeesService.updatePassword).toHaveBeenCalledWith(
+        id,
+        { newPassword },
+        mockEmployeeFromReq,
+      );
     });
   });
 });
