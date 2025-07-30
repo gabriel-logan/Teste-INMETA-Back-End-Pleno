@@ -36,5 +36,5 @@ jobs:
             exit 1
           fi
       - name: Deploy to Vercel
-        run: printf "Deployment to Vercel is ready. Please ensure the Vercel configuration is correct."
+        run: vercel --yes
 
