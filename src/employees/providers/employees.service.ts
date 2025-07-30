@@ -7,6 +7,7 @@ import {
   EmployeeWithContractEventsResponseDto,
   EmployeeWithDocumentTypesResponseDto,
 } from "src/common/dto/response/employee.dto";
+import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
@@ -334,8 +335,14 @@ export class EmployeesService {
   async updatePassword(
     employeeId: Types.ObjectId,
     updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
+    employeeFromReq: AuthPayload,
   ): Promise<UpdateEmployeePasswordResponseDto> {
     const { newPassword } = updateEmployeePasswordRequestDto;
+
+    // HERE We could do some logic to check allowement for the employee to update another employee's password
+    this.logger.warn(
+      `Employee ${employeeFromReq.username} is updating password for employee ${employeeId.toString()}`,
+    );
 
     const employee = await this.findById(employeeId, {
       lean: false,

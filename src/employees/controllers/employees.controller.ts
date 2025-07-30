@@ -14,6 +14,7 @@ import {
   ApiGlobalErrorResponses,
   ApiStandardResponses,
 } from "src/common/decorators/routes/docs.decorator";
+import { EmployeeFromReq } from "src/common/decorators/routes/employee.decorator";
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import {
   EmployeeFullResponseDto,
@@ -22,6 +23,7 @@ import {
 } from "src/common/dto/response/employee.dto";
 import { ParseCpfPipe } from "src/common/pipes/parse-cpf.pipe";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
+import { AuthPayload } from "src/common/types";
 
 import { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -164,10 +166,12 @@ export class EmployeesController {
     @Param("employeeId", new ParseObjectIdPipeLocal())
     employeeId: Types.ObjectId,
     @Body() updateEmployeePasswordRequestDto: UpdateEmployeePasswordRequestDto,
+    @EmployeeFromReq() employeeFromReq: AuthPayload,
   ): Promise<UpdateEmployeePasswordResponseDto> {
     return await this.employeesService.updatePassword(
       employeeId,
       updateEmployeePasswordRequestDto,
+      employeeFromReq,
     );
   }
 }
