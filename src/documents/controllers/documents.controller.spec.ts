@@ -1,8 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { Types } from "mongoose";
-import type { AuthPayload } from "src/common/types";
-import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import type { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
 import { DocumentsService } from "../providers/documents.service";
@@ -13,8 +11,8 @@ describe("DocumentsController", () => {
   let controller: DocumentsController;
 
   const mockDocumentsService = {
-    findAll: jest.fn(() => Promise.resolve([])),
-    findById: jest.fn((id: Types.ObjectId) =>
+    findAllWithDocumentTypeAndEmployee: jest.fn(() => Promise.resolve([])),
+    findByIdWithDocumentTypeAndEmployee: jest.fn((id: Types.ObjectId) =>
       Promise.resolve({
         id,
         employee: {},
@@ -34,19 +32,6 @@ describe("DocumentsController", () => {
         documentUrl: "https://example.com/document.pdf",
         createdAt: new Date(),
         updatedAt: new Date(),
-      }),
-    ),
-    sendDocumentFile: jest.fn(() =>
-      Promise.resolve({
-        message: "Document file sent successfully",
-        documentUrl: "https://example.com/document.pdf",
-      }),
-    ),
-
-    deleteDocumentFile: jest.fn(() =>
-      Promise.resolve({
-        message: "Document file deleted successfully",
-        documentUrl: "https://example.com/document.pdf",
       }),
     ),
 
@@ -109,10 +94,12 @@ describe("DocumentsController", () => {
 
   describe("findAll", () => {
     it("should return an array of documents", async () => {
-      const result = await controller.findAll();
+      const result = await controller.findAllWithDocumentTypeAndEmployee();
 
       expect(result).toEqual([]);
-      expect(mockDocumentsService.findAll).toHaveBeenCalled();
+      expect(
+        mockDocumentsService.findAllWithDocumentTypeAndEmployee,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -120,10 +107,12 @@ describe("DocumentsController", () => {
     it("should return a document by id", async () => {
       const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
 
-      const result = await controller.findById(id);
+      const result = await controller.findByIdWithDocumentTypeAndEmployee(id);
 
       expect(result.id).toEqual(id);
-      expect(mockDocumentsService.findById).toHaveBeenCalledWith(id);
+      expect(
+        mockDocumentsService.findByIdWithDocumentTypeAndEmployee,
+      ).toHaveBeenCalledWith(id);
     });
   });
 
@@ -140,49 +129,6 @@ describe("DocumentsController", () => {
       expect(result.id).toEqual(id);
       expect(result.status).toEqual(dto.status);
       expect(mockDocumentsService.update).toHaveBeenCalledWith(id, dto);
-    });
-  });
-
-  describe("sendDocumentFile", () => {
-    it("should send a document file and return a success message", async () => {
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const fakeMulterFile = {
-        originalname: "document.pdf",
-        mimetype: "application/pdf",
-        buffer: Buffer.alloc(1 * 1024 * 1024), // 1 MB buffer
-        size: 1 * 1024 * 1024, // 1 MB
-      } as Express.Multer.File;
-
-      const fakeEmployeeAuthPayload = {
-        sub: id.toString(),
-        role: EmployeeRole.ADMIN,
-        username: "employeeUsername",
-      } as AuthPayload;
-
-      const result = await controller.sendDocumentFile(
-        id,
-        fakeMulterFile,
-        fakeEmployeeAuthPayload,
-      );
-
-      expect(result.message).toEqual("Document file sent successfully");
-      expect(mockDocumentsService.sendDocumentFile).toHaveBeenCalledWith(
-        id,
-        fakeMulterFile,
-        fakeEmployeeAuthPayload,
-      );
-    });
-  });
-
-  describe("deleteDocumentFile", () => {
-    it("should delete a document file and return a success message", async () => {
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const result = await controller.deleteDocumentFile(id);
-
-      expect(result.message).toEqual("Document file deleted successfully");
-      expect(mockDocumentsService.deleteDocumentFile).toHaveBeenCalledWith(id);
     });
   });
 
