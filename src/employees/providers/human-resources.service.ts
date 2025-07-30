@@ -3,10 +3,7 @@ import { Types } from "mongoose";
 import { Transactional } from "src/common/decorators/transaction/Transactional";
 import { AuthPayload } from "src/common/types";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
-import {
-  ContractEvent,
-  ContractEventType,
-} from "src/contract-events/schemas/contract-event.schema";
+import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
 import {
   FireEmployeeRequestDto,
@@ -27,24 +24,6 @@ export class HumanResourcesService {
     private readonly employeesService: EmployeesService,
     private readonly contractEventsService: ContractEventsService,
   ) {}
-
-  private async createContractEvent({
-    type,
-    reason,
-    employee,
-  }: {
-    type: ContractEventType;
-    reason: string;
-    employee: { cpf: string; fullName: string };
-  }): Promise<ContractEvent> {
-    return await this.contractEventsService.create({
-      type,
-      date: new Date(),
-      reason,
-      employeeCpf: employee.cpf,
-      employeeFullName: employee.fullName,
-    });
-  }
 
   private throwErrorIfIsSameId({
     employeeId,
@@ -141,10 +120,12 @@ export class HumanResourcesService {
       );
     }
 
-    const contractEvent = await this.createContractEvent({
+    const contractEvent = await this.contractEventsService.create({
       type: ContractEventType.REHIRED,
+      date: new Date(),
       reason: reHireEmployeeDto.reason,
-      employee,
+      employeeCpf: employee.cpf,
+      employeeFullName: employee.fullName,
     });
 
     employee.contractStatus = ContractStatus.ACTIVE;

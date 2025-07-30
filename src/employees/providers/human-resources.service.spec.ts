@@ -2,9 +2,14 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import type { Connection } from "mongoose";
 import { Types } from "mongoose";
+import type { AuthPayload } from "src/common/types";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 
+import type {
+  FireEmployeeRequestDto,
+  ReHireEmployeeRequestDto,
+} from "../dto/request/action-reason-employee.dto";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 import { EmployeesService } from "./employees.service";
 import { HumanResourcesService } from "./human-resources.service";
@@ -17,24 +22,10 @@ describe("HumanResourcesService", () => {
   };
 
   const mockContractEventsService = {
-    create: jest.fn(() => Promise.resolve({})),
+    create: jest.fn(),
   };
 
   const mockGenericObjectId = new Types.ObjectId("507f1f77bcf86cd799439011");
-
-  const mockEmployee = {
-    _id: mockGenericObjectId,
-    firstName: "Jane",
-    lastName: "Doe",
-    fullName: "Jane Doe",
-    username: "jane.doe",
-    contractStatus: ContractStatus.ACTIVE,
-    documentTypes: [],
-    role: EmployeeRole.COMMON,
-    cpf: "987.654.321-00",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
 
   const mockSession = {
     startTransaction: jest.fn(),
@@ -76,5 +67,98 @@ describe("HumanResourcesService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("fire", () => {
+    it("should fire an employee by id", async () => {
+      const mockEmployee = {
+        contractEvents: [
+          {
+            _id: "event1",
+          },
+        ],
+      };
+
+      const spyOnFindById = jest
+        .spyOn(mockEmployeesService, "findById")
+        .mockResolvedValue({
+          ...mockEmployee,
+          save: jest.fn().mockResolvedValue(true),
+        });
+
+      const fireEmployeeDto: FireEmployeeRequestDto = {
+        reason: "Performance issues",
+      };
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
+        username: "admin",
+        role: EmployeeRole.ADMIN,
+        contractStatus: ContractStatus.ACTIVE,
+      };
+
+      const result = await service.fire(
+        mockGenericObjectId,
+        fireEmployeeDto,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({
+        reason: fireEmployeeDto.reason,
+        message: `Successfully terminated contract for employee with id ${mockGenericObjectId.toString()}`,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("reHire", () => {
+    it("should rehire an employee by id", async () => {
+      const mockEmployee = {
+        contractEvents: [
+          {
+            _id: "event1",
+            type: "hire",
+            reason: "Initial hire",
+          },
+          {
+            _id: "event2",
+            type: "fire",
+            reason: "Performance issues",
+          },
+        ],
+      };
+
+      const spyOnFindById = jest
+        .spyOn(mockEmployeesService, "findById")
+        .mockReturnValue({
+          ...mockEmployee,
+          save: jest.fn().mockResolvedValue(true),
+        });
+
+      const mockAuthPayload: AuthPayload = {
+        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
+        username: "admin",
+        role: EmployeeRole.ADMIN,
+        contractStatus: ContractStatus.ACTIVE,
+      };
+
+      const employeeId = mockGenericObjectId;
+
+      const reHireEmployeeDto: ReHireEmployeeRequestDto = {
+        reason: "Rehired for new project",
+      };
+
+      const result = await service.reHire(
+        employeeId,
+        reHireEmployeeDto,
+        mockAuthPayload,
+      );
+
+      expect(result).toEqual({
+        message: `Successfully rehired employee with id ${employeeId.toString()}`,
+        reason: reHireEmployeeDto.reason,
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
   });
 });
