@@ -53,7 +53,11 @@ Importe o arquivo `Insomnia.json` para o Insomnia para testar as rotas da API.
 ## Testar (PROD mode)
 
 ```bash
-yarn build && yarn start
+yarn build
+```
+
+```bash
+yarn start
 ```
 
 ## Unit Tests
