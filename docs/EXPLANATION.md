@@ -1,6 +1,6 @@
 ## Explicação do Projeto
 
-Projeto desenvolvido com NestJs e MongoDB para gerenciar a documentação de colaboradores, incluindo funcionalidades de autenticação, criação de funcionários, associação de documentos e verificação de status de documentação.
+Projeto desenvolvido com Nest.js(11) e MongoDB para gerenciar a documentação de colaboradores, incluindo funcionalidades de autenticação, criação de funcionários, associação de documentos e verificação de status de documentação.
 
 ### Sobre MYSQL config no arquivo .env
 
