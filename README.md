@@ -4,74 +4,72 @@
 
 API de Gerenciamento de documentação de colaboradores
 
-## Project setup
+## ⚙️ Pré-requisitos
+
+- Node.js `18+`
+
+## Project setup LOCALHOST
 
 ```bash
-$ yarn install
+git clone https://github.com/gabriel-logan/Teste-INMETA-Back-End-Pleno
 ```
 
-## Compile and run the project
+## Acesse o diretório do projeto
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+cd Teste-INMETA-Back-End-Pleno
 ```
 
-## Run tests
+## Instale as dependências
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Crie um arquivo .env
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+cp .env-example .env
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Certifique-se de que o MongoDB esteja rodando
 
-## Resources
+IMPORTANTE: Se estiver usando o MONGODB Localmente, LEIA O [IMPORTANT.md](docs/IMPORTANT.md) para configurar o MongoDB com Replica Set.
+Isso é necessário para o funcionamento correto das transações. Usando o MongoDB Atlas, não é necessário fazer essa configuração.
 
-Check out a few resources that may come in handy when working with NestJS:
+## Inicie o servidor (DEV mode)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+yarn dev
+```
 
-## Support
+## Acesse a documentação da API
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Swagger UI
+Acesse a documentação da API em: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+### Insomnia
+Importe o arquivo `Insomnia.json` para o Insomnia para testar as rotas da API.
 
-## Stay in touch
+## Testar (PROD mode)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+yarn build && yarn start
+```
 
-## License
+## Unit Tests
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+yarn test
+```
+
+### Coverage Report
+
+```bash
+yarn test:cov
+```
+
+## E2E Tests
+
+```bash
+yarn test:e2e
+```
