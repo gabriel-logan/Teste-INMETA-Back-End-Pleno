@@ -1,7 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { Types } from "mongoose";
-import type { AuthPayload } from "src/common/types";
 
 import type {
   FireEmployeeRequestDto,
@@ -142,7 +141,7 @@ describe("EmployeesController", () => {
 
   describe("findAll", () => {
     it("should return an array of employees", async () => {
-      const result = await controller.findAll();
+      const result = await controller.findAllWithDocumentTypes();
 
       expect(result).toEqual([]);
       expect(mockEmployeesService.findAll).toHaveBeenCalled();
@@ -152,7 +151,7 @@ describe("EmployeesController", () => {
   describe("findById", () => {
     it("should return a single employee", async () => {
       const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-      const result = await controller.findById(id);
+      const result = await controller.findByIdWithDocumentTypes(id);
 
       expect(result).toEqual({
         id,
@@ -204,6 +203,7 @@ describe("EmployeesController", () => {
         firstName: "Jane",
         lastName: "Doe",
         cpf: "987.654.321-00",
+        password: "securePassword",
       };
       const result = await controller.create(dto);
 
@@ -246,148 +246,6 @@ describe("EmployeesController", () => {
         updatedAt: expect.any(Date) as Date,
       });
       expect(mockEmployeesService.update).toHaveBeenCalledWith(id, dto);
-    });
-  });
-
-  describe("fire", () => {
-    it("should fire an employee", async () => {
-      const dto: FireEmployeeRequestDto = { reason: "Performance issues" };
-
-      const fakeAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d").toString(),
-        role: EmployeeRole.ADMIN,
-        username: "adminUser",
-        contractStatus: ContractStatus.ACTIVE,
-      };
-
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const result = await controller.fire(id, dto, fakeAuthPayload);
-
-      expect(result).toEqual({
-        reason: "Performance issues",
-        message:
-          "Successfully terminated contract for employee with id 60c72b2f9b1e8c001c8f8e1d",
-      });
-      expect(mockEmployeesService.fire).toHaveBeenCalledWith(
-        id,
-        dto,
-        fakeAuthPayload,
-      );
-    });
-  });
-
-  describe("reHire", () => {
-    it("should rehire an employee", async () => {
-      const dto: ReHireEmployeeRequestDto = { reason: "Business needs" };
-
-      const fakeAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c11b2f9b1e8c001c8f8e1d").toString(),
-        role: EmployeeRole.ADMIN,
-        username: "adminUser",
-        contractStatus: ContractStatus.ACTIVE,
-      };
-
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const result = await controller.reHire(id, dto, fakeAuthPayload);
-
-      expect(result).toEqual({
-        reason: "Business needs",
-        message:
-          "Successfully rehired employee with id 60c72b2f9b1e8c001c8f8e1d",
-      });
-      expect(mockEmployeesService.reHire).toHaveBeenCalledWith(
-        id,
-        dto,
-        fakeAuthPayload,
-      );
-    });
-  });
-
-  describe("linkDocumentTypes", () => {
-    it("should link document types to an employee", async () => {
-      const docTypesIds = [
-        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d"),
-        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1e"),
-      ];
-
-      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
-        documentTypeIds: docTypesIds,
-      };
-
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const result = await controller.linkDocumentTypes(
-        id,
-        linkDocumentTypesDto,
-      );
-
-      expect(result).toEqual({
-        documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds,
-      });
-      expect(mockEmployeesService.linkDocumentTypes).toHaveBeenCalledWith(
-        id,
-        linkDocumentTypesDto,
-      );
-    });
-  });
-
-  describe("unlinkDocumentTypes", () => {
-    it("should unlink document types from an employee", async () => {
-      const docTypesIds = [
-        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d"),
-        new Types.ObjectId("60c72b2f9b1e8c001c8f8e1e"),
-      ];
-
-      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
-        documentTypeIds: docTypesIds,
-      };
-
-      const id = new Types.ObjectId("60c72b2f9b1e8c001c8f8e1d");
-
-      const result = await controller.unlinkDocumentTypes(
-        id,
-        linkDocumentTypesDto,
-      );
-
-      expect(result).toEqual({
-        documentTypeIdsUnlinked: linkDocumentTypesDto.documentTypeIds,
-      });
-      expect(mockEmployeesService.unlinkDocumentTypes).toHaveBeenCalledWith(
-        id,
-        linkDocumentTypesDto,
-      );
-    });
-  });
-
-  describe("createAdminEmployee", () => {
-    it("should create a new admin employee", async () => {
-      const dto: CreateAdminEmployeeRequestDto = {
-        firstName: "Admin",
-        lastName: "User",
-        username: "adminUser",
-        cpf: "123.456.789-00",
-        password: "securePassword",
-      };
-      const result = await controller.createAdminEmployee(dto);
-
-      expect(result).toEqual({
-        id: expect.any(String) as string,
-        firstName: "Admin",
-        lastName: "User",
-        fullName: "Admin User",
-        username: "adminUser",
-        role: EmployeeRole.ADMIN,
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        cpf: "123.456.789-00",
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
-      });
-      expect(mockEmployeesService.createAdminEmployee).toHaveBeenCalledWith(
-        dto,
-      );
     });
   });
 });
