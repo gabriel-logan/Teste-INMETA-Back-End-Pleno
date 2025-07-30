@@ -61,7 +61,7 @@ export class DocumentFilesService {
     // Verify if the employee is the document owner
     // If not, throw a ForbiddenException
     if (employee.role === EmployeeRole.COMMON) {
-      if (!document.employee._id.equals(employee.sub)) {
+      if (document.employee._id.toString() !== employee.sub) {
         throw new ForbiddenException(
           `Employee ${employee.username} is not the owner of document ${documentId.toString()}`,
         );
