@@ -1,7 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import { type Model, Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import {
   Document,
   DocumentStatus,
@@ -11,43 +11,49 @@ import { EmployeeDocumentService } from "./employee-document.service";
 
 describe("EmployeeDocumentService", () => {
   let service: EmployeeDocumentService;
-  let mockDocumentModel: Model<Document>;
 
-  const mockDocumentModelSchema = class {
-    private readonly data: any;
+  const mockSave = jest.fn(function (this: Partial<Document>) {
+    return Promise.resolve({
+      _id: new Types.ObjectId("123e4567e89b12d3a4567890"),
+      documentType: this.documentType,
+      employee: this.employee,
+      status: this.status ?? DocumentStatus.MISSING,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  });
 
-    constructor(data: Partial<Document> = {}) {
-      this.data = {
-        _id: new Types.ObjectId("123e4567e89b12d3a4567890"),
+  const mockDocumentModel = jest.fn().mockImplementation(
+    (data) =>
+      ({
         ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      this.save = jest.fn().mockResolvedValue(this.data);
-    }
-
-    public static readonly findOneAndDelete = jest.fn();
-    public save = jest.fn();
+        save: mockSave,
+      }) as Model<DocumentType>,
+  ) as unknown as typeof Model & {
+    findOneAndDelete: jest.Mock;
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    mockDocumentModel.findOneAndDelete = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(null),
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmployeeDocumentService,
         {
           provide: getModelToken(Document.name),
-          useValue: mockDocumentModelSchema,
+          useValue: Model,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(getModelToken(Document.name))
+      .useValue(mockDocumentModel)
+      .compile();
 
     service = module.get<EmployeeDocumentService>(EmployeeDocumentService);
-    mockDocumentModel = module.get<Model<Document>>(
-      getModelToken(Document.name),
-    );
   });
 
   it("should be defined", () => {
@@ -86,13 +92,9 @@ describe("EmployeeDocumentService", () => {
         }),
       };
 
-      const spyFindOneAndDelete = jest
-        .spyOn(mockDocumentModel, "findOneAndDelete")
-        .mockReturnValue(
-          mockFindOneAndDelete as unknown as ReturnType<
-            typeof mockDocumentModel.findOneAndDelete
-          >,
-        );
+      mockDocumentModel.findOneAndDelete = jest
+        .fn()
+        .mockReturnValue(mockFindOneAndDelete);
 
       const result = await service.deleteDocumentByEmployeeIdAndDocumentTypeId(
         new Types.ObjectId("123e4567e89b12d3a4567890"),
@@ -101,7 +103,7 @@ describe("EmployeeDocumentService", () => {
 
       expect(result).toBeDefined();
       expect(mockFindOneAndDelete.lean).toHaveBeenCalled();
-      expect(spyFindOneAndDelete).toHaveBeenCalledTimes(1);
+      expect(mockDocumentModel.findOneAndDelete).toHaveBeenCalledTimes(1);
     });
 
     it("should throw NotFoundException if document not found", async () => {
@@ -109,13 +111,9 @@ describe("EmployeeDocumentService", () => {
         lean: jest.fn().mockResolvedValue(null),
       };
 
-      jest
-        .spyOn(mockDocumentModel, "findOneAndDelete")
-        .mockReturnValue(
-          mockFindOneAndDelete as unknown as ReturnType<
-            typeof mockDocumentModel.findOneAndDelete
-          >,
-        );
+      mockDocumentModel.findOneAndDelete = jest
+        .fn()
+        .mockReturnValue(mockFindOneAndDelete);
 
       await expect(
         service.deleteDocumentByEmployeeIdAndDocumentTypeId(
