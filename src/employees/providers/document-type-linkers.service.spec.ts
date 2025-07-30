@@ -82,34 +82,32 @@ describe("DocumentTypeLinkersService", () => {
         new Types.ObjectId("123456789012345678901235"),
       ];
 
-      const spyOnFindById = jest
-        .spyOn(mockEmployeesService, "findById")
-        .mockReturnValue({
-          documentTypes: [],
-          save: jest.fn().mockResolvedValue({
-            documentTypes: linkDocumentTypesObjectIds.map((id) => ({
-              _id: id,
-              name: `Document Type ${id.toString()}`,
-            })),
-          }),
-        });
+      mockEmployeesService.findById = jest.fn().mockReturnValue({
+        documentTypes: [],
+        save: jest.fn().mockResolvedValue({
+          documentTypes: linkDocumentTypesObjectIds.map((id) => ({
+            _id: id,
+            name: `Document Type ${id.toString()}`,
+          })),
+        }),
+      });
 
       const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
         documentTypeIds: linkDocumentTypesObjectIds,
       };
 
       linkDocumentTypesDto.documentTypeIds.forEach((docId) => {
-        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+        mockDocumentTypesService.findById = jest.fn().mockResolvedValue({
           id: docId,
           name: `Document Type ${docId.toString()}`,
-        } as never);
+        });
 
-        jest
-          .spyOn(mockEmployeeDocumentService, "createDocument")
+        mockEmployeeDocumentService.createDocument = jest
+          .fn()
           .mockResolvedValue({
             _id: "doc1FromEmployeeDocumentService",
             name: `Document Type ${docId.toString()}`,
-          } as never);
+          });
       });
 
       const employeeId = mockGenericObjectId;
@@ -128,7 +126,7 @@ describe("DocumentTypeLinkersService", () => {
           "doc1FromEmployeeDocumentService",
         ],
       });
-      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -141,37 +139,31 @@ describe("DocumentTypeLinkersService", () => {
         ],
       };
 
-      const spyOnFindById = jest
-        .spyOn(mockEmployeesService, "findById")
-        .mockReturnValue({
-          documentTypes: [
-            {
-              _id: documentTypeIdsToUnlink.documentTypeIds[0],
-              name: "Document Type 1",
-            },
-            {
-              _id: documentTypeIdsToUnlink.documentTypeIds[1],
-              name: "Document Type 2",
-            },
-          ],
-          save: jest.fn().mockResolvedValue(true),
-        });
+      mockEmployeesService.findById = jest.fn().mockReturnValue({
+        documentTypes: [
+          {
+            _id: documentTypeIdsToUnlink.documentTypeIds[0],
+            name: "Document Type 1",
+          },
+          {
+            _id: documentTypeIdsToUnlink.documentTypeIds[1],
+            name: "Document Type 2",
+          },
+        ],
+        save: jest.fn().mockResolvedValue(true),
+      });
 
       documentTypeIdsToUnlink.documentTypeIds.forEach((docId) => {
-        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+        mockDocumentTypesService.findById = jest.fn().mockResolvedValue({
           id: docId,
           name: `Document Type ${docId.toString()}`,
-        } as never);
+        });
 
-        jest
-          .spyOn(
-            mockEmployeeDocumentService,
-            "deleteDocumentByEmployeeIdAndDocumentTypeId",
-          )
-          .mockResolvedValue({
+        mockEmployeeDocumentService.deleteDocumentByEmployeeIdAndDocumentTypeId =
+          jest.fn().mockResolvedValue({
             _id: docId,
             name: `Document Type ${docId.toString()}`,
-          } as never);
+          });
       });
 
       const employeeId = mockGenericObjectId;
@@ -190,7 +182,7 @@ describe("DocumentTypeLinkersService", () => {
           documentTypeIdsToUnlink.documentTypeIds[1].toString(),
         ],
       });
-      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
     });
   });
 });
