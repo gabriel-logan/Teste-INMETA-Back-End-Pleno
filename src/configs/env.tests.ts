@@ -20,6 +20,7 @@ export default (): EnvTestConfig => ({
 
     mongodb: {
       uri: "mongodb://localhost:27017/employee_management",
+      autoCreate: true,
     },
   },
 
