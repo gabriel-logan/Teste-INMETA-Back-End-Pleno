@@ -31,9 +31,13 @@ As rotas fechadas precisam de autenticação para serem acessadas. Você deve pa
 - Cria um novo funcionário (employee) "admin" na aplicação.
 
 O restante das rotas são protegidas e requerem autenticação.
-Apenas usuários com o papel de "admin" podem executar acoes nas rotas não publicas.
+Apenas usuários com o papel de "admin" podem executar acoes nas rotas não publicas. Com exceção da rota de envio de documentos.
 
 ## Rota livre para usuarios "common"
+
+Explicação da rota de envio de documentos:
+
+Eu imaginei que seria interessante permitir que usuários comuns (common) pudessem enviar documentos, mas não criar ou editar funcionários. Por isso, a rota de envio de documentos está aberta para usuários comuns.
 
 ### POST /api/v1/document-files/:documentId/send
 - Envia um arquivo de documento para o servidor. Requer autenticação.
