@@ -67,7 +67,7 @@ Você deve enviar o token no header `Authorization` como **Bearer Token**.
    * CPF e USERNAME devem ser **únicos**
 4. **Criar os tipos de documentos** que a aplicação irá gerenciar
 
-> A rota `document-types` usa **forte cache**, então os documentos ficam praticamente estáticos.
+> A rota `document-types` usa **forte cache**(LOCAL), então os documentos ficam praticamente estáticos.
 > Consulte o schema de `DocumentType` para ver quais tipos são válidos.
 
 ### POST `/api/v1/document-types`
