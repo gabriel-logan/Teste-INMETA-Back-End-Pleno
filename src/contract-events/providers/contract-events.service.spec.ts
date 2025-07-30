@@ -45,16 +45,16 @@ describe("ContractEventsService", () => {
     findById: jest.Mock;
   };
 
-  mockContractEventModel.find = jest.fn().mockReturnValue({
-    lean: jest.fn().mockResolvedValue([mockDefaultContractEvent]),
-  });
-
-  mockContractEventModel.findById = jest.fn().mockReturnValue({
-    lean: jest.fn().mockResolvedValue(mockDefaultContractEvent),
-  });
-
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    mockContractEventModel.find = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue([mockDefaultContractEvent]),
+    });
+
+    mockContractEventModel.findById = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockDefaultContractEvent),
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
