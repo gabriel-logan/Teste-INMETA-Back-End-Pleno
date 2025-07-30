@@ -30,6 +30,6 @@ jobs:
             exit 1
           fi
       - name: Deploy to Vercel
-        run: vercel --yes --token=${{ secrets.VERCEL_TOKEN }} --prod
+        run: vercel --yes --token=${{ secrets.VERCEL_TOKEN }} --name=inmeta-gl --prod
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
