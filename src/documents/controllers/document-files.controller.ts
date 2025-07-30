@@ -55,12 +55,7 @@ export class DocumentFilesController {
     documentId: Types.ObjectId,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addMaxSizeValidator({
-          maxSize: fileValidation.general.size.maxSize,
-          message(maxSize) {
-            return fileValidation.general.size.message(maxSize);
-          },
-        })
+        .addMaxSizeValidator(fileValidation.general.size)
         .build(),
     )
     documentFile: Express.Multer.File,
