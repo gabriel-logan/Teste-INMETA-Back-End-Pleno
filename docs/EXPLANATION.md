@@ -152,17 +152,31 @@ A rota `GET /employees` permite filtros como:
 
 ---
 
-## 💡 Sugestão
+## 💡 Sugestão para Entender o Projeto
 
-Para entender melhor o projeto:
+Para explorar e entender melhor o funcionamento da aplicação:
 
-1. **Teste as rotas** no Insomnia com o arquivo indicado no `README.md`
-2. **Suba a aplicação localmente** para ter acesso ao **Swagger UI**
+1. ✅ **Teste as rotas no Insomnia**
+   Use o arquivo de exportação indicado neste `README.md`.
 
-> O Swagger UI mostra todos os schemas esperados nas requisições e respostas.
-> Isso facilita a compreensão do fluxo e dos dados envolvidos.
-> IMPORTANTE: O Swagger não está disponível no ambiente de produção, apenas localmente.
-> IMPORTANTE: A aplicação só funciona com o banco de dados MongoDB, então é necessário ter o MongoDB rodando localmente ou em um servidor.
+2. ⚙️ **Execute a aplicação localmente**
+   Isso permitirá o acesso à documentação interativa via **Swagger UI**.
+
+### 📘 Swagger UI
+
+* Exibe todos os **schemas esperados** nas requisições e respostas.
+* Facilita a compreensão do **fluxo de dados** da API.
+* **Disponível apenas localmente.**
+  Não acessível em ambientes de produção.
+
+### ⚠️ Requisitos
+
+* A aplicação depende do **MongoDB**.
+  Certifique-se de ter o banco rodando:
+
+  * Localmente **ou**
+  * Em um servidor acessível.
+  * As variáveis de ambiente devem estar configuradas corretamente no arquivo `.env`.
 
 ---
 
