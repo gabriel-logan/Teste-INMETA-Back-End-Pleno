@@ -8,7 +8,7 @@ import throttlerModuleOptions from "../throttler-module-options";
 
 interface Options {
   ttl: (context: ExecutionContext) => number;
-  limit: number;
+  limit: (context: ExecutionContext) => number;
   blockDuration: (context: ExecutionContext) => number;
   skipIf: (context: ExecutionContext) => boolean;
   getTracker: (req: Request, context?: ExecutionContext) => string;
@@ -62,6 +62,48 @@ describe("throttlerModuleOptions", () => {
       expect(result).toBe(seconds(15));
     });
   });
+
+  describe("limit", () => {
+    it("returns 20 for GET requests", () => {
+      mockContext.switchToHttp = (): HttpArgumentsHost =>
+        ({
+          getRequest: () => ({ method: "GET" }),
+        }) as HttpArgumentsHost;
+
+      const result = options.limit(mockContext);
+
+      expect(result).toBe(20);
+    });
+
+    it("returns 10 for document-files endpoint", () => {
+      mockContext.switchToHttp = (): HttpArgumentsHost =>
+        ({
+          getRequest: () => ({
+            method: "POST",
+            url: `${apiPrefix}/document-files`,
+          }),
+        }) as HttpArgumentsHost;
+
+      const result = options.limit(mockContext);
+
+      expect(result).toBe(10);
+    });
+
+    it("returns 15 for other endpoints", () => {
+      mockContext.switchToHttp = (): HttpArgumentsHost =>
+        ({
+          getRequest: () => ({
+            method: "POST",
+            url: `${apiPrefix}/other-endpoint`,
+          }),
+        }) as HttpArgumentsHost;
+
+      const result = options.limit(mockContext);
+
+      expect(result).toBe(15);
+    });
+  });
+
   describe("blockDuration", () => {
     it("returns 10 seconds for GET requests", () => {
       mockContext.switchToHttp = (): HttpArgumentsHost =>
@@ -181,9 +223,5 @@ describe("throttlerModuleOptions", () => {
 
       expect(result).toBe("unknown");
     });
-  });
-
-  it("should have limit set to 20", () => {
-    expect(options.limit).toBe(20);
   });
 });
