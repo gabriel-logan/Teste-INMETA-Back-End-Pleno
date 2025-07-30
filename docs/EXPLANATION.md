@@ -84,7 +84,14 @@ Você deve enviar o token no header `Authorization` como **Bearer Token**.
 
 * Desassocia um ou mais tipos de documentos de um funcionário.
 
-6. **Envio de documentos pelo colaborador**
+6. **Visualização de documentos "missing"**
+
+### GET `/api/v1/documents/missing/all`
+
+* Obtém todos os documentos que estão com status "missing".
+- Suporta filtros via query params: `page`, `limit`, `employeeId`, `documentTypeId`.
+
+7. **Envio de documentos pelo colaborador**
 
 ### POST `/api/v1/document-files/:documentId/send`
 
