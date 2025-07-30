@@ -74,6 +74,10 @@ yarn test:cov
 
 ## E2E Tests
 
+Certifique que o MongoDB esteja rodando,
+Certifique que existe um "employee" cadastrado no banco de dados, com o username "admin" e password "123456".
+Se não existir o teste ira falhar na rota de login.
+
 ```bash
 yarn test:e2e
 ```
