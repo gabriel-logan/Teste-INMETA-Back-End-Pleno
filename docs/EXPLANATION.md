@@ -63,8 +63,10 @@ Você deve enviar o token no header `Authorization` como **Bearer Token**.
 1. **Criar um usuário admin**
 2. **Fazer login** para obter o token JWT
 3. **Criar colaboradores (employees)**
-
    * CPF e USERNAME devem ser **únicos**
+   * Para atualizar um colaborador, use a rota `PATCH /api/v1/employees/:employeeId` ou `PATCH /api/v1/employees/:employeeId/password`
+   * Para rota `PATCH /api/v1/employees/:employeeId`, todos os campos são opcionais, exceto o `employeeId`.
+   * Para rota `PATCH /api/v1/employees/:employeeId/password`, o campo `newPassword` é obrigatório.
 4. **Criar os tipos de documentos** que a aplicação irá gerenciar
 
 > A rota `document-types` usa **forte cache**(LOCAL), então os documentos ficam praticamente estáticos.
