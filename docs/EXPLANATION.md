@@ -130,7 +130,7 @@ As buscas são feitas via rotas `GET`.
 * Obtém o **status da documentação** de um funcionário.
 
   * É necessário passar o `employeeId` como parâmetro.
-  * Também há a opção de usar a query `status` (missing, available, deleted etc.)
+  * Também há a opção de usar a query `status` (missing, available, deleted, etc).
 
 ### GET `/api/v1/documents/missing/all`
 
