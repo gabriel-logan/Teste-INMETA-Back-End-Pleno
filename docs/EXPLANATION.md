@@ -17,7 +17,7 @@ As senhas são criptografadas usando bcrypt, e o token JWT é gerado para autent
 
 A rota de criação de conta admin está publica por processo de demostracao e facilidade, mas em uma aplicacao real, essa rota não deve estar acessível publicamente.
 
-Rotas as rotas fechadas precisam de autenticação para serem acessadas. Você deve passar o token JWT no header Authorization como Bearer Token.
+As rotas fechadas precisam de autenticação para serem acessadas. Você deve passar o token JWT no header Authorization como Bearer Token. (Se estiver usando Swagger UI ele mostra as rotas protegidas com um cadeado no canto direito, e você pode clicar nele para inserir o token JWT).
 
 ## Rotas publicas
 
