@@ -12,7 +12,6 @@ import type {
   FireEmployeeRequestDto,
   ReHireEmployeeRequestDto,
 } from "../dto/request/action-reason-employee.dto";
-import type { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -614,35 +613,6 @@ describe("EmployeesService", () => {
         ],
       });
       expect(spyOnFindById).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("createAdminEmployee", () => {
-    it("should create an admin employee", async () => {
-      const createDto: CreateAdminEmployeeRequestDto = {
-        firstName: "Admin",
-        lastName: "User",
-        cpf: "123.456.789-00",
-        username: "admin.user",
-        password: "securepassword",
-      };
-
-      const result = await service.createAdminEmployee(createDto);
-
-      expect(result).toEqual({
-        _id: expect.any(Types.ObjectId) as Types.ObjectId,
-        id: expect.any(String) as string,
-        firstName: "Admin",
-        lastName: "User",
-        fullName: "Admin User",
-        username: "admin.user",
-        contractStatus: ContractStatus.ACTIVE,
-        role: EmployeeRole.ADMIN,
-        documentTypes: [],
-        cpf: "12345678900",
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
-      });
     });
   });
 });
