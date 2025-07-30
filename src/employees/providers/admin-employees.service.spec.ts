@@ -2,7 +2,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import type { Connection } from "mongoose";
-import { Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 
@@ -23,38 +23,28 @@ describe("AdminEmployeesService", () => {
 
   const mockGenericObjectId = new Types.ObjectId("507f1f77bcf86cd799439011");
 
-  const mockEmployee = {
-    _id: mockGenericObjectId,
-    firstName: "Jane",
-    lastName: "Doe",
-    fullName: "Jane Doe",
-    username: "jane.doe",
-    contractStatus: ContractStatus.ACTIVE,
-    documentTypes: [],
-    role: EmployeeRole.COMMON,
-    cpf: "987.654.321-00",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockSave = jest.fn(function (this: any) {
+    return Promise.resolve({ ...this });
+  });
 
-  const mockEmployeeModelSchema = class {
-    private readonly data: any;
-
-    constructor(data: Partial<Employee> = {}) {
-      this.data = {
-        ...mockEmployee,
-        ...data,
+  const mockEmployeeModelSchema = jest
+    .fn()
+    .mockImplementation((data: Partial<Employee>) => {
+      const now = new Date();
+      return {
+        _id: mockGenericObjectId,
+        id: mockGenericObjectId.toString(),
+        createdAt: now,
+        updatedAt: now,
+        contractStatus: ContractStatus.ACTIVE,
+        role: EmployeeRole.ADMIN,
+        documentTypes: [],
         fullName: `${data.firstName} ${data.lastName}`,
+        save: mockSave,
+        ...data,
       };
-
-      this.save = jest.fn().mockResolvedValue(this.data);
-    }
-
-    public static readonly find = jest.fn();
-    public static readonly findById = jest.fn();
-    public static readonly findOne = jest.fn();
-    public static readonly findByIdAndUpdate = jest.fn();
-    public save = jest.fn();
+    }) as unknown as typeof Model & {
+    findOne: jest.Mock;
   };
 
   const mockSession = {
@@ -79,16 +69,20 @@ describe("AdminEmployeesService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    mockEmployeeModelSchema.findOne = jest.fn().mockResolvedValue(null);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AdminEmployeesService,
         ContractEventsService,
         {
           provide: getModelToken(Employee.name),
-          useValue: mockEmployeeModelSchema,
+          useValue: Model,
         },
       ],
     })
+      .overrideProvider(getModelToken(Employee.name))
+      .useValue(mockEmployeeModelSchema)
       .overrideProvider(ContractEventsService)
       .useValue(mockContractEventsService)
       .compile();
