@@ -48,7 +48,7 @@ yarn dev
 ### Swagger UI
 Acesse a documentação da API em: [http://localhost:3000/api/v1/docs](http://localhost:3000/api/v1/docs)
 ### Insomnia
-Importe o arquivo `Insomnia.json` para o Insomnia para testar as rotas da API.
+Importe o arquivo `Insomnia.json` para o Insomnia ou Postman para testar as rotas da API.
 
 ## Testar (PROD mode)
 
