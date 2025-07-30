@@ -19,6 +19,8 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: yarn install
+      - name: Install Vercel CLI Global
+        run: npm install -g vercel
       - name: Run prettier
         run: yarn format
       - name: Run ESLint fix
