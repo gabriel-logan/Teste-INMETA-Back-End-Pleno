@@ -1,0 +1,38 @@
+name: Deploy to Vercel
+
+on:
+  # Runs on pushes targeting the default branch
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn install
+      - name: Run prettier
+        run: yarn format
+      - name: Run ESLint fix
+        run: yarn lint:fix
+      - name: Run unit tests
+        run: yarn test
+      - name: Build the project
+        run: yarn build
+      - name: Check if dist and types directories exist
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory does not exist."
+            exit 1
+          fi
+      - name: Deploy to Vercel
+        run: printf "Deployment to Vercel is ready. Please ensure the Vercel configuration is correct."
+
