@@ -88,7 +88,7 @@ Acesse o arquivo [`docs/EXPLANATION.md`](docs/EXPLANATION.md) para uma explicaç
 
 ## Finalização
 
-Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e está pronto para contribuir ou testar a API.
+Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e está pronto para testar a API.
 
 # Versão de Produção
 
