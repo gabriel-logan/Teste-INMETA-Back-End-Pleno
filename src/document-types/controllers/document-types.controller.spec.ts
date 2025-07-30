@@ -7,10 +7,10 @@ import { DocumentTypesService } from "../providers/document-types.service";
 import { DocumentTypeAllowedValues } from "../schemas/document-type.schema";
 import { DocumentTypesController } from "./document-types.controller";
 
-const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
-
 describe("DocumentTypesController", () => {
   let controller: DocumentTypesController;
+
+  const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
 
   const mockDocumentTypesService = {
     findAll: jest.fn(() => Promise.resolve([])),

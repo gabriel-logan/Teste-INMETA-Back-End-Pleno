@@ -2,7 +2,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import { type Model, Types } from "mongoose";
+import { Model, Types } from "mongoose";
 
 import type { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
 import type { UpdateDocumentTypeRequestDto } from "../dto/request/update-document-type.dto";
@@ -12,41 +12,49 @@ import {
 } from "../schemas/document-type.schema";
 import { DocumentTypesService } from "./document-types.service";
 
-const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
-
 describe("DocumentTypesService", () => {
   let service: DocumentTypesService;
-  let mockDocumentTypeModel: Model<DocumentType>;
 
-  const mockDocumentType = {
+  const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
+
+  const mockDefaultDocumentType = {
     _id: mockGenericObjectId,
     name: "Test Document Type",
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  const mockDocumentTypeModelSchema = class {
-    private readonly data: any;
+  const mockSave = jest.fn(function (this: any) {
+    return Promise.resolve({ ...this });
+  });
 
-    constructor(data: Partial<DocumentType> = {}) {
-      this.data = {
-        _id: mockGenericObjectId,
+  const mockDocumentTypeModel = jest.fn().mockImplementation(
+    (data) =>
+      ({
+        ...mockDefaultDocumentType,
         ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      this.save = jest.fn().mockResolvedValue(this.data);
-    }
-
-    public static readonly find = jest.fn();
-    public static readonly findById = jest.fn();
-    public static readonly findOne = jest.fn();
-    public save = jest.fn();
+        save: mockSave,
+      }) as Model<DocumentType>,
+  ) as unknown as typeof Model & {
+    find: jest.Mock;
+    findById: jest.Mock;
+    findOne: jest.Mock;
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    mockDocumentTypeModel.find = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue([mockDefaultDocumentType]),
+    });
+
+    mockDocumentTypeModel.findById = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockDefaultDocumentType),
+    });
+
+    mockDocumentTypeModel.findOne = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockDefaultDocumentType),
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
@@ -54,15 +62,15 @@ describe("DocumentTypesService", () => {
         DocumentTypesService,
         {
           provide: getModelToken(DocumentType.name),
-          useValue: mockDocumentTypeModelSchema,
+          useValue: Model,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(getModelToken(DocumentType.name))
+      .useValue(mockDocumentTypeModel)
+      .compile();
 
     service = module.get<DocumentTypesService>(DocumentTypesService);
-    mockDocumentTypeModel = module.get<Model<DocumentType>>(
-      getModelToken(DocumentType.name),
-    );
   });
 
   it("should be defined", () => {
@@ -71,132 +79,74 @@ describe("DocumentTypesService", () => {
 
   describe("findAll", () => {
     it("should return an array of document types", async () => {
-      const mockFind = {
-        lean: jest.fn().mockResolvedValue([mockDocumentType]),
-      };
-
-      const spyFind = jest
-        .spyOn(mockDocumentTypeModel, "find")
-        .mockReturnValue(
-          mockFind as unknown as ReturnType<typeof mockDocumentTypeModel.find>,
-        );
-
       const result = await service.findAll();
 
       expect(result).toEqual([
         {
-          _id: mockDocumentType._id,
-          id: mockDocumentType._id.toString(),
-          name: mockDocumentType.name,
-          createdAt: mockDocumentType.createdAt,
-          updatedAt: mockDocumentType.updatedAt,
+          _id: mockDefaultDocumentType._id,
+          id: mockDefaultDocumentType._id.toString(),
+          name: mockDefaultDocumentType.name,
+          createdAt: mockDefaultDocumentType.createdAt,
+          updatedAt: mockDefaultDocumentType.updatedAt,
         },
       ]);
-
-      expect(mockFind.lean).toHaveBeenCalled();
-      expect(spyFind).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.find).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("findById", () => {
     it("should return a document type by id", async () => {
-      const mockFindById = {
-        lean: jest.fn().mockResolvedValue(mockDocumentType),
-      };
-
-      const spyFindById = jest
-        .spyOn(mockDocumentTypeModel, "findById")
-        .mockReturnValue(
-          mockFindById as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findById
-          >,
-        );
-
-      const result = await service.findById(mockDocumentType._id);
+      const result = await service.findById(mockDefaultDocumentType._id);
 
       expect(result).toEqual({
-        _id: mockDocumentType._id,
-        id: mockDocumentType._id.toString(),
-        name: mockDocumentType.name,
-        createdAt: mockDocumentType.createdAt,
-        updatedAt: mockDocumentType.updatedAt,
+        _id: mockDefaultDocumentType._id,
+        id: mockDefaultDocumentType._id.toString(),
+        name: mockDefaultDocumentType.name,
+        createdAt: mockDefaultDocumentType.createdAt,
+        updatedAt: mockDefaultDocumentType.updatedAt,
       });
-
-      expect(mockFindById.lean).toHaveBeenCalled();
-      expect(spyFindById).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.findById).toHaveBeenCalledTimes(1);
     });
 
     it("should throw an error if document type not found", async () => {
-      const mockFindById = {
+      mockDocumentTypeModel.findById.mockReturnValue({
         lean: jest.fn().mockResolvedValue(null),
-      };
+      });
 
-      const spyFindById = jest
-        .spyOn(mockDocumentTypeModel, "findById")
-        .mockReturnValue(
-          mockFindById as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findById
-          >,
-        );
-
-      await expect(service.findById(mockDocumentType._id)).rejects.toThrow(
+      await expect(
+        service.findById(mockDefaultDocumentType._id),
+      ).rejects.toThrow(
         "DocumentType with id 60c72b2f9b1e8b001c8e4d3a not found",
       );
-
-      expect(mockFindById.lean).toHaveBeenCalled();
-      expect(spyFindById).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.findById).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("findOneByName", () => {
     it("should return a document type by name", async () => {
-      const mockFindOne = {
-        lean: jest.fn().mockResolvedValue(mockDocumentType),
-      };
-
-      const spyFindOne = jest
-        .spyOn(mockDocumentTypeModel, "findOne")
-        .mockReturnValue(
-          mockFindOne as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findOne
-          >,
-        );
-
-      const result = await service.findOneByName(mockDocumentType.name);
+      const result = await service.findOneByName(mockDefaultDocumentType.name);
 
       expect(result).toEqual({
-        _id: mockDocumentType._id,
-        id: mockDocumentType._id.toString(),
-        name: mockDocumentType.name,
-        createdAt: mockDocumentType.createdAt,
-        updatedAt: mockDocumentType.updatedAt,
+        _id: mockDefaultDocumentType._id,
+        id: mockDefaultDocumentType._id.toString(),
+        name: mockDefaultDocumentType.name,
+        createdAt: mockDefaultDocumentType.createdAt,
+        updatedAt: mockDefaultDocumentType.updatedAt,
       });
-
-      expect(mockFindOne.lean).toHaveBeenCalled();
-      expect(spyFindOne).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.findOne).toHaveBeenCalledTimes(1);
     });
 
     it("should throw an error if document type not found", async () => {
-      const mockFindOne = {
+      mockDocumentTypeModel.findOne.mockReturnValue({
         lean: jest.fn().mockResolvedValue(null),
-      };
-
-      const spyFindOne = jest
-        .spyOn(mockDocumentTypeModel, "findOne")
-        .mockReturnValue(
-          mockFindOne as unknown as ReturnType<
-            typeof mockDocumentTypeModel.findOne
-          >,
-        );
+      });
 
       await expect(
-        service.findOneByName(mockDocumentType.name),
+        service.findOneByName(mockDefaultDocumentType.name),
       ).rejects.toThrow(
-        `DocumentType with name ${mockDocumentType.name} not found`,
+        `DocumentType with name ${mockDefaultDocumentType.name} not found`,
       );
-
-      expect(mockFindOne.lean).toHaveBeenCalled();
-      expect(spyFindOne).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.findOne).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -211,7 +161,7 @@ describe("DocumentTypesService", () => {
       expect(result).toBeDefined();
       expect(result).toEqual({
         _id: expect.any(Types.ObjectId) as Types.ObjectId,
-        id: mockDocumentType._id.toString(),
+        id: mockDefaultDocumentType._id.toString(),
         name: createDocumentTypeDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
@@ -222,55 +172,48 @@ describe("DocumentTypesService", () => {
   describe("update", () => {
     it("should update an existing document type", async () => {
       const mockOldDocumentType: Partial<DocumentType> = {
+        _id: mockDefaultDocumentType._id,
         name: DocumentTypeAllowedValues.CNPJ,
+        createdAt: mockDefaultDocumentType.createdAt,
+        updatedAt: mockDefaultDocumentType.updatedAt,
       };
 
       const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
         name: DocumentTypeAllowedValues.RG,
       };
 
-      const spyFindById = jest
-        .spyOn(mockDocumentTypeModel, "findById")
-        .mockReturnValue({
-          _id: mockGenericObjectId,
-          ...mockOldDocumentType,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          save: jest.fn().mockResolvedValue({
-            _id: mockGenericObjectId,
-            ...updateDocumentTypeDto,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }),
-        } as unknown as ReturnType<typeof mockDocumentTypeModel.findById>);
+      mockDocumentTypeModel.findById.mockResolvedValue({
+        ...mockOldDocumentType,
+        save: mockSave,
+      });
 
       const result = await service.update(
-        mockDocumentType._id,
+        mockDefaultDocumentType._id,
         updateDocumentTypeDto,
       );
 
       expect(result).toBeDefined();
       expect(result).toEqual({
-        _id: mockDocumentType._id,
-        id: mockDocumentType._id.toString(),
+        _id: mockDefaultDocumentType._id,
+        id: mockDefaultDocumentType._id.toString(),
         name: updateDocumentTypeDto.name,
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
-      expect(spyFindById).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypeModel.findById).toHaveBeenCalledTimes(1);
     });
 
     it("should throw an error if document type not found for update", async () => {
-      jest.spyOn(mockDocumentTypeModel, "findById").mockResolvedValue(null);
+      mockDocumentTypeModel.findById.mockResolvedValue(null);
 
       const updateDocumentTypeDto: UpdateDocumentTypeRequestDto = {
         name: DocumentTypeAllowedValues.RG,
       };
 
       await expect(
-        service.update(mockDocumentType._id, updateDocumentTypeDto),
+        service.update(mockDefaultDocumentType._id, updateDocumentTypeDto),
       ).rejects.toThrow(
-        `DocumentType with id ${mockDocumentType._id.toString()} not found`,
+        `DocumentType with id ${mockDefaultDocumentType._id.toString()} not found`,
       );
     });
   });
