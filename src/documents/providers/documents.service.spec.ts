@@ -14,10 +14,10 @@ import {
 import { Document, DocumentStatus } from "../schemas/document.schema";
 import { DocumentsService } from "./documents.service";
 
-const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
-
 describe("DocumentsService", () => {
   let service: DocumentsService;
+
+  const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
 
   const mockEmployeesService = {
     findById: jest.fn((id: Types.ObjectId) =>
