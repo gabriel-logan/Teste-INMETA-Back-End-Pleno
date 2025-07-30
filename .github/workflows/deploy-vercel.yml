@@ -29,7 +29,9 @@ jobs:
             echo "Error: dist directory does not exist."
             exit 1
           fi
+      - name: Link Vercel Project to existing project
+        run: vercel link
       - name: Deploy to Vercel
-        run: vercel --yes --token=${{ secrets.VERCEL_TOKEN }} --name=inmeta-gl --prod
+        run: vercel --yes --token=${{ secrets.VERCEL_TOKEN }} --prod
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
