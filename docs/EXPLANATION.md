@@ -125,6 +125,8 @@ Você deve enviar o token no header `Authorization` como **Bearer Token**.
 
 As buscas são feitas via rotas `GET`.
 
+## Exemplos de Busca
+
 ### GET `/api/v1/documents/employee/:employeeId/statuses`
 
 * Obtém o **status da documentação** de um funcionário.
