@@ -18,7 +18,20 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       return seconds(15);
     },
 
-    limit: 20,
+    limit(context): number {
+      const request = context.switchToHttp().getRequest<Request>();
+      const method = request.method as Method;
+
+      if (method === "GET") {
+        return 20;
+      }
+
+      if (request.url.startsWith(`${apiPrefix}/document-files`)) {
+        return 10;
+      }
+
+      return 15;
+    },
 
     blockDuration: (context): number => {
       const request = context.switchToHttp().getRequest<Request>();
