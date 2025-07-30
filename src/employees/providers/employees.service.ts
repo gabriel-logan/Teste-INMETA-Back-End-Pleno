@@ -343,16 +343,16 @@ export class EmployeesService {
       lean: false,
     });
 
+    // HERE We could do some logic to check allowement for the employee to update another employee's password
     if (employeeFromReq.username === employee.username) {
       this.logger.warn(
         `Employee ${employeeFromReq.username} is updating their own password`,
       );
+    } else {
+      this.logger.warn(
+        `Employee ${employeeFromReq.username} is updating password for employee id ${employeeId.toString()} username ${employee.username}`,
+      );
     }
-
-    // HERE We could do some logic to check allowement for the employee to update another employee's password
-    this.logger.warn(
-      `Employee ${employeeFromReq.username} is updating password for employee id ${employeeId.toString()} username ${employee.username}`,
-    );
 
     employee.password = newPassword;
 
