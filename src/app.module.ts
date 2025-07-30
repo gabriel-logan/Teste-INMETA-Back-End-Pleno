@@ -31,6 +31,7 @@ import { TasksModule } from "./tasks/tasks.module";
       imports: [ConfigModule.forFeature(envDatabase)],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>("database.mongodb.uri"),
+        autoCreate: configService.get<boolean>("database.mongodb.autoCreate"),
       }),
       inject: [ConfigService],
     }),

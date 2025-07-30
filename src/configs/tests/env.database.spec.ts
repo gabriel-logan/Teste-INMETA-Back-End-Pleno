@@ -21,6 +21,7 @@ describe("env.database config", () => {
     process.env.MYSQL_PASSWORD = "testpass";
     process.env.MYSQL_DATABASE = "testdb";
     process.env.MONGODB_URI = "mongodb://localhost:27017/testdb";
+    process.env.MONGODB_AUTO_CREATE = "true";
 
     const config = envDatabase();
 
@@ -35,6 +36,7 @@ describe("env.database config", () => {
         },
         mongodb: {
           uri: "mongodb://localhost:27017/testdb",
+          autoCreate: true,
         },
       },
     });

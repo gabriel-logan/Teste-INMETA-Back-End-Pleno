@@ -12,6 +12,7 @@ export default (): EnvDatabaseConfig => ({
 
     mongodb: {
       uri: process.env.MONGODB_URI!,
+      autoCreate: process.env.MONGODB_AUTO_CREATE === "true",
     },
   },
 });

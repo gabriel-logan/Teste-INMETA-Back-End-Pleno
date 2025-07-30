@@ -8,6 +8,7 @@ interface MysqlDatabase {
 
 interface MongoDatabase {
   uri: string;
+  autoCreate: boolean;
 }
 
 export interface EnvDatabaseConfig {
