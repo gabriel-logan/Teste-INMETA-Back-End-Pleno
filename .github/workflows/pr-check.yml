@@ -29,7 +29,7 @@ jobs:
         run: yarn test:verb:cov
       - name: Build the project
         run: yarn build
-      - name: Check if dist and types directories exist
+      - name: Check if dist directory exists
         run: |
           if [ ! -d "dist" ]; then
             echo "Error: dist directory does not exist."
