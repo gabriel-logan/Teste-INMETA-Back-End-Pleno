@@ -85,7 +85,7 @@ Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e e
 # Versão de Produção
 
 A versão de produção do projeto está hospedada no Vercel. Você pode acessá-la através do seguinte link:
-[https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app)
+[https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app/api/v1)
 
 INFO: O swagger não está disponível na versão de produção.
 
