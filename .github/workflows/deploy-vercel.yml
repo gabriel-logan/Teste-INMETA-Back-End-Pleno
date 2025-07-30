@@ -32,7 +32,7 @@ jobs:
             exit 1
           fi
       - name: Link Vercel Project to existing project
-        run: vercel link
+        run: vercel link --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy to Vercel
         run: vercel --yes --token=${{ secrets.VERCEL_TOKEN }} --prod
 
