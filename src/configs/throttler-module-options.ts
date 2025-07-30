@@ -33,7 +33,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       return 15;
     },
 
-    blockDuration: (context): number => {
+    blockDuration(context): number {
       const request = context.switchToHttp().getRequest<Request>();
       const method = request.method as Method;
 
@@ -44,7 +44,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       return seconds(30);
     },
 
-    skipIf: (context): boolean => {
+    skipIf(context): boolean {
       const request = context.switchToHttp().getRequest<Request>();
 
       const cachedEndpoints = [`${apiPrefix}/document-types`];
@@ -58,7 +58,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       );
     },
 
-    getTracker: (req: Request): string => {
+    getTracker(req: Request): string {
       const deviceId = req.headers["x-device-id"];
 
       return typeof deviceId === "string" ? deviceId : req.ip || "unknown";
