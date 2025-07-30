@@ -22,19 +22,6 @@ describe("DocumentFilesService", () => {
   const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1d8c001a8e4e1a");
   const mockDefaultEmployeeId = new Types.ObjectId("60c72b2f9b1d8c001c8e4e1a");
 
-  const mockDefaultDocument = {
-    _id: mockGenericObjectId,
-    status: DocumentStatus.MISSING,
-    employee: {
-      _id: mockDefaultEmployeeId,
-      username: "johndoe",
-    },
-    documentUrl: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    save: jest.fn().mockResolvedValue(true),
-  };
-
   const mockDocumentService = {
     findById: jest.fn(),
   };
@@ -63,7 +50,18 @@ describe("DocumentFilesService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    mockDocumentService.findById.mockReturnValue({ ...mockDefaultDocument });
+    mockDocumentService.findById = jest.fn().mockReturnValue({
+      _id: mockGenericObjectId,
+      status: DocumentStatus.MISSING,
+      employee: {
+        _id: mockDefaultEmployeeId,
+        username: "johndoe",
+      },
+      documentUrl: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      save: jest.fn().mockResolvedValue(true),
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forFeature(envTests)],
