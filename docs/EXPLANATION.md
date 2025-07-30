@@ -103,6 +103,13 @@ Você deve enviar o token no header `Authorization` como **Bearer Token**.
 
 * Deleta um documento.
 
+8. **Verificação de status da documentação (Colaborador específico)**
+
+### GET `/api/v1/documents/employee/:employeeId/statuses`
+* Obtém o status da documentação de um funcionário específico.
+  * É necessário passar o `employeeId` como parâmetro.
+  * Também há a opção de usar a query `status` (missing, available, deleted, etc).
+
 ---
 
 ### ❗ Atenção
