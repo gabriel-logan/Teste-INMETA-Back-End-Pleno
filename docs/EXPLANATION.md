@@ -40,7 +40,7 @@ Explicação da rota de envio de documentos:
 Eu imaginei que seria interessante permitir que usuários comuns (common) pudessem enviar documentos, mas não criar ou editar funcionários. Por isso, a rota de envio de documentos está aberta para usuários comuns.
 
 ### POST /api/v1/document-files/:documentId/send
-- Envia um arquivo de documento para o servidor. Requer autenticação.
+- Envia um arquivo de documento para o servidor.
  - Essa rota é usada para enviar arquivos de documentos que serão associados a um funcionário específico. Os usuarios "common" podem enviar documentos, mas não podem criar ou editar funcionários.
 
 ## Fluxo de aplicação (EXEMPLO)
@@ -58,15 +58,15 @@ Adicione ou altere os documentos que são realmente necessários para a aplicaç
 
 A rota pra criar tipos de documento é a seguinte:
 ### POST /api/v1/document-types
-- Cria um novo tipo de documento. Requer autenticação.
+- Cria um novo tipo de documento.
 
 Apos ter "Tipos de documentos" criados e "Colaboradores" criados, voce pode associar documentos aos colaboradores.
 
 A rota de associacao e desassociacao de documentos é a seguinte:
 ### POST /api/v1/document-type-linkers/:employeeId/link
-- Associa um ou varios tipos de documentos a um funcionário específico. Requer autenticação.
+- Associa um ou varios tipos de documentos a um funcionário específico.
 ### POST /api/v1/document-type-linkers/:employeeId/unlink
-- Desassocia um ou varios tipos de documentos de um funcionário específico. Requer autenticação.
+- Desassocia um ou varios tipos de documentos de um funcionário específico.
 
 Apos isso, voce pode buscar os colaboradores e seus documentos associados.
 
@@ -74,10 +74,10 @@ Agora o colaborador pode enviar o documento que esta "missing" (faltando) para o
 
 isso pode ser feito com a seguinte rota:
 ### POST /api/v1/document-files/:documentId/send
-- Envia um arquivo de documento para o servidor. Requer autenticação.
+- Envia um arquivo de documento para o servidor.
 
 ### DELETE /api/v1/document-files/:documentId/delete
-- Deleta um arquivo de documento do servidor. Requer autenticação.
+- Deleta um arquivo de documento do servidor.
 
 ### OBS: Não confundir a rota /documents com a rota /document-types
 
@@ -90,13 +90,13 @@ Seram feitos atravez de todas as rotas GET
 
 Ex: obter status da documentacao de um colaborador especifico:
 ### GET /api/v1/documents/employee/:employeeId/statuses
-- Obtém o status de documentação de um funcionário específico. Requer autenticação.
+- Obtém o status de documentação de um funcionário específico.
  - Voce precisa passar o ID do funcionário no parâmetro employeeId.
  - Tambem tem a opçao da query (status) para filtrar os status de documentos que voce deseja obter. (missing, available, deleted, etc).
 
 Rota para buscar todos os documentos (missing) de todos os colaboradores:
 ### GET /api/v1/documents/missing/all
-- Obtém todos os documentos (missing) de todos os colaboradores. Requer autenticação.
+- Obtém todos os documentos (missing) de todos os colaboradores.
  - Essa rota tem a opção de filtrar por multiplos query params, como por exemplo: page(number), limit(number), employeeId(ObjectId), documentTypeId(ObjectId).
 
 ## Funcionalidades adicionais
