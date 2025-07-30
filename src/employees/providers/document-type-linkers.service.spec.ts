@@ -6,7 +6,7 @@ import { MongooseProvider } from "src/configs/mongoose-provider";
 import { DocumentTypesService } from "src/document-types/providers/document-types.service";
 import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
 
-import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
+import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import { DocumentTypeLinkersService } from "./document-type-linkers.service";
 import { EmployeesService } from "./employees.service";
 
@@ -18,7 +18,8 @@ describe("DocumentTypeLinkersService", () => {
   };
 
   const mockEmployeeDocumentService = {
-    linkDocumentTypes: jest.fn(),
+    createDocument: jest.fn(),
+    deleteDocumentByEmployeeIdAndDocumentTypeId: jest.fn(),
   };
 
   const mockEmployeesService = {
@@ -26,20 +27,6 @@ describe("DocumentTypeLinkersService", () => {
   };
 
   const mockGenericObjectId = new Types.ObjectId("507f1f77bcf86cd799439011");
-
-  const mockEmployee = {
-    _id: mockGenericObjectId,
-    firstName: "Jane",
-    lastName: "Doe",
-    fullName: "Jane Doe",
-    username: "jane.doe",
-    contractStatus: ContractStatus.ACTIVE,
-    documentTypes: [],
-    role: EmployeeRole.COMMON,
-    cpf: "987.654.321-00",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
 
   const mockSession = {
     startTransaction: jest.fn(),
@@ -86,5 +73,124 @@ describe("DocumentTypeLinkersService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("linkDocumentTypes", () => {
+    it("should link document types to an employee", async () => {
+      const linkDocumentTypesObjectIds = [
+        new Types.ObjectId("123456789012345678901234"),
+        new Types.ObjectId("123456789012345678901235"),
+      ];
+
+      const spyOnFindById = jest
+        .spyOn(mockEmployeesService, "findById")
+        .mockReturnValue({
+          documentTypes: [],
+          save: jest.fn().mockResolvedValue({
+            documentTypes: linkDocumentTypesObjectIds.map((id) => ({
+              _id: id,
+              name: `Document Type ${id.toString()}`,
+            })),
+          }),
+        });
+
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
+        documentTypeIds: linkDocumentTypesObjectIds,
+      };
+
+      linkDocumentTypesDto.documentTypeIds.forEach((docId) => {
+        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+          id: docId,
+          name: `Document Type ${docId.toString()}`,
+        } as never);
+
+        jest
+          .spyOn(mockEmployeeDocumentService, "createDocument")
+          .mockResolvedValue({
+            _id: "doc1FromEmployeeDocumentService",
+            name: `Document Type ${docId.toString()}`,
+          } as never);
+      });
+
+      const employeeId = mockGenericObjectId;
+
+      const result = await service.linkDocumentTypes(
+        employeeId,
+        linkDocumentTypesDto,
+      );
+
+      expect(result).toEqual({
+        documentTypeIdsLinked: linkDocumentTypesDto.documentTypeIds.map((id) =>
+          id.toString(),
+        ),
+        documentIdsCreated: [
+          "doc1FromEmployeeDocumentService",
+          "doc1FromEmployeeDocumentService",
+        ],
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("unlinkDocumentTypes", () => {
+    it("should unlink document types from an employee", async () => {
+      const documentTypeIdsToUnlink: LinkDocumentTypesRequestDto = {
+        documentTypeIds: [
+          new Types.ObjectId("123456789012345678901234"),
+          new Types.ObjectId("123456789012345678901235"),
+        ],
+      };
+
+      const spyOnFindById = jest
+        .spyOn(mockEmployeesService, "findById")
+        .mockReturnValue({
+          documentTypes: [
+            {
+              _id: documentTypeIdsToUnlink.documentTypeIds[0],
+              name: "Document Type 1",
+            },
+            {
+              _id: documentTypeIdsToUnlink.documentTypeIds[1],
+              name: "Document Type 2",
+            },
+          ],
+          save: jest.fn().mockResolvedValue(true),
+        });
+
+      documentTypeIdsToUnlink.documentTypeIds.forEach((docId) => {
+        jest.spyOn(mockDocumentTypesService, "findById").mockResolvedValue({
+          id: docId,
+          name: `Document Type ${docId.toString()}`,
+        } as never);
+
+        jest
+          .spyOn(
+            mockEmployeeDocumentService,
+            "deleteDocumentByEmployeeIdAndDocumentTypeId",
+          )
+          .mockResolvedValue({
+            _id: docId,
+            name: `Document Type ${docId.toString()}`,
+          } as never);
+      });
+
+      const employeeId = mockGenericObjectId;
+
+      const result = await service.unlinkDocumentTypes(
+        employeeId,
+        documentTypeIdsToUnlink,
+      );
+
+      expect(result).toEqual({
+        documentTypeIdsUnlinked: documentTypeIdsToUnlink.documentTypeIds.map(
+          (id) => id.toString(),
+        ),
+        documentIdsDeleted: [
+          documentTypeIdsToUnlink.documentTypeIds[1].toString(),
+          documentTypeIdsToUnlink.documentTypeIds[1].toString(),
+        ],
+      });
+      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+    });
   });
 });
