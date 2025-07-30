@@ -14,8 +14,6 @@ import {
 } from "../schemas/employee.schema";
 import { AdminEmployeesService } from "./admin-employees.service";
 
-const mockGenericObjectId = new Types.ObjectId("507f1f77bcf86cd799439011");
-
 describe("AdminEmployeesService", () => {
   let service: AdminEmployeesService;
   let mockEmployeeModel: Model<Employee>;
@@ -23,6 +21,8 @@ describe("AdminEmployeesService", () => {
   const mockContractEventsService = {
     create: jest.fn(() => Promise.resolve({})),
   };
+
+  const mockGenericObjectId = new Types.ObjectId("507f1f77bcf86cd799439011");
 
   const mockEmployee = {
     _id: mockGenericObjectId,
