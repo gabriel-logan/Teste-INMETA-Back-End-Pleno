@@ -7,7 +7,7 @@ Este projeto utiliza **transações do MongoDB**, que **exigem que o banco estej
 
 SE O MONGO NÃO ESTIVER RODANDO COMO REPLICA SET, AS TRANSAÇÕES NÃO FUNCIONARÃO!
 
-ESSAS CONFIGURAÇÕES SÃO NECESSÁRIAS ABAIXO SÃO PARA AMBIENTE LOCAL.
+ESSAS CONFIGURAÇÕES ABAIXO SÃO NECESSÁRIAS APENAS PARA AMBIENTE LOCAL.
 
 DOC OFICIAL: [MongoDB Transactions](https://www.mongodb.com/docs/manual/core/transactions/)
 
