@@ -1,7 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import type { Connection, Model } from "mongoose";
+import type { Connection } from "mongoose";
 import { Types } from "mongoose";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
@@ -16,7 +16,6 @@ import { AdminEmployeesService } from "./admin-employees.service";
 
 describe("AdminEmployeesService", () => {
   let service: AdminEmployeesService;
-  let mockEmployeeModel: Model<Employee>;
 
   const mockContractEventsService = {
     create: jest.fn(() => Promise.resolve({})),
@@ -95,9 +94,6 @@ describe("AdminEmployeesService", () => {
       .compile();
 
     service = module.get<AdminEmployeesService>(AdminEmployeesService);
-    mockEmployeeModel = module.get<Model<Employee>>(
-      getModelToken(Employee.name),
-    );
   });
 
   it("should be defined", () => {
@@ -130,6 +126,7 @@ describe("AdminEmployeesService", () => {
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
+      expect(mockEmployeeModelSchema.findOne).toHaveBeenCalledTimes(1);
     });
   });
 });
