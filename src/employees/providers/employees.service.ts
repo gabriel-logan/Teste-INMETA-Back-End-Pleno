@@ -339,14 +339,20 @@ export class EmployeesService {
   ): Promise<UpdateEmployeePasswordResponseDto> {
     const { newPassword } = updateEmployeePasswordRequestDto;
 
-    // HERE We could do some logic to check allowement for the employee to update another employee's password
-    this.logger.warn(
-      `Employee ${employeeFromReq.username} is updating password for employee ${employeeId.toString()}`,
-    );
-
     const employee = await this.findById(employeeId, {
       lean: false,
     });
+
+    if (employeeFromReq.username === employee.username) {
+      this.logger.warn(
+        `Employee ${employeeFromReq.username} is updating their own password`,
+      );
+    }
+
+    // HERE We could do some logic to check allowement for the employee to update another employee's password
+    this.logger.warn(
+      `Employee ${employeeFromReq.username} is updating password for employee id ${employeeId.toString()} username ${employee.username}`,
+    );
 
     employee.password = newPassword;
 
