@@ -82,5 +82,12 @@ Acesse o arquivo [`docs/EXPLANATION.md`](docs/EXPLANATION.md) para uma explicaç
 
 Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e está pronto para contribuir ou testar a API.
 
+# Versão de Produção
+
+A versão de produção do projeto está hospedada no Vercel. Você pode acessá-la através do seguinte link:
+[https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app)
+
+INFO: O swagger não está disponível na versão de produção.
+
 ## Creditos
 - [Gabriel Logan](https://github.com/gabriel-logan)
