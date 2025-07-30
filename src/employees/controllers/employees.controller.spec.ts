@@ -2,24 +2,18 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { Types } from "mongoose";
 
-import type {
-  FireEmployeeRequestDto,
-  ReHireEmployeeRequestDto,
-} from "../dto/request/action-reason-employee.dto";
-import type { CreateAdminEmployeeRequestDto } from "../dto/request/create-admin-employee.dto";
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
-import type { LinkDocumentTypesRequestDto } from "../dto/request/link-document-types.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
 import { EmployeesService } from "../providers/employees.service";
-import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
+import { ContractStatus } from "../schemas/employee.schema";
 import { EmployeesController } from "./employees.controller";
 
 describe("EmployeesController", () => {
   let controller: EmployeesController;
 
   const mockEmployeesService = {
-    findAll: jest.fn(() => Promise.resolve([])),
-    findById: jest.fn((id: string) =>
+    findAllWithDocumentTypes: jest.fn(() => Promise.resolve([])),
+    findByIdWithDocumentTypes: jest.fn((id: string) =>
       Promise.resolve({
         id,
         firstName: "John",
@@ -78,47 +72,6 @@ describe("EmployeesController", () => {
         updatedAt: new Date(),
       }),
     ),
-    fire: jest.fn(
-      (employeeId: string, fireEmployeeDto: FireEmployeeRequestDto) =>
-        Promise.resolve({
-          reason: fireEmployeeDto.reason,
-          message: `Successfully terminated contract for employee with id ${employeeId}`,
-        }),
-    ),
-    reHire: jest.fn(
-      (employeeId: string, reHireEmployeeDto: ReHireEmployeeRequestDto) =>
-        Promise.resolve({
-          reason: reHireEmployeeDto.reason,
-          message: `Successfully rehired employee with id ${employeeId}`,
-        }),
-    ),
-    linkDocumentTypes: jest.fn(
-      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
-        Promise.resolve({
-          documentTypeIdsLinked: dto.documentTypeIds,
-        }),
-    ),
-    unlinkDocumentTypes: jest.fn(
-      (_employeeId: string, dto: LinkDocumentTypesRequestDto) =>
-        Promise.resolve({
-          documentTypeIdsUnlinked: dto.documentTypeIds,
-        }),
-    ),
-    createAdminEmployee: jest.fn((dto: CreateAdminEmployeeRequestDto) =>
-      Promise.resolve({
-        id: "60c72b2f9b1e8c001c8f8e1d",
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        fullName: `${dto.firstName} ${dto.lastName}`,
-        username: dto.username,
-        role: EmployeeRole.ADMIN,
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
-        cpf: dto.cpf,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    ),
   };
 
   beforeEach(async () => {
@@ -144,7 +97,7 @@ describe("EmployeesController", () => {
       const result = await controller.findAllWithDocumentTypes();
 
       expect(result).toEqual([]);
-      expect(mockEmployeesService.findAll).toHaveBeenCalled();
+      expect(mockEmployeesService.findAllWithDocumentTypes).toHaveBeenCalled();
     });
   });
 
@@ -164,7 +117,9 @@ describe("EmployeesController", () => {
         createdAt: expect.any(Date) as Date,
         updatedAt: expect.any(Date) as Date,
       });
-      expect(mockEmployeesService.findById).toHaveBeenCalledWith(id);
+      expect(
+        mockEmployeesService.findByIdWithDocumentTypes,
+      ).toHaveBeenCalledWith(id);
     });
   });
 
