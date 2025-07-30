@@ -1,126 +1,170 @@
-## Explicação do Projeto
+# 📘 Explicação do Projeto
 
-Projeto desenvolvido com Nest.js(11) e MongoDB para gerenciar a documentação de colaboradores, incluindo funcionalidades de autenticação, criação de funcionários, associação de documentos e verificação de status de documentação.
+Projeto desenvolvido com **Nest.js (11)** e **MongoDB** para gerenciar a documentação de colaboradores, incluindo funcionalidades de autenticação, criação de funcionários, associação de documentos e verificação de status de documentação.
 
-### Sobre MYSQL config no arquivo .env
+---
 
-Eu inicialmente iria fazer a parte de login separada com MYSQL e deixar o mongo apenas para o gerenciamento de docs e funcionarios, porem por questoes de recurso para deploy, resolvi usar apenas o MongoDB para tudo, e deixei o MYSQL como alternativa caso queira usar.
-O MYSQL não é utilizado no projeto, mas o arquivo .env ainda contém as variáveis de configuração para o caso de querer implementar essa funcionalidade no futuro.
+## ⚠️ Sobre MySQL no arquivo `.env`
 
-A rota /api/v1 é a base para todas as operações da API. A seguir, estão as principais rotas e suas funcionalidades:
+Inicialmente, a ideia era separar a parte de login utilizando MySQL e deixar o MongoDB apenas para o gerenciamento de documentos e funcionários.
+Porém, por questões de recurso para deploy, foi decidido utilizar apenas o **MongoDB para tudo**.
 
-/ - Rota apenas para verificar se a API está funcionando corretamente. Retorna uma mensagem de sucesso. "Hello World!".
+> O MySQL **não é utilizado no projeto**, mas o arquivo `.env` ainda contém as variáveis de configuração para o caso de desejar implementar essa funcionalidade futuramente.
 
-Para criar um "employee", você precisa criar uma conta com "role" de "admin".
+---
 
-As senhas são criptografadas usando bcrypt, e o token JWT é gerado para autenticação.
+## 🌐 Base da API
 
-A rota de criação de conta admin está publica por processo de demostracao e facilidade, mas em uma aplicacao real, essa rota não deve estar acessível publicamente.
+A base de todas as operações da API é:
+`/api/v1`
 
-As rotas fechadas precisam de autenticação para serem acessadas. Você deve passar o token JWT no header Authorization como Bearer Token. (Se estiver usando Swagger UI ele mostra as rotas protegidas com um cadeado no canto direito, e você pode clicar nele para inserir o token JWT).
+---
 
-## Rotas publicas
+## 🔓 Rotas Públicas
 
-### GET /api/v1
-- Verifica se a API está funcionando corretamente.
+### GET `/api/v1`
 
-### POST /api/v1/auth/sign-in
-- Realiza o login de um usuário e retorna um token JWT.
+* Verifica se a API está funcionando corretamente.
+  Retorna uma mensagem de sucesso: `"Hello World!"`
 
-### POST /api/v1/admin-employees
-- Cria um novo funcionário (employee) "admin" na aplicação.
+### POST `/api/v1/auth/sign-in`
 
-O restante das rotas são protegidas e requerem autenticação.
-Apenas usuários com o papel de "admin" podem executar acoes nas rotas não publicas. Com exceção da rota de envio de documentos.
+* Realiza o login de um usuário e retorna um token JWT.
 
-## Rota livre para usuarios "common"
+### POST `/api/v1/admin-employees`
 
-Explicação da rota de envio de documentos:
+* Cria um novo funcionário ("employee") com **role** de **admin**.
 
-Eu imaginei que seria interessante permitir que usuários comuns (common) pudessem enviar documentos, mas não criar ou editar funcionários. Por isso, a rota de envio de documentos está aberta para usuários comuns.
+> A rota de criação de conta admin está **pública** por motivos de demonstração e facilidade.
+> **Em uma aplicação real, essa rota não deve estar acessível publicamente.**
 
-### POST /api/v1/document-files/:documentId/send
-- Envia um arquivo de documento para o servidor.
- - Essa rota é usada para enviar arquivos de documentos que serão associados a um funcionário específico. Os usuarios "common" podem enviar documentos, mas não podem criar ou editar funcionários.
+---
 
-## Fluxo de aplicação (EXEMPLO)
+## 🔐 Autenticação
 
-Voce precisa criar um usuário "admin" e depois fazer login com esse usuário para obter um token JWT.
+As rotas protegidas exigem autenticação via token JWT.
+Você deve enviar o token no header `Authorization` como **Bearer Token**.
 
-Apos obter o token JWT, voce pode criar colaboradores (employees) e associar documentos a esses colaboradores.
-CPF e USERNAME devem ser únicos, ou seja, não é possível criar dois colaboradores com o mesmo CPF ou USERNAME.
+> No Swagger UI, as rotas protegidas aparecem com um cadeado. Clique no cadeado para inserir o token.
 
-Para fazer as associações com os documentos, antes precisa criá-los.
+---
 
-Primeiro crie os documentos que a aplicação ira gerenciar, essa rota DocumentType esta usando forte cache, então os documentos ficaram praticamente como estaticos.
-Verifique o schema de DocumentType para saber quais documentos sao permitidos de criar. (Isso é um controle para evitar que sejam criados documentos inválidos).
-Adicione ou altere os documentos que são realmente necessários para a aplicação.
+## 👤 Rota livre para usuários "common"
 
-A rota pra criar tipos de documento é a seguinte:
-### POST /api/v1/document-types
-- Cria um novo tipo de documento.
+### POST `/api/v1/document-files/:documentId/send`
 
-Apos ter "Tipos de documentos" criados e "Colaboradores" criados, voce pode associar documentos aos colaboradores.
+* Usuários **common** podem enviar documentos, mas **não** podem criar ou editar funcionários.
+* Essa rota permite o envio de um arquivo que será associado a um funcionário específico.
 
-A rota de associacao e desassociacao de documentos é a seguinte:
-### POST /api/v1/document-type-linkers/:employeeId/link
-- Associa um ou varios tipos de documentos a um funcionário específico.
-### POST /api/v1/document-type-linkers/:employeeId/unlink
-- Desassocia um ou varios tipos de documentos de um funcionário específico.
+---
 
-Apos isso, voce pode buscar os colaboradores e seus documentos associados.
+## 🔁 Fluxo de Aplicação (EXEMPLO)
 
-Agora o colaborador pode enviar o documento que esta "missing" (faltando) para o servidor.
+1. **Criar um usuário admin**
+2. **Fazer login** para obter o token JWT
+3. **Criar colaboradores (employees)**
 
-isso pode ser feito com a seguinte rota:
-### POST /api/v1/document-files/:documentId/send
-- Envia um arquivo de documento para o servidor.
+   * CPF e USERNAME devem ser **únicos**
+4. **Criar os tipos de documentos** que a aplicação irá gerenciar
 
-### DELETE /api/v1/document-files/:documentId/delete
-- Deleta um arquivo de documento do servidor.
+> A rota `document-types` usa **forte cache**, então os documentos ficam praticamente estáticos.
+> Consulte o schema de `DocumentType` para ver quais tipos são válidos.
 
-### OBS: Não confundir a rota /documents com a rota /document-types
+### POST `/api/v1/document-types`
 
-Rotas /document-types são para gerenciar os tipos de documentos que a aplicação irá gerenciar.
-Rotas /documents são para gerenciar os documentos que estão associados aos colaboradores.
+* Cria um novo tipo de documento.
 
-## Buscar dados
+5. **Associar documentos a colaboradores**
 
-Seram feitos atravez de todas as rotas GET
+### POST `/api/v1/document-type-linkers/:employeeId/link`
 
-Ex: obter status da documentacao de um colaborador especifico:
-### GET /api/v1/documents/employee/:employeeId/statuses
-- Obtém o status de documentação de um funcionário específico.
- - Voce precisa passar o ID do funcionário no parâmetro employeeId.
- - Tambem tem a opçao da query (status) para filtrar os status de documentos que voce deseja obter. (missing, available, deleted, etc).
+* Associa um ou mais tipos de documentos a um funcionário.
 
-Rota para buscar todos os documentos (missing) de todos os colaboradores:
-### GET /api/v1/documents/missing/all
-- Obtém todos os documentos (missing) de todos os colaboradores.
- - Essa rota tem a opção de filtrar por multiplos query params, como por exemplo: page(number), limit(number), employeeId(ObjectId), documentTypeId(ObjectId).
+### POST `/api/v1/document-type-linkers/:employeeId/unlink`
 
-## Funcionalidades adicionais
+* Desassocia um ou mais tipos de documentos de um funcionário.
 
-Alem da funcionalidade de login que criei, a aplicação possui as seguintes funcionalidades adicionais:
+6. **Envio de documentos pelo colaborador**
 
-ContractEvents, voce pode verificar os eventos de contrato de todos os colaboradores.
-Ex: Colaboradores que foram contratados, demitidos, etc.
+### POST `/api/v1/document-files/:documentId/send`
 
-Demitir e recontratar colaboradores. (OBS: quando voce cria um colaborador, é considerado como contratado e um ContractEvent é criado automaticamente).
-Se voce demitir ou recontratar um colaborador, um novo ContractEvent será criado automaticamente.
+* Envia um documento.
 
-A rota GET employees tem varios query params para filtrar os colaboradores, como por exemplo: byFirstName(string), byLastName(string), byCpf(string), byContractStatus(string), byDocumentTypeId(ObjectId).
+### DELETE `/api/v1/document-files/:documentId/delete`
 
-## Sugestao
+* Deleta um documento.
 
-Para um melhor entendimento do projeto, recomendo que voce teste as rotas da API usando o Insomnia pelo arquivo indicado no README.md.
+---
 
-E tambem suba a aplicação localmente para ter acesso ao Swagger UI, que é uma documentação interativa da API.
+### ❗ Atenção
 
-O swagger UI mostrara todos os Schemas pedidos nas requests e os Schemas de resposta esperados.
+**Não confundir** as rotas:
 
-Qualquer duvida, sinta-se a vontade para entrar em contato comigo.
+* `/document-types`: gerenciamento dos **tipos de documentos**
+* `/documents`: gerenciamento dos **documentos associados aos colaboradores**
 
-Qualquer modificação que fosse necessaria eu poderia refazer para melhorar a explicação do projeto.
+---
 
-Voce podera ver todas as rotas, parâmetros, exemplos de requisições e respostas, o que facilitará muito o entendimento do fluxo da aplicação.
+## 🔍 Buscar Dados
+
+As buscas são feitas via rotas `GET`.
+
+### GET `/api/v1/documents/employee/:employeeId/statuses`
+
+* Obtém o **status da documentação** de um funcionário.
+
+  * É necessário passar o `employeeId` como parâmetro.
+  * Também há a opção de usar a query `status` (missing, available, deleted etc.)
+
+### GET `/api/v1/documents/missing/all`
+
+* Obtém todos os documentos **missing** de todos os colaboradores.
+
+  * Suporta filtros via query params: `page`, `limit`, `employeeId`, `documentTypeId`.
+
+---
+
+## ➕ Funcionalidades Adicionais
+
+### 📄 ContractEvents
+
+* Acompanhe eventos de contrato dos colaboradores (ex: contratado, demitido etc.)
+
+> Quando um colaborador é criado, um **ContractEvent** de contratação é registrado automaticamente.
+> Ao demitir ou recontratar, novos eventos são gerados.
+
+### 🔍 Filtros para busca de colaboradores
+
+A rota `GET /employees` permite filtros como:
+
+* `byFirstName`
+* `byLastName`
+* `byCpf`
+* `byContractStatus`
+* `byDocumentTypeId`
+
+---
+
+## 💡 Sugestão
+
+Para entender melhor o projeto:
+
+1. **Teste as rotas** no Insomnia com o arquivo indicado no `README.md`
+2. **Suba a aplicação localmente** para ter acesso ao **Swagger UI**
+
+> O Swagger UI mostra todos os schemas esperados nas requisições e respostas.
+
+---
+
+## ❓ Dúvidas
+
+Sinta-se à vontade para entrar em contato.
+
+Caso precise modificar algo, estou aberto a sugestões e posso refatorar para melhorar a explicação do projeto.
+
+---
+
+## 👀 Observação Final
+
+Você poderá visualizar todas as rotas, parâmetros, exemplos de requisições e respostas diretamente no Swagger.
+Isso facilita bastante o entendimento do fluxo completo da aplicação.
