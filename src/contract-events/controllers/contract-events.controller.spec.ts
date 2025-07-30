@@ -36,6 +36,7 @@ describe("ContractEventsController", () => {
       mockContractEventsService.findAll.mockResolvedValue(mockEvents);
 
       const result = await controller.findAll();
+
       expect(result).toEqual(mockEvents);
       expect(mockContractEventsService.findAll).toHaveBeenCalled();
     });
@@ -48,6 +49,7 @@ describe("ContractEventsController", () => {
       );
 
       const result = await controller.findAll(employeeCpf);
+
       expect(result).toEqual(mockEvents);
       expect(
         mockContractEventsService.findAllByEmployeeCpf,
@@ -62,6 +64,7 @@ describe("ContractEventsController", () => {
       mockContractEventsService.findById.mockResolvedValue(mockEvent);
 
       const result = await controller.findById(contractEventId);
+
       expect(result).toEqual(mockEvent);
       expect(mockContractEventsService.findById).toHaveBeenCalledWith(
         contractEventId,
@@ -74,6 +77,7 @@ describe("ContractEventsController", () => {
           `ContractEvent with id ${contractEventId.toString()} not found`,
         ),
       );
+
       await expect(controller.findById(contractEventId)).rejects.toThrow(
         `ContractEvent with id ${contractEventId.toString()} not found`,
       );

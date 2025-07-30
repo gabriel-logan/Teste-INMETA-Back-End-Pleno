@@ -69,9 +69,9 @@ describe("AuthService", () => {
     });
 
     it("should throw UnauthorizedException for invalid username", async () => {
-      jest
-        .spyOn(mockEmployeesService, "findOneByUsername")
-        .mockRejectedValue(new Error("User not found"));
+      mockEmployeesService.findOneByUsername.mockRejectedValue(
+        new Error("User not found"),
+      );
 
       await expect(
         service.signIn({
@@ -93,7 +93,7 @@ describe("AuthService", () => {
     });
 
     it("should throw UnauthorizedException for inactive contract status", async () => {
-      jest.spyOn(mockEmployeesService, "findOneByUsername").mockResolvedValue({
+      mockEmployeesService.findOneByUsername.mockResolvedValue({
         id: 1,
         username: "testUser",
         password: "hashedPassword",
