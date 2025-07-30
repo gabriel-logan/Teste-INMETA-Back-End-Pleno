@@ -82,13 +82,6 @@ describe("AuthService", () => {
     });
 
     it("should throw UnauthorizedException for invalid password", async () => {
-      jest.spyOn(mockEmployeesService, "findOneByUsername").mockResolvedValue({
-        id: 1,
-        username: "testUser",
-        password: "hashedPassword",
-        role: "user",
-      });
-
       jest.spyOn(bcrypt, "compare").mockResolvedValue(false as never);
 
       await expect(

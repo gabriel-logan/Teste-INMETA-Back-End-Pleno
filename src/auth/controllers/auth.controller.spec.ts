@@ -32,7 +32,9 @@ describe("AuthController", () => {
   describe("signIn", () => {
     it("should return an access token", async () => {
       const createAuthDto = { username: "testUser", password: "testPass" };
+
       const result = await controller.signIn(createAuthDto);
+
       expect(result).toEqual({ accessToken: "mockedAccessToken" });
       expect(mockAuthService.signIn).toHaveBeenCalledWith(createAuthDto);
     });
