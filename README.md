@@ -1,56 +1,72 @@
 # Teste-INMETA-Back-End-Pleno
 
-## Description
+## 📝 Descrição
 
-API de Gerenciamento de documentação de colaboradores
+API de Gerenciamento de documentação de colaboradores.
+
+---
 
 ## ⚙️ Pré-requisitos
 
-- Node.js `18+`
+* Node.js `18+`
 
-## Project setup LOCALHOST
+---
+
+## 🚀 Setup do Projeto (LOCALHOST)
+
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/gabriel-logan/Teste-INMETA-Back-End-Pleno
 ```
 
-## Acesse o diretório do projeto
+### 2. Acesse o diretório do projeto
 
 ```bash
 cd Teste-INMETA-Back-End-Pleno
 ```
 
-## Instale as dependências
+### 3. Instale as dependências
 
 ```bash
 yarn install
 ```
 
-## Crie um arquivo .env
+### 4. Crie um arquivo `.env`
 
 ```bash
 cp .env-example .env
 ```
 
-## Certifique-se de que o MongoDB esteja rodando
+### 5. Certifique-se de que o MongoDB esteja rodando
 
-IMPORTANTE: Se estiver usando o MONGODB Localmente, LEIA O [IMPORTANT.md](docs/IMPORTANT.md) para configurar o MongoDB com Replica Set.
-Isso é necessário para o funcionamento correto das transações. Usando o MongoDB Atlas, não é necessário fazer essa configuração.
+> **IMPORTANTE:** Se estiver usando o MongoDB localmente, LEIA o arquivo [`IMPORTANT.md`](docs/IMPORTANT.md) para configurar o MongoDB com Replica Set.
+> Isso é necessário para o funcionamento correto das transações.
+> Usando o MongoDB Atlas, **não** é necessário fazer essa configuração.
 
-## Inicie o servidor (DEV mode)
+### 6. Inicie o servidor (modo DEV)
 
 ```bash
 yarn dev
 ```
 
-## Acesse a documentação da API
+---
+
+## 📚 Documentação da API
 
 ### Swagger UI
-Acesse a documentação da API em: [http://localhost:3000/api/v1/docs](http://localhost:3000/api/v1/docs)
-### Insomnia
+
+Acesse em: [http://localhost:3000/api/v1/docs](http://localhost:3000/api/v1/docs)
+
+### Insomnia / Postman
+
 Importe o arquivo `Insomnia.json` para o Insomnia ou Postman para testar as rotas da API.
 
-## Testar (PROD mode)
+---
+
+## 🧪 Testes
+
+### Testar em modo produção
 
 ```bash
 yarn build
@@ -60,42 +76,57 @@ yarn build
 yarn start
 ```
 
-## Unit Tests
+### Testes unitários
 
 ```bash
 yarn test
 ```
 
-### Coverage Report
+#### Relatório de cobertura
 
 ```bash
 yarn test:cov
 ```
 
-## E2E Tests
+### Testes E2E
 
-Certifique que o MongoDB esteja rodando,
-Certifique que existe um "employee" cadastrado no banco de dados, com o username "admin" e password "123456".
-Se não existir o teste ira falhar na rota de login.
+> Certifique-se de que o MongoDB esteja rodando.
+> Certifique-se de que existe um `employee` cadastrado no banco de dados com:
+
+* **username:** `admin`
+* **password:** `123456`
+
+> Se não existir, o teste irá falhar na rota de login.
 
 ```bash
 yarn test:e2e
 ```
 
-## Explicação do projeto e rotas
+---
 
-Acesse o arquivo [`docs/EXPLANATION.md`](docs/EXPLANATION.md) para uma explicação detalhada do projeto e suas rotas.
+## 📄 Explicação do projeto e rotas
 
-## Finalização
+Acesse o arquivo [`EXPLANATION.md`](docs/EXPLANATION.md) para uma explicação detalhada do projeto e suas rotas.
+
+---
+
+## ✅ Finalização
 
 Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e está pronto para testar a API.
 
-# Versão de Produção
+---
 
-A versão de produção do projeto está hospedada no Vercel. Você pode acessá-la através do seguinte link:
+## 🌐 Versão de Produção
+
+A versão de produção do projeto está hospedada na Vercel.
+Acesse através do link:
+
 [https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app/api/v1)
 
-INFO: O swagger não está disponível na versão de produção.
+> **INFO:** O Swagger não está disponível na versão de produção.
 
-## Creditos
-- [Gabriel Logan](https://github.com/gabriel-logan)
+---
+
+## 👤 Créditos
+
+* [Gabriel Logan](https://github.com/gabriel-logan)
