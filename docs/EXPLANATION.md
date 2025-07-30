@@ -11,7 +11,9 @@ A rota /api/v1 é a base para todas as operações da API. A seguir, estão as p
 
 / - Rota apenas para verificar se a API está funcionando corretamente. Retorna uma mensagem de sucesso. "Hello World!".
 
-Para criar um "employee", você precisa criar uma conta com "role" de "admin". Após isso, você pode criar um "employee" com o seguinte comando:
+Para criar um "employee", você precisa criar uma conta com "role" de "admin".
+
+As senhas são criptografadas usando bcrypt, e o token JWT é gerado para autenticação.
 
 A rota de criação de conta admin está publica por processo de demostracao e facilidade, mas em uma aplicacao real, essa rota não deve estar acessível publicamente.
 
