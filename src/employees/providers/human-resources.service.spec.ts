@@ -79,12 +79,10 @@ describe("HumanResourcesService", () => {
         ],
       };
 
-      const spyOnFindById = jest
-        .spyOn(mockEmployeesService, "findById")
-        .mockResolvedValue({
-          ...mockEmployee,
-          save: jest.fn().mockResolvedValue(true),
-        });
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        ...mockEmployee,
+        save: jest.fn().mockResolvedValue(true),
+      });
 
       const fireEmployeeDto: FireEmployeeRequestDto = {
         reason: "Performance issues",
@@ -107,7 +105,7 @@ describe("HumanResourcesService", () => {
         reason: fireEmployeeDto.reason,
         message: `Successfully terminated contract for employee with id ${mockGenericObjectId.toString()}`,
       });
-      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -128,12 +126,10 @@ describe("HumanResourcesService", () => {
         ],
       };
 
-      const spyOnFindById = jest
-        .spyOn(mockEmployeesService, "findById")
-        .mockReturnValue({
-          ...mockEmployee,
-          save: jest.fn().mockResolvedValue(true),
-        });
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        ...mockEmployee,
+        save: jest.fn().mockResolvedValue(true),
+      });
 
       const mockAuthPayload: AuthPayload = {
         sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
@@ -158,7 +154,7 @@ describe("HumanResourcesService", () => {
         message: `Successfully rehired employee with id ${employeeId.toString()}`,
         reason: reHireEmployeeDto.reason,
       });
-      expect(spyOnFindById).toHaveBeenCalledTimes(1);
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
     });
   });
 });
