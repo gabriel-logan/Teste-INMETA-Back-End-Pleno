@@ -46,7 +46,7 @@ yarn dev
 ## Acesse a documentação da API
 
 ### Swagger UI
-Acesse a documentação da API em: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+Acesse a documentação da API em: [http://localhost:3000/api/v1/docs](http://localhost:3000/api/v1/docs)
 ### Insomnia
 Importe o arquivo `Insomnia.json` para o Insomnia para testar as rotas da API.
 
@@ -73,3 +73,14 @@ yarn test:cov
 ```bash
 yarn test:e2e
 ```
+
+## Explicação do projeto e rotas
+
+Acesse o arquivo [`docs/EXPLANATION.md`](docs/EXPLANATION.md) para uma explicação detalhada do projeto e suas rotas.
+
+## Finalização
+
+Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e está pronto para contribuir ou testar a API.
+
+## Creditos
+- [Gabriel Logan](https://github.com/gabriel-logan)
