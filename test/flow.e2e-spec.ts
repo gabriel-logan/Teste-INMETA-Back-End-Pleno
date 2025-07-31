@@ -88,113 +88,111 @@ describe("Protected Routes (e2e)", () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  describe("employees", () => {
-    it("should retrieve the list of employees", async () => {
-      return request(app.getHttpServer())
-        .get("/employees")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .expect(HttpStatus.OK);
-    });
+  it("should retrieve the list of employees", async () => {
+    return request(app.getHttpServer())
+      .get("/employees")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+  });
 
-    it("should create a new employee", async () => {
-      const res = await request(app.getHttpServer())
-        .post("/employees")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          firstName: fakeData.firstName,
-          lastName: fakeData.lastName,
-          username: fakeData.username,
-          password: fakeData.password,
-          cpf: fakeData.cpf,
-        })
-        .expect(HttpStatus.CREATED)
-        .expect((res) => {
-          expect(res.body).toHaveProperty("id");
-        });
+  it("should create a new employee", async () => {
+    const res = await request(app.getHttpServer())
+      .post("/employees")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        firstName: fakeData.firstName,
+        lastName: fakeData.lastName,
+        username: fakeData.username,
+        password: fakeData.password,
+        cpf: fakeData.cpf,
+      })
+      .expect(HttpStatus.CREATED)
+      .expect((res) => {
+        expect(res.body).toHaveProperty("id");
+      });
 
-      fakeData.employeeId = (res.body as { id: string }).id;
-    });
+    fakeData.employeeId = (res.body as { id: string }).id;
+  });
 
-    it("should link an employee to a document type", async () => {
-      return request(app.getHttpServer())
-        .post(`/document-type-linkers/${fakeData.employeeId}/link`)
-        .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          documentTypeIds: [documentType1.id, documentType2.id],
-        })
-        .expect(HttpStatus.OK);
-    });
+  it("should link an employee to a document type", async () => {
+    return request(app.getHttpServer())
+      .post(`/document-type-linkers/${fakeData.employeeId}/link`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        documentTypeIds: [documentType1.id, documentType2.id],
+      })
+      .expect(HttpStatus.OK);
+  });
 
-    it("should list missing documents for an employee", async () => {
-      const res = await request(app.getHttpServer())
-        .get(`/documents/missing/all`)
-        .set("Authorization", `Bearer ${accessToken}`)
-        .expect(HttpStatus.OK);
+  it("should list missing documents for an employee", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/documents/missing/all`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
 
-      const body = res.body as Array<{
+    const body = res.body as Array<{
+      id: string;
+      status: string;
+      documentUrl: string;
+      createdAt: string;
+      updatedAt: string;
+      employee: {
         id: string;
-        status: string;
-        documentUrl: string;
+        firstName: string;
+        lastName: string;
+        fullName: string;
+        username: string;
+        contractStatus: string;
+        cpf: string;
+        role: string;
         createdAt: string;
         updatedAt: string;
-        employee: {
-          id: string;
-          firstName: string;
-          lastName: string;
-          fullName: string;
-          username: string;
-          contractStatus: string;
-          cpf: string;
-          role: string;
-          createdAt: string;
-          updatedAt: string;
-        };
-        documentType: {
-          id: string;
-          name: string;
-          createdAt: string;
-          updatedAt: string;
-        };
-      }>;
+      };
+      documentType: {
+        id: string;
+        name: string;
+        createdAt: string;
+        updatedAt: string;
+      };
+    }>;
 
-      // Verifica se é um array
-      expect(Array.isArray(body)).toBe(true);
+    // Verifica se é um array
+    expect(Array.isArray(body)).toBe(true);
 
-      // Se quiser garantir que tenha ao menos um item
-      expect(body.length).toBeGreaterThan(0);
+    // Se quiser garantir que tenha ao menos um item
+    expect(body.length).toBeGreaterThan(0);
 
-      // Verifica estrutura de cada item
-      for (const item of body) {
-        expect(item).toHaveProperty("id");
-        expect(item).toHaveProperty("status", "missing");
-        expect(item).toHaveProperty("documentUrl");
-        expect(item).toHaveProperty("createdAt");
-        expect(item).toHaveProperty("updatedAt");
+    // Verifica estrutura de cada item
+    for (const item of body) {
+      expect(item).toHaveProperty("id");
+      expect(item).toHaveProperty("status", "missing");
+      expect(item).toHaveProperty("documentUrl");
+      expect(item).toHaveProperty("createdAt");
+      expect(item).toHaveProperty("updatedAt");
 
-        // Verifica estrutura do employee
-        expect(item).toHaveProperty("employee");
-        expect(item.employee).toMatchObject({
-          id: expect.any(String) as string,
-          firstName: expect.any(String) as string,
-          lastName: expect.any(String) as string,
-          fullName: expect.any(String) as string,
-          username: expect.any(String) as string,
-          contractStatus: expect.any(String) as string,
-          cpf: expect.any(String) as string,
-          role: expect.any(String) as string,
-          createdAt: expect.any(String) as string,
-          updatedAt: expect.any(String) as string,
-        });
+      // Verifica estrutura do employee
+      expect(item).toHaveProperty("employee");
+      expect(item.employee).toMatchObject({
+        id: expect.any(String) as string,
+        firstName: expect.any(String) as string,
+        lastName: expect.any(String) as string,
+        fullName: expect.any(String) as string,
+        username: expect.any(String) as string,
+        contractStatus: expect.any(String) as string,
+        cpf: expect.any(String) as string,
+        role: expect.any(String) as string,
+        createdAt: expect.any(String) as string,
+        updatedAt: expect.any(String) as string,
+      });
 
-        // Verifica estrutura do documentType
-        expect(item).toHaveProperty("documentType");
-        expect(item.documentType).toMatchObject({
-          id: expect.any(String) as string,
-          name: expect.any(String) as string,
-          createdAt: expect.any(String) as string,
-          updatedAt: expect.any(String) as string,
-        });
-      }
-    });
+      // Verifica estrutura do documentType
+      expect(item).toHaveProperty("documentType");
+      expect(item.documentType).toMatchObject({
+        id: expect.any(String) as string,
+        name: expect.any(String) as string,
+        createdAt: expect.any(String) as string,
+        updatedAt: expect.any(String) as string,
+      });
+    }
   });
 });
