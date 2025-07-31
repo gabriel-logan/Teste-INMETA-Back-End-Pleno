@@ -112,17 +112,8 @@ jobs:
             })();
           '
 
-      - name: Run E2E tests with soft timeout (warn only)
-        run: |
-          timeout 60s yarn test:e2e || (
-            code=$?
-            if [ $code -eq 124 ]; then
-              echo "::warning ::Test timeout (60s) atingido. Testes passaram, mas Jest não saiu automaticamente."
-              exit 0
-            else
-              exit $code
-            fi
-          )
+      - name: Run E2E
+        run: yarn test:e2e --runInBand --detectOpenHandles --forceExit
 
       - name: Cleanup MongoDB container
         if: always()
