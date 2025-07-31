@@ -1,0 +1,54 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "src/**"
+      - "test/**"
+      - ".github/workflows/e2e-tests.yml"
+      - "yarn.lock"
+      - "tsconfig.json"
+      - "nest-cli.json"
+  push:
+    branches: ["main"]
+    paths:
+      - "src/**"
+      - "test/**"
+      - ".github/workflows/e2e-tests.yml"
+      - "yarn.lock"
+      - "tsconfig.json"
+      - "nest-cli.json"
+
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      MONGODB_URI: mongodb://localhost:27017/test-db
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn install
+      - name: Run E2E Tests
+        run: yarn test:e2e
