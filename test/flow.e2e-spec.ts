@@ -229,12 +229,22 @@ describe("Protected Routes (e2e)", () => {
   });
 
   it("should send a document for an employee", async () => {
-    const filePath = join(__dirname, "fixtures", "sample.pdf");
+    const filePath: string | undefined = join(
+      __dirname,
+      "fixtures",
+      "sample.pdf",
+    );
+
+    if (!filePath) {
+      throw new Error(
+        "File not found or corrupted. Please check the file path.",
+      );
+    }
 
     return request(app.getHttpServer())
       .post(`/document-files/${documentToSend.documentStatus.documentId}/send`)
       .set("Authorization", `Bearer ${accessToken}`)
-      .attach("documentId", filePath)
+      .attach("documentFile", filePath)
       .expect(HttpStatus.CREATED)
       .expect((res) => {
         expect(res.body).toHaveProperty(
