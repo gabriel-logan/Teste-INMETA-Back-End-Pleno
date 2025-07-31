@@ -19,18 +19,20 @@ describe("AuthService", () => {
 
   const mockEmployeesId = new Types.ObjectId("507f1f77bcf86cd799439011");
 
+  const mockDefaultEmployee = {
+    _id: mockEmployeesId,
+    id: mockEmployeesId.toString(),
+    username: "testUser",
+    password: "hashedPassword",
+    role: EmployeeRole.ADMIN,
+    contractStatus: ContractStatus.ACTIVE,
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
     mockEmployeesService = {
-      findOneByUsername: jest.fn().mockResolvedValue({
-        _id: mockEmployeesId,
-        id: mockEmployeesId.toString(),
-        username: "testUser",
-        password: "hashedPassword",
-        role: EmployeeRole.ADMIN,
-        contractStatus: ContractStatus.ACTIVE,
-      }),
+      findOneByUsername: jest.fn().mockResolvedValue(mockDefaultEmployee),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -99,10 +101,7 @@ describe("AuthService", () => {
 
     it("should throw UnauthorizedException for inactive contract status", async () => {
       mockEmployeesService.findOneByUsername.mockResolvedValue({
-        id: 1,
-        username: "testUser",
-        password: "hashedPassword",
-        role: "user",
+        ...mockDefaultEmployee,
         contractStatus: "inactive",
       });
 
