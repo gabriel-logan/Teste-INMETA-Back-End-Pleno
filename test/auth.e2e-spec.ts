@@ -5,6 +5,7 @@ import * as request from "supertest";
 import type { App } from "supertest/types";
 
 import { AppModule } from "./../src/app.module";
+import { authenticate } from "./utils/auth";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
@@ -24,19 +25,7 @@ describe("AppController (e2e)", () => {
 
   describe("signIn", () => {
     it("should sign in with valid credentials (POST)", async () => {
-      return await request(app.getHttpServer())
-        .post("/auth/sign-in")
-        .send({
-          username: "admin",
-          password: "123456",
-        })
-        .expect(HttpStatus.OK)
-        .expect((res) => {
-          const body = res.body as { accessToken: string };
-
-          expect(body).toHaveProperty("accessToken");
-          expect(typeof body.accessToken).toBe("string");
-        });
+      return await authenticate(app);
     });
 
     it("should return unauthorized for invalid password credentials (POST)", async () => {
