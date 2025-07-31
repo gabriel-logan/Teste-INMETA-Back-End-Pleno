@@ -5,8 +5,19 @@ import { RolesGuard } from "./roles.guard";
 
 describe("RolesGuard", () => {
   let guard: RolesGuard;
+  let mockContext: ExecutionContext;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
+    mockContext = {
+      getHandler: jest.fn(),
+      getClass: jest.fn(),
+      switchToHttp: () => ({
+        getRequest: (): (() => object) => jest.fn(),
+      }),
+    } as unknown as ExecutionContext;
+
     const moduleRef = await Test.createTestingModule({
       providers: [RolesGuard],
     }).compile();
@@ -23,15 +34,7 @@ describe("RolesGuard", () => {
       .spyOn(guard["reflector"], "getAllAndOverride")
       .mockReturnValue(undefined);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        getRequest: (): (() => object) => jest.fn(),
-      }),
-    } as unknown as ExecutionContext;
-
-    expect(guard.canActivate(context)).toBe(true);
+    expect(guard.canActivate(mockContext)).toBe(true);
   });
 
   it("should return false if employee is not present in request", () => {
@@ -39,15 +42,7 @@ describe("RolesGuard", () => {
       .spyOn(guard["reflector"], "getAllAndOverride")
       .mockReturnValue(["admin"]);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        getRequest: (): (() => object) => jest.fn(),
-      }),
-    } as unknown as ExecutionContext;
-
-    expect(guard.canActivate(context)).toBe(false);
+    expect(guard.canActivate(mockContext)).toBe(false);
   });
 
   it("should return true if employee has at least one required role", () => {
@@ -55,20 +50,15 @@ describe("RolesGuard", () => {
       .spyOn(guard["reflector"], "getAllAndOverride")
       .mockReturnValue(["admin", "manager"]);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          employee: {
-            role: ["user", "admin"],
-          },
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        employee: {
+          role: ["admin"],
+        },
       }),
-    } as unknown as ExecutionContext;
+    });
 
-    expect(guard.canActivate(context)).toBe(true);
+    expect(guard.canActivate(mockContext)).toBe(true);
   });
 
   it("should return false if employee does not have any required roles", () => {
@@ -76,19 +66,14 @@ describe("RolesGuard", () => {
       .spyOn(guard["reflector"], "getAllAndOverride")
       .mockReturnValue(["admin", "manager"]);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          employee: {
-            role: ["user"],
-          },
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        employee: {
+          role: ["user"],
+        },
       }),
-    } as unknown as ExecutionContext;
+    });
 
-    expect(guard.canActivate(context)).toBe(false);
+    expect(guard.canActivate(mockContext)).toBe(false);
   });
 });

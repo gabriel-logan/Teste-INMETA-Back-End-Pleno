@@ -12,8 +12,23 @@ import { AuthGuard } from "./auth.guard";
 
 describe("AuthGuard", () => {
   let guard: AuthGuard;
+  let mockContext: ExecutionContext;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
+    mockContext = {
+      getHandler: jest.fn(),
+      getClass: jest.fn(),
+      switchToHttp: () => ({
+        getRequest: (): any => ({
+          headers: {
+            authorization: "Bearer token",
+          },
+        }),
+      }),
+    } as unknown as ExecutionContext;
+
     const moduleRef = await Test.createTestingModule({
       imports: [
         JwtModule.register({
@@ -34,40 +49,22 @@ describe("AuthGuard", () => {
   it("should return true if public decorator is used", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(true);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          headers: {
-            authorization: "Bearer token",
-          },
-        }),
-      }),
-    } as unknown as ExecutionContext;
-
-    expect(await guard.canActivate(context)).toBe(true);
+    expect(await guard.canActivate(mockContext)).toBe(true);
   });
 
   it("should throw UnauthorizedException if no token is provided", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          headers: {},
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        headers: {},
       }),
-    } as unknown as ExecutionContext;
+    });
 
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       UnauthorizedException,
     );
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       "No token provided",
     );
   });
@@ -75,23 +72,18 @@ describe("AuthGuard", () => {
   it("should throw UnauthorizedException if token is invalid", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          headers: {
-            authorization: "Bearer invalidToken",
-          },
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        headers: {
+          authorization: "Bearer invalidToken",
+        },
       }),
-    } as unknown as ExecutionContext;
+    });
 
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       UnauthorizedException,
     );
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       "Token is invalid or expired",
     );
   });
@@ -99,18 +91,13 @@ describe("AuthGuard", () => {
   it("should throw UnauthorizedException if contract status is not active", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          headers: {
-            authorization: "Bearer validToken",
-          },
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        headers: {
+          authorization: "Bearer validToken",
+        },
       }),
-    } as unknown as ExecutionContext;
+    });
 
     const mockPayload = {
       contractStatus: ContractStatus.INACTIVE,
@@ -120,10 +107,10 @@ describe("AuthGuard", () => {
       .spyOn(guard["jwtService"], "verifyAsync")
       .mockResolvedValue(mockPayload);
 
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       UnauthorizedException,
     );
-    await expect(guard.canActivate(context)).rejects.toThrow(
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
       "Contract status is not active",
     );
   });
@@ -131,18 +118,13 @@ describe("AuthGuard", () => {
   it("should set employee in request if token is valid", async () => {
     jest.spyOn(guard["reflector"], "getAllAndOverride").mockReturnValue(false);
 
-    const context = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        getRequest: () => ({
-          headers: {
-            authorization: "Bearer validToken",
-          },
-        }),
+    mockContext.switchToHttp = (): any => ({
+      getRequest: () => ({
+        headers: {
+          authorization: "Bearer validToken",
+        },
       }),
-    } as unknown as ExecutionContext;
+    });
 
     const mockPayload = {
       id: "123",
@@ -154,6 +136,6 @@ describe("AuthGuard", () => {
       .spyOn(guard["jwtService"], "verifyAsync")
       .mockResolvedValue(mockPayload);
 
-    expect(await guard.canActivate(context)).toBe(true);
+    expect(await guard.canActivate(mockContext)).toBe(true);
   });
 });
