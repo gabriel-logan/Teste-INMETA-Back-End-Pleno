@@ -186,7 +186,7 @@ Para explorar e entender melhor o funcionamento da aplicação:
 * Exibe todos os **schemas esperados** nas requisições e respostas.
 * Facilita a compreensão do **fluxo de dados** da API.
 * **Disponível apenas localmente.**
-  Não acessível em ambientes de produção.
+  Não acessível em ambiente de produção.
 
 ### ⚠️ Requisitos
 
