@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -60,6 +61,8 @@ describe("AdminEmployeesService", () => {
   };
 
   beforeAll(() => {
+    jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+
     // Mock the Mongoose connection
     MongooseProvider.setMongooseInstance(
       mockConnection as unknown as Connection,
@@ -121,6 +124,29 @@ describe("AdminEmployeesService", () => {
         updatedAt: expect.any(Date) as Date,
       });
       expect(mockEmployeeModelSchema.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if username or cpf already exists", async () => {
+      mockEmployeeModelSchema.findOne.mockResolvedValue({
+        _id: mockGenericObjectId,
+        username: "admin.user",
+        cpf: "12345678900",
+        firstName: "Existing",
+        lastName: "Employee",
+        role: EmployeeRole.ADMIN,
+      });
+
+      const createDto: CreateAdminEmployeeRequestDto = {
+        firstName: "Admin",
+        lastName: "User",
+        cpf: "123.456.789-00",
+        username: "admin.user",
+        password: "securepassword",
+      };
+
+      await expect(service.createAdminEmployee(createDto)).rejects.toThrow(
+        `An employee with username admin.user or CPF 12345678900 already exists`,
+      );
     });
   });
 });

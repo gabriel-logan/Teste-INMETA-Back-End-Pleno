@@ -203,6 +203,16 @@ describe("EmployeesService", () => {
       expect(result).toEqual(mockDefaultEmployee);
       expect(mockEmployeeModel.findOne).toHaveBeenCalledTimes(1);
     });
+
+    it("should throw an error if employee not found", async () => {
+      mockEmployeeModel.findOne.mockReturnValue({
+        lean: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(service.findOneByUsername("non.existent")).rejects.toThrow(
+        `Employee with username non.existent not found`,
+      );
+    });
   });
 
   describe("findByIdWithContractEvents", () => {
