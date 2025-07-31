@@ -159,12 +159,12 @@ export class DocumentTypesService {
 
     // Invalidate and set caches after update
     // Invalidate cache for findAll, findById, and findOneByName
-    await Promise.all([
-      this.invalidateDocumentTypeCaches(result),
-      invalidateKeys(this.cacheManager, [
+    await this.invalidateDocumentTypeCaches(result);
+    if (previousName !== result.name) {
+      await invalidateKeys(this.cacheManager, [
         cacheKeys.documentTypes.findOneByName(previousName),
-      ]),
-    ]);
+      ]);
+    }
 
     // Set cache for the updated document type
     await this.setDocumentTypeCaches(result);
