@@ -123,13 +123,11 @@ export class DocumentTypesService {
     const result = this.genericDocumentTypeResponseMapper(createdDocumentType);
 
     // Invalidate and set caches for the new document type
-    await Promise.all([
-      // Invalidate cache for findAll, findById, and findOneByName
-      this.invalidateDocumentTypeCaches(result),
+    // Invalidate cache for findAll, findById, and findOneByName
+    await this.invalidateDocumentTypeCaches(result);
 
-      // Set cache for the newly created document type
-      this.setDocumentTypeCaches(result),
-    ]);
+    // Set cache for the newly created document type
+    await this.setDocumentTypeCaches(result);
 
     return result;
   }
@@ -160,16 +158,16 @@ export class DocumentTypesService {
     const result = this.genericDocumentTypeResponseMapper(updatedDocumentType);
 
     // Invalidate and set caches after update
+    // Invalidate cache for findAll, findById, and findOneByName
     await Promise.all([
-      // Invalidate cache for findAll, findById, and findOneByName
       this.invalidateDocumentTypeCaches(result),
       invalidateKeys(this.cacheManager, [
         cacheKeys.documentTypes.findOneByName(previousName),
       ]),
-
-      // Set cache for the updated document type
-      this.setDocumentTypeCaches(result),
     ]);
+
+    // Set cache for the updated document type
+    await this.setDocumentTypeCaches(result);
 
     return result;
   }
