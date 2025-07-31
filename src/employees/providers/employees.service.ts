@@ -255,7 +255,17 @@ export class EmployeesService {
     );
 
     return {
-      ...this.genericEmployeeResponseMapper(employee),
+      _id: employee._id,
+      id: employee._id.toString(),
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      fullName: employee.fullName,
+      username: employee.username,
+      cpf: employee.cpf,
+      role: employee.role,
+      contractStatus: employee.contractStatus,
+      createdAt: employee.createdAt,
+      updatedAt: employee.updatedAt,
       contractEvents,
     };
   }
