@@ -28,8 +28,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE_ENV: development
-      MONGODB_URI: mongodb://localhost:27017/employee_management?replicaSet=rs0
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
       BASE_URL: ${{ secrets.BASE_URL }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       JWT_TOKEN_SECRET: ${{ secrets.JWT_TOKEN_SECRET }}
