@@ -13,22 +13,25 @@ import { AuthService } from "./auth.service";
 
 describe("AuthService", () => {
   let service: AuthService;
+  let mockEmployeesService: {
+    findOneByUsername: jest.Mock;
+  };
 
   const mockEmployeesId = new Types.ObjectId("507f1f77bcf86cd799439011");
 
-  const mockEmployeesService = {
-    findOneByUsername: jest.fn().mockResolvedValue({
-      _id: mockEmployeesId,
-      id: mockEmployeesId.toString(),
-      username: "testUser",
-      password: "hashedPassword",
-      role: EmployeeRole.ADMIN,
-      contractStatus: ContractStatus.ACTIVE,
-    }),
-  };
-
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    mockEmployeesService = {
+      findOneByUsername: jest.fn().mockResolvedValue({
+        _id: mockEmployeesId,
+        id: mockEmployeesId.toString(),
+        username: "testUser",
+        password: "hashedPassword",
+        role: EmployeeRole.ADMIN,
+        contractStatus: ContractStatus.ACTIVE,
+      }),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
