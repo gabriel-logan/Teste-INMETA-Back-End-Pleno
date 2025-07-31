@@ -1,6 +1,6 @@
 # 🧾 MongoDB Transactions Project (Replica Set) – Setup Instructions
 
-This project uses **MongoDB transactions**, which **require the database to be running as a *replica set*** (even in local development).
+This project uses **MongoDB transactions**, which **require the database to be running as a *replica set***.
 
 > ⚠️ **If you run MongoDB in standalone mode, transactions will fail with the error:**
 > `MongoServerError: Transaction numbers are only allowed on a replica set member or mongos`
