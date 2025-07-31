@@ -16,6 +16,7 @@ export class MongodbExceptionFilter implements ExceptionFilter {
 
     const response = ctx.getResponse<Response>();
 
+    // Duplication error handling
     if (exception.code === 11000) {
       const request = ctx.getRequest<Request>();
       const url = request.url;
