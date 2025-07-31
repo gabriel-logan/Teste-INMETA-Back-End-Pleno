@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import type { Connection } from "mongoose";
@@ -16,6 +17,25 @@ import { HumanResourcesService } from "./human-resources.service";
 
 describe("HumanResourcesService", () => {
   let service: HumanResourcesService;
+
+  const mockDefaultEmployee = {
+    contractEvents: [
+      {
+        _id: "event1",
+      },
+    ],
+  };
+
+  const fireEmployeeDto: FireEmployeeRequestDto = {
+    reason: "Performance issues",
+  };
+
+  const mockAuthPayload: AuthPayload = {
+    sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
+    username: "admin",
+    role: EmployeeRole.ADMIN,
+    contractStatus: ContractStatus.ACTIVE,
+  };
 
   const mockEmployeesService = {
     findById: jest.fn(),
@@ -40,6 +60,8 @@ describe("HumanResourcesService", () => {
   };
 
   beforeAll(() => {
+    jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+
     // Mock the Mongoose connection
     MongooseProvider.setMongooseInstance(
       mockConnection as unknown as Connection,
@@ -69,31 +91,33 @@ describe("HumanResourcesService", () => {
     expect(service).toBeDefined();
   });
 
+  describe("throwErrorIfIsSameId", () => {
+    it("should throw an error if the same id is provided", async () => {
+      // Calling fire because fire or reHire will call this method
+      // Does not matter which one we call here
+      await expect(
+        service.fire(
+          mockGenericObjectId,
+          { reason: "test" } as FireEmployeeRequestDto,
+          {
+            sub: mockGenericObjectId.toString(),
+            username: "testUser",
+            role: EmployeeRole.ADMIN,
+            contractStatus: ContractStatus.ACTIVE,
+          } as AuthPayload,
+        ),
+      ).rejects.toThrow(
+        new Error("You cannot fire yourself. Please contact a manager."),
+      );
+    });
+  });
+
   describe("fire", () => {
     it("should fire an employee by id", async () => {
-      const mockEmployee = {
-        contractEvents: [
-          {
-            _id: "event1",
-          },
-        ],
-      };
-
       mockEmployeesService.findById = jest.fn().mockResolvedValue({
-        ...mockEmployee,
+        ...mockDefaultEmployee,
         save: jest.fn().mockResolvedValue(true),
       });
-
-      const fireEmployeeDto: FireEmployeeRequestDto = {
-        reason: "Performance issues",
-      };
-
-      const mockAuthPayload: AuthPayload = {
-        sub: new Types.ObjectId("60c72b2f9b1e8d001c8e4f1a").toString(),
-        username: "admin",
-        role: EmployeeRole.ADMIN,
-        contractStatus: ContractStatus.ACTIVE,
-      };
 
       const result = await service.fire(
         mockGenericObjectId,
@@ -106,6 +130,21 @@ describe("HumanResourcesService", () => {
         message: `Successfully terminated contract for employee with id ${mockGenericObjectId.toString()}`,
       });
       expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the employee is already inactive", async () => {
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        ...mockDefaultEmployee,
+        contractStatus: ContractStatus.INACTIVE,
+      });
+
+      await expect(
+        service.fire(mockGenericObjectId, fireEmployeeDto, mockAuthPayload),
+      ).rejects.toThrow(
+        new Error(
+          "Employee with id 507f1f77bcf86cd799439011 is already inactive",
+        ),
+      );
     });
   });
 
@@ -155,6 +194,25 @@ describe("HumanResourcesService", () => {
         reason: reHireEmployeeDto.reason,
       });
       expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the employee is already active", async () => {
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        ...mockDefaultEmployee,
+        contractStatus: ContractStatus.ACTIVE,
+      });
+
+      const reHireEmployeeDto: ReHireEmployeeRequestDto = {
+        reason: "Rehired for new project",
+      };
+
+      await expect(
+        service.reHire(mockGenericObjectId, reHireEmployeeDto, mockAuthPayload),
+      ).rejects.toThrow(
+        new Error(
+          "Employee with id 507f1f77bcf86cd799439011 is already active",
+        ),
+      );
     });
   });
 });
