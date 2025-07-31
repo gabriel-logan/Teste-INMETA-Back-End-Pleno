@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -17,6 +16,7 @@ import {
 import { Roles } from "src/common/decorators/routes/roles.decorator";
 import { DocumentTypeResponseDto } from "src/common/dto/response/document-type.dto";
 import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pipe";
+import { throwInvalidDocumentTypeName } from "src/common/utils/validation-exceptions";
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { CreateDocumentTypeRequestDto } from "../dto/request/create-document-type.dto";
@@ -81,12 +81,7 @@ export class DocumentTypesController {
     @Param(
       "documentTypeName",
       new ParseEnumPipe(DocumentTypeAllowedValues, {
-        exceptionFactory: (): void => {
-          throw new BadRequestException(
-            "Invalid document type name. Allowed values are: " +
-              Object.values(DocumentTypeAllowedValues).join(", "),
-          );
-        },
+        exceptionFactory: throwInvalidDocumentTypeName,
       }),
     )
     documentTypeName: string,
