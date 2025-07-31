@@ -20,6 +20,7 @@ import { ParseObjectIdPipeLocal } from "src/common/pipes/parse-objectId-local.pi
 import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { GetAllMissingDocumentsQueriesResponseDto } from "../dto/response/get-all-missing-documents-queries.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
@@ -120,8 +121,7 @@ export class DocumentsController {
   @ApiStandardResponses({
     ok: {
       description: "Returns all missing documents",
-      type: DocumentFullResponseDto,
-      isArray: true,
+      type: GetAllMissingDocumentsQueriesResponseDto,
     },
   })
   @Get("missing/all")
@@ -133,12 +133,7 @@ export class DocumentsController {
     employeeId?: Types.ObjectId,
     @Query("documentTypeId", new ParseObjectIdPipeLocal({ optional: true }))
     documentTypeId?: Types.ObjectId,
-  ): Promise<{
-    documents: DocumentFullResponseDto[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+  ): Promise<GetAllMissingDocumentsQueriesResponseDto> {
     return await this.documentsService.getAllMissingDocuments(
       page,
       limit,

@@ -6,6 +6,7 @@ import { DocumentTypeAllowedValues } from "src/document-types/schemas/document-t
 import { EmployeesService } from "src/employees/providers/employees.service";
 
 import { UpdateDocumentRequestDto } from "../dto/request/update-document.dto";
+import { GetAllMissingDocumentsQueriesResponseDto } from "../dto/response/get-all-missing-documents-queries.dto";
 import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-document-statuses-by-employeeId.dto";
 import {
   Document,
@@ -254,12 +255,7 @@ export class DocumentsService {
     limit = 10,
     employeeId?: Types.ObjectId,
     documentTypeId?: Types.ObjectId,
-  ): Promise<{
-    documents: DocumentFullResponseDto[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+  ): Promise<GetAllMissingDocumentsQueriesResponseDto> {
     const filters: Partial<Record<keyof Document, any>> = {
       status: DocumentStatus.MISSING,
     };
