@@ -2,6 +2,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { type Connection, Model, Types } from "mongoose";
+import type { AuthPayload } from "src/common/types";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
 import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
@@ -174,6 +175,24 @@ describe("EmployeesService", () => {
         lastName: { $regex: "^Doe", $options: "i" },
       });
     });
+
+    it("should call populate if is requested", async () => {
+      const result = await service.findAll(undefined, {
+        populates: ["contractEvents"],
+      });
+
+      expect(result).toEqual([mockDefaultEmployee]);
+      expect(mockEmployeeModel.find).toHaveBeenCalledWith({});
+    });
+
+    it("should call lean if is requested", async () => {
+      const result = await service.findAll(undefined, {
+        lean: true,
+      });
+
+      expect(result).toEqual([mockDefaultEmployee]);
+      expect(mockEmployeeModel.find).toHaveBeenCalledWith({});
+    });
   });
 
   describe("findById", () => {
@@ -194,6 +213,17 @@ describe("EmployeesService", () => {
         `Employee with id ${mockGenericObjectId.toString()} not found`,
       );
     });
+
+    it("should call populate if is requested", async () => {
+      const result = await service.findById(mockGenericObjectId, {
+        populates: ["contractEvents"],
+      });
+
+      expect(result).toEqual(mockDefaultEmployee);
+      expect(mockEmployeeModel.findById).toHaveBeenCalledWith(
+        mockGenericObjectId,
+      );
+    });
   });
 
   describe("findOneByUsername", () => {
@@ -212,6 +242,22 @@ describe("EmployeesService", () => {
       await expect(service.findOneByUsername("non.existent")).rejects.toThrow(
         `Employee with username non.existent not found`,
       );
+    });
+
+    it("should call populate if is requested", async () => {
+      mockEmployeeModel.findOne.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDefaultEmployee),
+      });
+
+      const result = await service.findOneByUsername("jane.doe", {
+        populates: ["contractEvents"],
+      });
+
+      expect(result).toEqual(mockDefaultEmployee);
+      expect(mockEmployeeModel.findOne).toHaveBeenCalledWith({
+        username: "jane.doe",
+      });
     });
   });
 
@@ -303,6 +349,36 @@ describe("EmployeesService", () => {
         cpf: updateDto.cpf?.replace(/\D/g, ""),
       });
       expect(mockEmployeeModel.findByIdAndUpdate).toHaveBeenCalled();
+    });
+  });
+
+  describe("updatePassword", () => {
+    it("should update an employee's password", async () => {
+      const mockUpdatedEmployee = {
+        ...mockDefaultEmployee,
+        password: "newPassword123",
+      };
+
+      mockEmployeeModel.findById = jest.fn().mockReturnValue({
+        ...mockUpdatedEmployee,
+        save: mockSave,
+      });
+
+      const result = await service.updatePassword(
+        mockGenericObjectId,
+        {
+          newPassword: "newPassword123",
+        },
+        {
+          sub: mockGenericObjectId.toString(),
+          username: "jane.doe",
+          role: EmployeeRole.COMMON,
+        } as AuthPayload,
+      );
+
+      expect(result).toEqual({
+        message: "Password updated successfully",
+      });
     });
   });
 });
