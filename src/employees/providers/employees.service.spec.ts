@@ -1,11 +1,10 @@
 import { getModelToken } from "@nestjs/mongoose";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import { type Connection, type Model, Types } from "mongoose";
+import { type Connection, Model, Types } from "mongoose";
 import { MongooseProvider } from "src/configs/mongoose-provider";
 import { ContractEventsService } from "src/contract-events/providers/contract-events.service";
-import { DocumentTypesService } from "src/document-types/providers/document-types.service";
-import { EmployeeDocumentService } from "src/shared/employee-document/employee-document.service";
+import { ContractEventType } from "src/contract-events/schemas/contract-event.schema";
 
 import type { CreateEmployeeRequestDto } from "../dto/request/create-employee.dto";
 import type { UpdateEmployeeRequestDto } from "../dto/request/update-employee.dto";
@@ -18,34 +17,30 @@ import { EmployeesService } from "./employees.service";
 
 describe("EmployeesService", () => {
   let service: EmployeesService;
-  let mockEmployeeModel: Model<Employee>;
-
-  const mockEmployeeDocumentService = {
-    createDocument: jest.fn(() => Promise.resolve({})),
-    deleteDocumentByEmployeeIdAndDocumentTypeId: jest.fn(() =>
-      Promise.resolve({}),
-    ),
-  };
-
-  const mockDocumentTypesService = {
-    findById: jest.fn(() => Promise.resolve({})),
-  };
 
   const mockContractEventsService = {
-    findById: jest.fn(() => Promise.resolve({})),
-    findManyByIds: jest.fn(() => Promise.resolve([])),
-    create: jest.fn(() => Promise.resolve({})),
+    findById: jest.fn(),
+    findManyByIds: jest.fn(),
+    create: jest.fn(),
   };
 
   const mockGenericObjectId = new Types.ObjectId("60c72b2f9b1e8b001c8e4d3a");
 
-  const mockEmployee = {
+  const mockDefaultEmployee = {
     _id: mockGenericObjectId,
     firstName: "Jane",
     lastName: "Doe",
     fullName: "Jane Doe",
     username: "jane.doe",
     contractStatus: ContractStatus.ACTIVE,
+    contractEvents: [
+      {
+        _id: new Types.ObjectId("60c72b2f9b1e8b001c8e4d3b"),
+        type: ContractEventType.HIRED,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
     documentTypes: [
       {
         _id: new Types.ObjectId("123456789012345678901234"),
@@ -69,26 +64,23 @@ describe("EmployeesService", () => {
     updatedAt: new Date(),
   };
 
-  const mockEmployeeModelSchema = class {
-    private readonly data: any;
+  const mockSave = jest.fn(function (this: any) {
+    return Promise.resolve({ ...this });
+  });
 
-    constructor(data: Partial<Employee> = {}) {
-      this.data = {
-        ...mockEmployee,
+  const mockEmployeeModel = jest.fn().mockImplementation(
+    (data) =>
+      ({
+        ...mockDefaultEmployee,
         ...data,
-        fullName: `${data.firstName} ${data.lastName}`,
-      };
-
-      this.save = jest.fn().mockResolvedValue(this.data);
-    }
-
-    public static readonly find = jest.fn();
-    public static readonly findById = jest.fn();
-    public static readonly findOne = jest.fn();
-    public static readonly findByIdAndUpdate = jest.fn();
-    public save = jest.fn();
+        save: mockSave,
+      }) as Model<Employee>,
+  ) as unknown as typeof Model & {
+    find: jest.Mock;
+    findById: jest.Mock;
+    findOne: jest.Mock;
+    findByIdAndUpdate: jest.Mock;
   };
-
   const mockSession = {
     startTransaction: jest.fn(),
     commitTransaction: jest.fn(),
@@ -111,30 +103,38 @@ describe("EmployeesService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    mockEmployeeModel.find = jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue([mockDefaultEmployee]),
+    });
+
+    mockEmployeeModel.findById = jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(mockDefaultEmployee),
+    });
+
+    mockEmployeeModel.findOne = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockDefaultEmployee),
+    });
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmployeesService,
-        EmployeeDocumentService,
-        DocumentTypesService,
         ContractEventsService,
         {
           provide: getModelToken(Employee.name),
-          useValue: mockEmployeeModelSchema,
+          useValue: Model,
         },
       ],
     })
-      .overrideProvider(EmployeeDocumentService)
-      .useValue(mockEmployeeDocumentService)
-      .overrideProvider(DocumentTypesService)
-      .useValue(mockDocumentTypesService)
+
+      .overrideProvider(getModelToken(Employee.name))
+      .useValue(mockEmployeeModel)
       .overrideProvider(ContractEventsService)
       .useValue(mockContractEventsService)
       .compile();
 
     service = module.get<EmployeesService>(EmployeesService);
-    mockEmployeeModel = module.get<Model<Employee>>(
-      getModelToken(Employee.name),
-    );
   });
 
   it("should be defined", () => {
@@ -143,26 +143,17 @@ describe("EmployeesService", () => {
 
   describe("findAll", () => {
     it("should return an array of employees", async () => {
-      const spyOnFind = jest.spyOn(mockEmployeeModel, "find").mockReturnValue({
-        populate: jest.fn().mockReturnThis(),
-        lean: jest.fn().mockResolvedValue([mockEmployee]),
-      } as unknown as ReturnType<typeof mockEmployeeModel.find>);
-
       const result = await service.findAll();
 
-      expect(result).toEqual([
-        {
-          ...mockEmployee,
-        },
-      ]);
-      expect(spyOnFind).toHaveBeenCalled();
+      expect(result).toEqual([mockDefaultEmployee]);
+      expect(mockEmployeeModel.find).toHaveBeenCalledTimes(1);
     });
 
     it("should return an array for filtered employees", async () => {
-      const spyOnFind = jest.spyOn(mockEmployeeModel, "find").mockReturnValue({
+      mockEmployeeModel.find.mockReturnValue({
         populate: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([]),
-      } as unknown as ReturnType<typeof mockEmployeeModel.find>);
+      });
 
       const documentTypeId = new Types.ObjectId("123456789012345678901234");
 
@@ -175,7 +166,7 @@ describe("EmployeesService", () => {
       });
 
       expect(result).toEqual([]);
-      expect(spyOnFind).toHaveBeenCalledWith({
+      expect(mockEmployeeModel.find).toHaveBeenCalledWith({
         contractStatus: ContractStatus.INACTIVE,
         cpf: "98765432100",
         documentTypes: documentTypeId,
@@ -187,26 +178,17 @@ describe("EmployeesService", () => {
 
   describe("findById", () => {
     it("should return an employee by id", async () => {
-      const spyOnFindById = jest
-        .spyOn(mockEmployeeModel, "findById")
-        .mockReturnValue({
-          populate: jest.fn().mockReturnThis(),
-          lean: jest.fn().mockResolvedValue(mockEmployee),
-        } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
-
       const result = await service.findById(mockGenericObjectId);
 
-      expect(result).toEqual({
-        ...mockEmployee,
-      });
-      expect(spyOnFindById).toHaveBeenCalled();
+      expect(result).toEqual(mockDefaultEmployee);
+      expect(mockEmployeeModel.findById).toHaveBeenCalledTimes(1);
     });
 
     it("should throw an error if employee not found", async () => {
-      jest.spyOn(mockEmployeeModel, "findById").mockReturnValue({
+      mockEmployeeModel.findById.mockReturnValue({
         populate: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue(null),
-      } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+      });
 
       await expect(service.findById(mockGenericObjectId)).rejects.toThrow(
         `Employee with id ${mockGenericObjectId.toString()} not found`,
@@ -216,27 +198,10 @@ describe("EmployeesService", () => {
 
   describe("findOneByUsername", () => {
     it("should return an employee by username", async () => {
-      const spyOnfindOneByUsername = jest
-        .spyOn(mockEmployeeModel, "findOne")
-        .mockReturnValue({
-          lean: jest.fn().mockResolvedValue(mockEmployee),
-        } as unknown as ReturnType<typeof mockEmployeeModel.findOne>);
-
       const result = await service.findOneByUsername("jane.doe");
 
-      expect(result).toEqual(mockEmployee);
-      expect(spyOnfindOneByUsername).toHaveBeenCalled();
-    });
-
-    it("should throw an error if employee not found", async () => {
-      jest.spyOn(mockEmployeeModel, "findOne").mockReturnValue({
-        populate: jest.fn().mockReturnThis(),
-        lean: jest.fn().mockResolvedValue(null),
-      } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
-
-      await expect(service.findById(mockGenericObjectId)).rejects.toThrow(
-        `Employee with id ${mockGenericObjectId.toString()} not found`,
-      );
+      expect(result).toEqual(mockDefaultEmployee);
+      expect(mockEmployeeModel.findOne).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -249,20 +214,13 @@ describe("EmployeesService", () => {
       ];
 
       const mockEmployeeWithEvents = {
-        ...mockEmployee,
+        ...mockDefaultEmployee,
         contractEvents: mockContractEvents,
       };
 
-      const spyOnFindManyByIds = jest
-        .spyOn(mockContractEventsService, "findManyByIds")
-        .mockResolvedValue(mockContractEvents as never);
-
-      const spyOnFindById = jest
-        .spyOn(mockEmployeeModel, "findById")
-        .mockReturnValue({
-          populate: jest.fn().mockReturnThis(),
-          lean: jest.fn().mockResolvedValue(mockEmployeeWithEvents),
-        } as unknown as ReturnType<typeof mockEmployeeModel.findById>);
+      mockContractEventsService.findManyByIds.mockResolvedValue(
+        mockContractEvents,
+      );
 
       const result =
         await service.findByIdWithContractEvents(mockGenericObjectId);
@@ -270,8 +228,8 @@ describe("EmployeesService", () => {
       expect(result).toEqual({
         ...mockEmployeeWithEvents,
       });
-      expect(spyOnFindById).toHaveBeenCalledTimes(1);
-      expect(spyOnFindManyByIds).toHaveBeenCalledTimes(1);
+      expect(mockEmployeeModel.findById).toHaveBeenCalledTimes(1);
+      expect(mockContractEventsService.findManyByIds).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -283,9 +241,7 @@ describe("EmployeesService", () => {
         },
       ];
 
-      const spyOnCreateContractEvent = jest
-        .spyOn(mockContractEventsService, "create")
-        .mockResolvedValue(mockContractEvents as never);
+      mockContractEventsService.create.mockResolvedValue(mockContractEvents);
 
       const createDto: CreateEmployeeRequestDto = {
         firstName: "Jane",
@@ -297,14 +253,14 @@ describe("EmployeesService", () => {
       const result = await service.create(createDto);
 
       expect(result).toEqual({
-        ...mockEmployee,
+        ...mockDefaultEmployee,
         id: mockGenericObjectId.toString(),
         cpf: "98765432100",
         documentTypes: [],
         username: "98765432100",
         contractEvents: [mockContractEvents],
       });
-      expect(spyOnCreateContractEvent).toHaveBeenCalledTimes(1);
+      expect(mockContractEventsService.create).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -316,42 +272,27 @@ describe("EmployeesService", () => {
         cpf: "123.456.789-00",
       };
 
-      const spyOnFindByIdAndUpdate = jest
-        .spyOn(mockEmployeeModel, "findByIdAndUpdate")
-        .mockReturnValue({
-          populate: jest.fn().mockReturnThis(),
-          lean: jest.fn().mockResolvedValue({
-            _id: mockGenericObjectId,
-            fullName: "Jane Smith",
-            contractStatus: ContractStatus.ACTIVE,
-            documentTypes: [],
-            contractEvents: [],
-            firstName: updateDto.firstName,
-            lastName: updateDto.lastName,
-            username: updateDto.cpf?.replace(/\D/g, ""),
-            role: EmployeeRole.COMMON,
-            cpf: updateDto.cpf?.replace(/\D/g, ""),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }),
-        } as unknown as ReturnType<typeof mockEmployeeModel.findByIdAndUpdate>);
+      mockEmployeeModel.findByIdAndUpdate = jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue({
+          ...mockDefaultEmployee,
+          ...updateDto,
+          cpf: updateDto.cpf?.replace(/\D/g, ""),
+        }),
+      });
 
       const result = await service.update(mockGenericObjectId, updateDto);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { contractEvents, ...employeeWithoutEvents } = mockDefaultEmployee;
+
       expect(result).toEqual({
-        ...mockEmployee,
-        id: mockGenericObjectId.toString(),
+        ...employeeWithoutEvents,
         firstName: updateDto.firstName,
         lastName: updateDto.lastName,
-        contractStatus: ContractStatus.ACTIVE,
-        documentTypes: [],
         cpf: updateDto.cpf?.replace(/\D/g, ""),
-        fullName: `${updateDto.firstName} ${updateDto.lastName}`,
-        username: updateDto.cpf?.replace(/\D/g, ""),
-        createdAt: expect.any(Date) as Date,
-        updatedAt: expect.any(Date) as Date,
       });
-      expect(spyOnFindByIdAndUpdate).toHaveBeenCalled();
+      expect(mockEmployeeModel.findByIdAndUpdate).toHaveBeenCalled();
     });
   });
 });
