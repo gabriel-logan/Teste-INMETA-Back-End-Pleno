@@ -40,6 +40,12 @@ cp .env-example .env
 
 ### 5. Certifique-se de que o MongoDB esteja rodando
 
+> **IMPORTANTE:** Se estiver usando o MongoDB localmente, LEIA o arquivo [`IMPORTANT.md`](docs/IMPORTANT.md) para configurar o MongoDB com Replica Set.
+> Isso é necessário para o funcionamento correto das transações.
+> Usando o MongoDB Atlas, **não** é necessário fazer essa configuração.
+
+#### MongoDB Local
+
 ```bash
 sudo systemctl start mongod
 ```
@@ -49,10 +55,6 @@ sudo systemctl start mongod
 ```bash
 sudo systemctl status mongod
 ```
-
-> **IMPORTANTE:** Se estiver usando o MongoDB localmente, LEIA o arquivo [`IMPORTANT.md`](docs/IMPORTANT.md) para configurar o MongoDB com Replica Set.
-> Isso é necessário para o funcionamento correto das transações.
-> Usando o MongoDB Atlas, **não** é necessário fazer essa configuração.
 
 ### 6. Inicie o servidor (modo DEV)
 
