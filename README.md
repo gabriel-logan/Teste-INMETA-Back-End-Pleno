@@ -130,3 +130,5 @@ Acesse através do link:
 ## 👤 Créditos
 
 * [Gabriel Logan](https://github.com/gabriel-logan)
+
+As libs cpf_and_cnpj-generator e multiform-validator foram criadas por mim e estão disponíveis no meu perfil do GitHub.
