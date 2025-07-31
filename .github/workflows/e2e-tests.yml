@@ -73,6 +73,7 @@ jobs:
         run: |
           node -e '
             const { MongoClient } = require("mongodb");
+            const bcrypt = require("bcrypt");
             (async () => {
               const client = new MongoClient(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`);
               await client.connect();
@@ -81,15 +82,19 @@ jobs:
 
               const exists = await employees.findOne({ username: process.env.TEST_ADMIN_USERNAME });
               if (!exists) {
+                const hashedPassword = await bcrypt.hash(process.env.TEST_ADMIN_PASSWORD, 8);
                 await employees.insertOne({
                   username: process.env.TEST_ADMIN_USERNAME,
-                  password: process.env.TEST_ADMIN_PASSWORD,
+                  password: hashedPassword,
                   role: "admin",
                   fullName: "Admin Test",
                   cpf: "00000000000",
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 });
+                console.log("Admin user created");
+              } else {
+                console.log("Admin user already exists, skipping seed.");
               }
 
               await client.close();
