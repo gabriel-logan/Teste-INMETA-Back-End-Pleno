@@ -86,7 +86,11 @@ describe("Protected Routes (e2e)", () => {
     return request(app.getHttpServer())
       .get("/employees")
       .set("Authorization", "Bearer invalidToken")
-      .expect(HttpStatus.UNAUTHORIZED);
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect((res) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(res.body.message).toMatch(/Unauthorized|invalid/i);
+      });
   });
 
   it("should retrieve the list of employees", async () => {
@@ -247,6 +251,8 @@ describe("Protected Routes (e2e)", () => {
         "File not found or corrupted. Please check the file path.",
       );
     }
+
+    expect(documentToSend).toBeDefined();
 
     return request(app.getHttpServer())
       .post(`/document-files/${documentToSend.documentStatus.documentId}/send`)
