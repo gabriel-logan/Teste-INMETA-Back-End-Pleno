@@ -80,15 +80,26 @@ jobs:
               const db = client.db(process.env.MONGO_DB_NAME);
               const employees = db.collection("employees");
 
-              const exists = await employees.findOne({ username: process.env.TEST_ADMIN_USERNAME });
+              const envUsername = process.env.TEST_ADMIN_USERNAME;
+              const envPassword = process.env.TEST_ADMIN_PASSWORD;
+              
+              if (!envPassword || !envUsername) {
+                throw new Error("TEST_ADMIN_PASSWORD or TEST_ADMIN_USERNAME environment variable is not set.");
+              }
+
+              const exists = await employees.findOne({ username: envUsername });
               if (!exists) {
-                const hashedPassword = await bcrypt.hash(process.env.TEST_ADMIN_PASSWORD, 8);
+                const hashedPassword = await bcrypt.hash(envPassword, 8);
                 await employees.insertOne({
-                  username: process.env.TEST_ADMIN_USERNAME,
+                  firstName: envUsername,
+                  lastName: envUsername,
+                  username: envUsername,
+                  contractStatus: "active",
+                  contractEvents: [],
                   password: hashedPassword,
                   role: "admin",
-                  fullName: "Admin Test",
                   cpf: "00000000000",
+                  documentTypes: [],
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 });
