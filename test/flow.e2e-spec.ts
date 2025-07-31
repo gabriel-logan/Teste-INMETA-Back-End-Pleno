@@ -3,6 +3,7 @@ import { HttpStatus, type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import { generateCpf } from "cpf_and_cnpj-generator";
+import { join } from "path";
 import * as request from "supertest";
 import type { App } from "supertest/types";
 
@@ -21,6 +22,13 @@ describe("Protected Routes (e2e)", () => {
   };
   let documentType1: { id: string; name: string };
   let documentType2: { id: string; name: string };
+  let documentToSend: {
+    documentName: string;
+    documentStatus: {
+      documentId: string;
+      status: string;
+    };
+  };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -194,5 +202,60 @@ describe("Protected Routes (e2e)", () => {
         updatedAt: expect.any(String) as string,
       });
     }
+  });
+
+  it("should get an missing document by employee ID", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/documents/employee/${fakeData.employeeId}/statuses?status=missing`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    const body = res.body as Array<{
+      documentStatuses: [
+        {
+          documentName: string;
+          documentStatus: {
+            documentId: string;
+            status: string;
+          };
+        },
+      ];
+    }>;
+
+    documentToSend = body[0].documentStatuses[0];
+  });
+
+  it("should send a document for an employee", async () => {
+    const filePath = join(__dirname, "fixtures", "sample.pdf");
+
+    return request(app.getHttpServer())
+      .post(`/documents/${documentToSend.documentStatus.documentId}/send`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .attach("documentId", filePath)
+      .expect(HttpStatus.CREATED)
+      .expect((res) => {
+        expect(res.body).toHaveProperty(
+          "message",
+          expect.any(String) as string,
+        );
+        expect(res.body).toHaveProperty(
+          "documentUrl",
+          expect.any(String) as string,
+        );
+      });
+  });
+
+  it("Should find specific sent document and status should be 'available'", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/documents/${documentToSend.documentStatus.documentId}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    const body = res.body as {
+      documentId: string;
+      status: string;
+    };
+
+    expect(body).toHaveProperty("status", "available");
   });
 });
