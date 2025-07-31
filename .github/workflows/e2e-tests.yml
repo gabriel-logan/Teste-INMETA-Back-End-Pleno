@@ -37,6 +37,11 @@ jobs:
       TEST_ADMIN_USERNAME: ${{ secrets.TEST_ADMIN_USERNAME }}
       TEST_ADMIN_PASSWORD: ${{ secrets.TEST_ADMIN_PASSWORD }}
 
+      MONGO_HOST: ${{ secrets.MONGO_HOST }}
+      MONGO_PORT: ${{ secrets.MONGO_PORT }}
+      MONGO_REPLICA_SET: ${{ secrets.MONGO_REPLICA_SET }}
+      MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,34 +59,34 @@ jobs:
         run: |
           docker run -d \
             --name mongo-rs \
-            -p 27017:27017 \
-            mongo:6.0 --replSet rs0
+            -p ${{ env.MONGO_PORT }}:${{ env.MONGO_PORT }} \
+            mongo:6.0 --replSet ${{ env.MONGO_REPLICA_SET }}
 
           echo "Waiting for MongoDB to start..."
           sleep 5
 
-          docker exec mongo-rs mongosh --eval 'rs.initiate({_id: "rs0", members: [{ _id: 0, host: "localhost:27017" }]})'
+          docker exec mongo-rs mongosh --eval "rs.initiate({_id: '${{ env.MONGO_REPLICA_SET }}', members: [{ _id: 0, host: '${{ env.MONGO_HOST }}:${{ env.MONGO_PORT }}' }]})"
 
           sleep 5
 
       - name: Seed test admin user into collection
         run: |
           node -e "
-            const { MongoClient } = require("mongodb");
+            const { MongoClient } = require('mongodb');
             (async () => {
-              const client = new MongoClient("mongodb://localhost:27017");
+              const client = new MongoClient(\`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}\`);
               await client.connect();
-              const db = client.db("employee_management");
-              const employees = db.collection("employees");
+              const db = client.db(process.env.MONGO_DB_NAME);
+              const employees = db.collection('employees');
 
               const exists = await employees.findOne({ username: process.env.TEST_ADMIN_USERNAME });
               if (!exists) {
                 await employees.insertOne({
                   username: process.env.TEST_ADMIN_USERNAME,
                   password: process.env.TEST_ADMIN_PASSWORD,
-                  role: "admin",
-                  fullName: "Admin Test",
-                  cpf: "00000000000",
+                  role: 'admin',
+                  fullName: 'Admin Test',
+                  cpf: '00000000000',
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 });
