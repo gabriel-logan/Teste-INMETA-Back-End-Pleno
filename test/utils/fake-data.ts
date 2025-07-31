@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { generateCpf } from "cpf_and_cnpj-generator";
 
-export function createFakeEmployee(): {
+export function createFakeCommonEmployee(): {
   firstName: string;
   lastName: string;
   password: string;

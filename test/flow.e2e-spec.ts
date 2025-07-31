@@ -7,7 +7,7 @@ import type { App } from "supertest/types";
 
 import { AppModule } from "./../src/app.module";
 import { authenticate } from "./utils/auth";
-import { createFakeEmployee } from "./utils/fake-data";
+import { createFakeCommonEmployee } from "./utils/fake-data";
 
 describe("Protected Routes (e2e)", () => {
   let app: INestApplication<App>;
@@ -42,7 +42,7 @@ describe("Protected Routes (e2e)", () => {
 
     fakeData = {
       employeeId: "",
-      ...createFakeEmployee(),
+      ...createFakeCommonEmployee(),
     };
 
     const existingDocumentType = await request(app.getHttpServer())
