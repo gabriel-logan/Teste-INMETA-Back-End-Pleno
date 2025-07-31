@@ -132,3 +132,5 @@ Acesse através do link:
 * [Gabriel Logan](https://github.com/gabriel-logan)
 
 As libs cpf_and_cnpj-generator e multiform-validator foram criadas por mim e estão disponíveis no meu perfil do GitHub.
+* [cpf_and_cnpj-generator](https://github.com/gabriel-logan/Gerador-CPF-e-CNPJ-valido)
+* [multiform-validator](https://multiformvalidator.netlify.app)
