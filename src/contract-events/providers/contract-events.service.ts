@@ -199,12 +199,12 @@ export class ContractEventsService {
 
     // Invalidate and set caches after update
     // Invalidate cache for findById and findAll, findAllByEmployeeCpf
-    await Promise.all([
-      this.invalidateContractEventCaches(result),
-      invalidateKeys(this.cacheManager, [
+    await this.invalidateContractEventCaches(result);
+    if (previousEmployeeCpf !== result.employeeCpf) {
+      await invalidateKeys(this.cacheManager, [
         cacheKeys.contractEvents.findAllByEmployeeCpf(previousEmployeeCpf),
-      ]),
-    ]);
+      ]);
+    }
 
     // Set cache for the updated contract event
     await this.setContractEventCaches(result);
