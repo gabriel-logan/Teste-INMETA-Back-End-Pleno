@@ -95,6 +95,8 @@ yarn test:cov
 
 Após isso certifique de registrar esse usuario no arquivo `.env` na variável `TEST_ADMIN_USERNAME` e `TEST_ADMIN_PASSWORD`.
 
+Também certifique-se de que o banco de dados esteja com status `running`.
+
 > Se não existir, o teste irá falhar na rota de login.
 
 ```bash
