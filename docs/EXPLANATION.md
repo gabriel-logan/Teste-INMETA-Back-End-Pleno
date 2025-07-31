@@ -211,3 +211,9 @@ Caso precise modificar algo, estou aberto a sugestões e posso refatorar para me
 
 Você poderá visualizar todas as rotas, parâmetros, exemplos de requisições e respostas diretamente no Swagger.
 Isso facilita bastante o entendimento do fluxo completo da aplicação.
+
+A implementação de login foi feita usando o **JWT** e o **bcrypt** para criptografia de senhas, porem, isso pode facilmente ser substituído por outro método de autenticação, como OAuth2, se necessário. Por proposito, o JWT foi escolhido por ser simples e eficaz para este projeto. Mesmo sem ter sido requerido login.
+
+Acredito que um controle de documentos teria que ser feito por usuarios autenticados, mesmo que o sistema seja local e não exposto publicamente.
+Com mais detalhes sobre algo real, eu conseguiria adaptar melhor o projeto para atender às necessidades específicas.
+Espero que o projeto atenda às suas expectativas e que a explicação tenha sido clara.
