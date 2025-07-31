@@ -129,21 +129,6 @@ describe("throttlerModuleOptions", () => {
   });
 
   describe("skipIf", () => {
-    it("returns true for GET requests to cached endpoints", () => {
-      mockContext.switchToHttp = (): HttpArgumentsHost =>
-        ({
-          getRequest: () =>
-            ({
-              method: "GET",
-              url: `${apiPrefix}/document-types/123`,
-            }) as Request,
-        }) as HttpArgumentsHost;
-
-      const result = options.skipIf(mockContext);
-
-      expect(result).toBe(true);
-    });
-
     it("returns true for GET requests to file endpoints", () => {
       mockContext.switchToHttp = (): HttpArgumentsHost =>
         ({
