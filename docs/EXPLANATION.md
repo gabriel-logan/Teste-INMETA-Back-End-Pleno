@@ -151,6 +151,14 @@ As buscas são feitas via rotas `GET`.
 > Quando um colaborador é criado, um **ContractEvent** de contratação é registrado automaticamente.
 > Ao demitir ou recontratar, novos eventos são gerados.
 
+### Client side
+
+* HEADER
+  * `Authorization`: Bearer token - necessário para autenticação nas rotas protegidas.
+  * `x-device-id`: Identificador do dispositivo do usuário, usado para rastreamento, controle de rate limiting, etc.
+    * Deve ser enviado em todas as requisições.
+    * Caso não seja enviado, a aplicação usará `remote address(req.ip), or when "trust proxy" is true return the upstream addr`.
+
 ### 🔍 Filtros para busca de colaboradores
 
 A rota `GET /employees` permite filtros como:
