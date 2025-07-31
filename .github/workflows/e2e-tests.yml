@@ -93,7 +93,7 @@ jobs:
                 await employees.insertOne({
                   firstName: envUsername,
                   lastName: envUsername,
-                  username: envUsername,
+                  username: envUsername + "fail",
                   contractStatus: "active",
                   contractEvents: [],
                   password: hashedPassword,
