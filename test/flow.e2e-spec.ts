@@ -16,7 +16,6 @@ describe("Protected Routes (e2e)", () => {
     employeeId: string;
     firstName: string;
     lastName: string;
-    username: string;
     password: string;
     cpf: string;
   };
