@@ -1,13 +1,13 @@
-import { faker } from "@faker-js/faker";
 import { HttpStatus, type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
-import { generateCpf } from "cpf_and_cnpj-generator";
 import { join } from "path";
 import * as request from "supertest";
 import type { App } from "supertest/types";
 
 import { AppModule } from "./../src/app.module";
+import { authenticate } from "./utils/auth";
+import { createFakeEmployee } from "./utils/fake-data";
 
 describe("Protected Routes (e2e)", () => {
   let app: INestApplication<App>;
@@ -38,20 +38,12 @@ describe("Protected Routes (e2e)", () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    const res = await request(app.getHttpServer()).post("/auth/sign-in").send({
-      username: "admin",
-      password: "123456",
-    });
-
-    accessToken = (res.body as { accessToken: string }).accessToken;
+    // Authenticate to get the access token
+    accessToken = await authenticate(app);
 
     fakeData = {
       employeeId: "",
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      username: faker.internet.username(),
-      password: "123456",
-      cpf: generateCpf(),
+      ...createFakeEmployee(),
     };
 
     const existingDocumentType = await request(app.getHttpServer())
@@ -227,6 +219,20 @@ describe("Protected Routes (e2e)", () => {
     };
 
     documentToSend = body.documentStatuses[0];
+  });
+
+  it("Should find specific file document and status should be 'missing'", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/documents/${documentToSend.documentStatus.documentId}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    const body = res.body as {
+      documentId: string;
+      status: string;
+    };
+
+    expect(body).toHaveProperty("status", "missing");
   });
 
   it("should send a document for an employee", async () => {
