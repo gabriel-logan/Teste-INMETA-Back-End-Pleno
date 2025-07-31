@@ -9,7 +9,7 @@ import { AppModule } from "./../src/app.module";
 import { authenticate } from "./utils/auth";
 import { createFakeCommonEmployee } from "./utils/fake-data";
 
-describe("Protected Routes (e2e)", () => {
+describe("Protected Routes Flow (e2e)", () => {
   let app: INestApplication<App>;
   let accessToken: string;
   let fakeData: {
