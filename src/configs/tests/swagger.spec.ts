@@ -28,9 +28,7 @@ describe("swaggerInitializer", () => {
   });
 
   it("should call SwaggerModule.setup with correct arguments", () => {
-    const configs = { globalPrefix: "api" };
-
-    swaggerInitializer(app, configs);
+    swaggerInitializer(app);
 
     // Manually trigger documentFactory
     const documentFactory = (
@@ -51,7 +49,7 @@ describe("swaggerInitializer", () => {
     );
 
     expect(setupSpy).toHaveBeenCalledWith(
-      "api/docs",
+      "/api/v1/docs",
       app,
       expect.any(Function),
       expect.objectContaining({
@@ -65,9 +63,7 @@ describe("swaggerInitializer", () => {
   });
 
   it("should generate OpenAPIObject using documentFactory", () => {
-    const configs = { globalPrefix: "api" };
-
-    swaggerInitializer(app, configs);
+    swaggerInitializer(app);
 
     // Get the documentFactory function from the call
     const documentFactory = (

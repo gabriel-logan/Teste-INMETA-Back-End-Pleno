@@ -33,7 +33,7 @@ async function bootstrap(): Promise<void> {
     app.set("trust proxy", true);
   } else {
     // Initialize Swagger
-    swaggerInitializer(app, { globalPrefix: apiPrefix });
+    swaggerInitializer(app);
   }
 
   app.useGlobalFilters(new MongodbExceptionFilter());
