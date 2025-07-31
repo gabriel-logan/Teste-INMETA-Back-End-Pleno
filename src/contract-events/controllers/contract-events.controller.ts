@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiParam, ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiQuery } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
@@ -13,7 +13,6 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 
 import { ContractEventsService } from "../providers/contract-events.service";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("contract-events")

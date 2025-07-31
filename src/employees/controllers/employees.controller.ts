@@ -7,7 +7,7 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { ApiParam, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGetAllEmployeesQueries,
@@ -32,7 +32,6 @@ import { UpdateEmployeePasswordResponseDto } from "../dto/response/update-employ
 import { EmployeesService } from "../providers/employees.service";
 import { ContractStatus, EmployeeRole } from "../schemas/employee.schema";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("employees")

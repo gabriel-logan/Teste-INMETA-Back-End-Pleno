@@ -11,6 +11,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
+  ApiSecurity,
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
@@ -49,6 +50,10 @@ export function ApiStandardResponses(
   options: ResponseOptions,
 ): MethodDecorator & ClassDecorator {
   const decorators: (MethodDecorator | ClassDecorator)[] = [];
+
+  if (!options.isPublic) {
+    decorators.push(ApiSecurity("bearer"));
+  }
 
   if (options.ok.isStatusCodeCreated) {
     decorators.push(

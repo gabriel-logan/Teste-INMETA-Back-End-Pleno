@@ -6,7 +6,7 @@ import {
   Param,
   Post,
 } from "@nestjs/common";
-import { ApiParam, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
@@ -28,7 +28,6 @@ import {
 import { HumanResourcesService } from "../providers/human-resources.service";
 import { EmployeeRole } from "../schemas/employee.schema";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("human-resources")

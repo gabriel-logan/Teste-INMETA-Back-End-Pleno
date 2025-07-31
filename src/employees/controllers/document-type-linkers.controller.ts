@@ -6,7 +6,7 @@ import {
   Param,
   Post,
 } from "@nestjs/common";
-import { ApiParam, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGlobalErrorResponses,
@@ -21,7 +21,6 @@ import { DocumentTypeEmployeeUnlinkedResponseDto } from "../dto/response/documen
 import { DocumentTypeLinkersService } from "../providers/document-type-linkers.service";
 import { EmployeeRole } from "../schemas/employee.schema";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("document-type-linkers")

@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiParam, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { fileValidation } from "src/common/constants";
 import {
@@ -25,7 +25,6 @@ import { EmployeeRole } from "src/employees/schemas/employee.schema";
 import { SendOrDeleteDocumentFileResponseDto } from "../dto/response/send-or-delete-document-file.dto";
 import { DocumentFilesService } from "../providers/document-files.service";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Controller("document-files")
 export class DocumentFilesController {

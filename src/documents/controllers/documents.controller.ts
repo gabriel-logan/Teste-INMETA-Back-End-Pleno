@@ -7,7 +7,7 @@ import {
   Patch,
   Query,
 } from "@nestjs/common";
-import { ApiParam, ApiQuery, ApiSecurity } from "@nestjs/swagger";
+import { ApiParam, ApiQuery } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import {
   ApiGetAllMissingDocumentsQueries,
@@ -25,7 +25,6 @@ import { GetDocumentStatusesByEmployeeIdResponseDto } from "../dto/response/get-
 import { DocumentsService } from "../providers/documents.service";
 import { DocumentStatus } from "../schemas/document.schema";
 
-@ApiSecurity("bearer")
 @ApiGlobalErrorResponses()
 @Roles(EmployeeRole.MANAGER, EmployeeRole.ADMIN)
 @Controller("documents")
