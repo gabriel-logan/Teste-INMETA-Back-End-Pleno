@@ -205,14 +205,6 @@ describe("Protected Routes (e2e)", () => {
         updatedAt: expect.any(String) as string,
       });
     }
-
-    documentToSend = {
-      documentName: body.documents[0].documentType.name,
-      documentStatus: {
-        documentId: body.documents[0].id,
-        status: body.documents[0].status,
-      },
-    };
   });
 
   it("should get an missing document by employee ID", async () => {
@@ -221,7 +213,7 @@ describe("Protected Routes (e2e)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    const body = res.body as Array<{
+    const body = res.body as {
       documentStatuses: [
         {
           documentName: string;
@@ -231,16 +223,16 @@ describe("Protected Routes (e2e)", () => {
           };
         },
       ];
-    }>;
+    };
 
-    documentToSend = body[0].documentStatuses[0];
+    documentToSend = body.documentStatuses[0];
   });
 
   it("should send a document for an employee", async () => {
     const filePath = join(__dirname, "fixtures", "sample.pdf");
 
     return request(app.getHttpServer())
-      .post(`/documents/${documentToSend.documentStatus.documentId}/send`)
+      .post(`/document-files/${documentToSend.documentStatus.documentId}/send`)
       .set("Authorization", `Bearer ${accessToken}`)
       .attach("documentId", filePath)
       .expect(HttpStatus.CREATED)
