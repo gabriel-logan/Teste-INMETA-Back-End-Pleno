@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import {
@@ -8,6 +8,8 @@ import {
 
 @Injectable()
 export class EmployeeDocumentService {
+  private readonly logger = new Logger(EmployeeDocumentService.name);
+
   constructor(
     @InjectModel(Document.name) private readonly documentModel: Model<Document>,
   ) {}
@@ -45,6 +47,9 @@ export class EmployeeDocumentService {
     }
 
     // If needed - DELETE the document file from storage here TOO
+    this.logger.warn(
+      "Document deleted, but file storage cleanup is not implemented yet.",
+    );
 
     return document;
   }
