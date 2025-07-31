@@ -112,8 +112,8 @@ jobs:
             })();
           '
 
-      - name: Run E2E tests
-        run: yarn test:e2e
+      - name: Run E2E tests (timeout after 60s)
+        run: timeout 60s yarn test:e2e
 
       - name: Cleanup MongoDB container
         if: always()
