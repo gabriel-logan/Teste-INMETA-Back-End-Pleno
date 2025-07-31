@@ -161,6 +161,31 @@ describe("DocumentsService", () => {
       ]);
       expect(mockDocumentModel.find).toHaveBeenCalledTimes(1);
     });
+
+    it("should return an array with filters applied", async () => {
+      mockDocumentModel.find = jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue([]),
+      });
+
+      const result = await service.findAll({
+        byDocumentTypeId: mockGenericObjectId,
+        byEmployeeId: mockGenericObjectId,
+        byStatus: DocumentStatus.AVAILABLE,
+      });
+
+      expect(result).toEqual([]);
+      expect(mockDocumentModel.find).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("findAllWithDocumentTypeAndEmployee", () => {
+    it("should return an array of PublicDocumentResponseDto", async () => {
+      const result = await service.findAllWithDocumentTypeAndEmployee();
+
+      expect(result).toEqual([mockDefaultDocument]);
+      expect(mockDocumentModel.find).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("findById", () => {
@@ -192,6 +217,48 @@ describe("DocumentsService", () => {
       await expect(
         service.findById("nonexistent-id" as unknown as Types.ObjectId),
       ).rejects.toThrow("Document with id nonexistent-id not found");
+    });
+
+    it("should aply populates if provided", async () => {
+      mockDocumentModel.findById.mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(mockDefaultDocument),
+      });
+
+      const result = await service.findById(mockGenericObjectId, {
+        populates: ["employee", "documentType"],
+      });
+
+      expect(result).toEqual({
+        _id: mockDefaultDocument._id,
+        id: mockDefaultDocument._id.toString(),
+        employee: mockDefaultDocument.employee,
+        documentType: mockDefaultDocument.documentType,
+        status: mockDefaultDocument.status,
+        documentUrl: mockDefaultDocument.documentUrl,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+      expect(mockDocumentModel.findById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("findByIdWithDocumentTypeAndEmployee", () => {
+    it("should return a DocumentFullResponseDto with documentType and employee populated", async () => {
+      const result =
+        await service.findByIdWithDocumentTypeAndEmployee(mockGenericObjectId);
+
+      expect(result).toEqual({
+        _id: mockDefaultDocument._id,
+        id: mockDefaultDocument._id.toString(),
+        employee: mockDefaultDocument.employee,
+        documentType: mockDefaultDocument.documentType,
+        status: mockDefaultDocument.status,
+        documentUrl: mockDefaultDocument.documentUrl,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+      expect(mockDocumentModel.findById).toHaveBeenCalledTimes(1);
     });
   });
 
