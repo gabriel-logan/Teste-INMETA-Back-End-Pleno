@@ -12,7 +12,7 @@ export function createFakeEmployee(): {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     username: faker.internet.username(),
-    password: "123456",
+    password: faker.internet.password(),
     cpf: generateCpf(),
   };
 }
