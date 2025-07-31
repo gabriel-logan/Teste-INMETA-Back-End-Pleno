@@ -132,11 +132,21 @@ Se você chegou até aqui, parabéns! Você configurou com sucesso o projeto e e
 ## 🌐 Versão de Produção
 
 A versão de produção do projeto está hospedada na Vercel.
-Acesse através do link:
+Você pode acessá-la pelo link abaixo:
 
-[https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app/api/v1)
+🔗 [https://inmeta-gl.vercel.app](https://inmeta-gl.vercel.app/api/v1)
 
-> **INFO:** O Swagger não está disponível na versão de produção.
+> **Atenção:** A documentação Swagger não está disponível nesta versão.
+
+### ⚠️ Observações
+
+Se notar lentidão na conexão, isso pode ocorrer por dois motivos:
+
+1. Estou utilizando os planos gratuitos do MongoDB Atlas e da Vercel.
+2. Ambos os servidores estão localizados nos EUA, o que pode gerar certa latência para usuários em outras regiões.
+
+Nos testes realizados, a latência variou entre **100ms e 400ms**.
+Além disso, a API entra em modo de hibernação após um tempo sem requisições, o que pode tornar a **primeira requisição um pouco mais lenta** (cerca de **3 segundos**). Após isso, as demais devem responder rapidamente.
 
 ---
 
