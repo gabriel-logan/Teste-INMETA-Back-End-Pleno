@@ -195,6 +195,18 @@ describe("EmployeesService", () => {
     });
   });
 
+  describe("findAllWithDocumentTypes", () => {
+    it("should return an array of employees with document types", async () => {
+      const result = await service.findAllWithDocumentTypes();
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { contractEvents, ...employeeWithoutEvents } = mockDefaultEmployee;
+
+      expect(result).toEqual([employeeWithoutEvents]);
+      expect(mockEmployeeModel.find).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("findById", () => {
     it("should return an employee by id", async () => {
       const result = await service.findById(mockGenericObjectId);
@@ -261,15 +273,16 @@ describe("EmployeesService", () => {
     });
   });
 
-  describe("findAllWithDocumentTypes", () => {
-    it("should return an array of employees with document types", async () => {
-      const result = await service.findAllWithDocumentTypes();
+  describe("findByIdWithDocumentTypes", () => {
+    it("should return an employee with document types by id", async () => {
+      const result =
+        await service.findByIdWithDocumentTypes(mockGenericObjectId);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { contractEvents, ...employeeWithoutEvents } = mockDefaultEmployee;
 
-      expect(result).toEqual([employeeWithoutEvents]);
-      expect(mockEmployeeModel.find).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(employeeWithoutEvents);
+      expect(mockEmployeeModel.findById).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -403,6 +416,34 @@ describe("EmployeesService", () => {
         {
           sub: mockGenericObjectId.toString(),
           username: "jane.doe",
+          role: EmployeeRole.COMMON,
+        } as AuthPayload,
+      );
+
+      expect(result).toEqual({
+        message: "Password updated successfully",
+      });
+    });
+
+    it("should hit else", async () => {
+      const mockUpdatedEmployee = {
+        ...mockDefaultEmployee,
+        password: "newPassword123",
+      };
+
+      mockEmployeeModel.findById = jest.fn().mockReturnValue({
+        ...mockUpdatedEmployee,
+        save: mockSave,
+      });
+
+      const result = await service.updatePassword(
+        mockGenericObjectId,
+        {
+          newPassword: "newPassword123",
+        },
+        {
+          sub: mockGenericObjectId.toString(),
+          username: "jane.doe2",
           role: EmployeeRole.COMMON,
         } as AuthPayload,
       );
