@@ -6,20 +6,20 @@ on:
     paths:
       - "src/**"
       - "test/**"
+      - ".github/workflows/e2e-tests.yml"
       - "yarn.lock"
       - "tsconfig.json"
       - "nest-cli.json"
-      - ".github/workflows/e2e-tests.yml"
 
   push:
     branches: ["main"]
     paths:
       - "src/**"
       - "test/**"
+      - ".github/workflows/e2e-tests.yml"
       - "yarn.lock"
       - "tsconfig.json"
       - "nest-cli.json"
-      - ".github/workflows/e2e-tests.yml"
 
   workflow_dispatch:
 
