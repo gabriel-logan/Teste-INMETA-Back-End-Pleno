@@ -107,19 +107,6 @@ If MongoDB is running properly as a replica set, transactions will work without 
 
 ---
 
-## 🛠️ Tip: Development Script
-
-Add this to your `package.json`:
-
-```json
-"scripts": {
-  "mongo": "mongod --dbpath ./mongo-data --replSet rs0",
-  "start:dev": "npm run mongo & nest start --watch"
-}
-```
-
----
-
 ## 🧼 Resetting the Database
 
 If you delete the `mongo-data` directory for any reason, you will need to run `rs.initiate()` again after restarting MongoDB.

@@ -107,19 +107,6 @@ Se o Mongo estiver corretamente rodando como replica set, as transações funcio
 
 ---
 
-## 🛠️ Dica: Script para facilitar o desenvolvimento
-
-Adicione ao seu `package.json`:
-
-```json
-"scripts": {
-  "mongo": "mongod --dbpath ./mongo-data --replSet rs0",
-  "start:dev": "npm run mongo & nest start --watch"
-}
-```
-
----
-
 ## 🧼 Resetando o banco
 
 Se por algum motivo você apagar o diretório `mongo-data`, será necessário rodar `rs.initiate()` novamente após iniciar o Mongo.
