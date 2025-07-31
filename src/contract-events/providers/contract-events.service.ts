@@ -159,13 +159,11 @@ export class ContractEventsService {
     const result = this.genericContractEventResponseMapper(newContractEvent);
 
     // Invalidate and set caches after creation
-    await Promise.all([
-      // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
-      this.invalidateContractEventCaches(result),
+    // Invalidate cache for findAll, findById, and findAllByEmployeeCpf
+    await this.invalidateContractEventCaches(result);
 
-      // Set cache for the newly created contract event
-      this.setContractEventCaches(result),
-    ]);
+    // Set cache for the newly created contract event
+    await this.setContractEventCaches(result);
 
     return result;
   }
@@ -200,16 +198,16 @@ export class ContractEventsService {
       this.genericContractEventResponseMapper(updatedContractEvent);
 
     // Invalidate and set caches after update
+    // Invalidate cache for findById and findAll, findAllByEmployeeCpf
     await Promise.all([
-      // Invalidate cache for findById and findAll, findAllByEmployeeCpf
       this.invalidateContractEventCaches(result),
       invalidateKeys(this.cacheManager, [
         cacheKeys.contractEvents.findAllByEmployeeCpf(previousEmployeeCpf),
       ]),
-
-      // Set cache for the updated contract event
-      this.setContractEventCaches(result),
     ]);
+
+    // Set cache for the updated contract event
+    await this.setContractEventCaches(result);
 
     return result;
   }
