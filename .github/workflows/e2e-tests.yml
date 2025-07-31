@@ -71,22 +71,22 @@ jobs:
 
       - name: Seed test admin user into collection
         run: |
-          node -e "
-            const { MongoClient } = require('mongodb');
+          node -e '
+            const { MongoClient } = require("mongodb");
             (async () => {
-              const client = new MongoClient(\`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}\`);
+              const client = new MongoClient(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`);
               await client.connect();
               const db = client.db(process.env.MONGO_DB_NAME);
-              const employees = db.collection('employees');
+              const employees = db.collection("employees");
 
               const exists = await employees.findOne({ username: process.env.TEST_ADMIN_USERNAME });
               if (!exists) {
                 await employees.insertOne({
                   username: process.env.TEST_ADMIN_USERNAME,
                   password: process.env.TEST_ADMIN_PASSWORD,
-                  role: 'admin',
-                  fullName: 'Admin Test',
-                  cpf: '00000000000',
+                  role: "admin",
+                  fullName: "Admin Test",
+                  cpf: "00000000000",
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 });
@@ -94,7 +94,7 @@ jobs:
 
               await client.close();
             })();
-          "
+          '
 
       - name: Run E2E tests
         run: yarn test:e2e
