@@ -189,7 +189,6 @@ describe("Protected Routes (e2e)", () => {
         id: expect.any(String) as string,
         firstName: expect.any(String) as string,
         lastName: expect.any(String) as string,
-        fullName: expect.any(String) as string,
         username: expect.any(String) as string,
         contractStatus: expect.any(String) as string,
         cpf: expect.any(String) as string,
