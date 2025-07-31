@@ -261,6 +261,18 @@ describe("EmployeesService", () => {
     });
   });
 
+  describe("findAllWithDocumentTypes", () => {
+    it("should return an array of employees with document types", async () => {
+      const result = await service.findAllWithDocumentTypes();
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { contractEvents, ...employeeWithoutEvents } = mockDefaultEmployee;
+
+      expect(result).toEqual([employeeWithoutEvents]);
+      expect(mockEmployeeModel.find).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("findByIdWithContractEvents", () => {
     it("should return an employee with contract events by id", async () => {
       const mockContractEvents = [
@@ -349,6 +361,25 @@ describe("EmployeesService", () => {
         cpf: updateDto.cpf?.replace(/\D/g, ""),
       });
       expect(mockEmployeeModel.findByIdAndUpdate).toHaveBeenCalled();
+    });
+
+    it("should throw an error if employee not found", async () => {
+      mockEmployeeModel.findByIdAndUpdate = jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValue(null),
+      });
+
+      const updateDto: UpdateEmployeeRequestDto = {
+        firstName: "Jane",
+        lastName: "Smith",
+        cpf: "123.456.789-00",
+      };
+
+      await expect(
+        service.update(mockGenericObjectId, updateDto),
+      ).rejects.toThrow(
+        `Employee with id ${mockGenericObjectId.toString()} not found`,
+      );
     });
   });
 
