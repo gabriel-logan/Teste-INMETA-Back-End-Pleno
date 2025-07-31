@@ -3,8 +3,8 @@ import * as request from "supertest";
 import type { App } from "supertest/types";
 
 const adminCredentials = {
-  username: process.env.TEST_USERNAME,
-  password: process.env.TEST_PASSWORD,
+  username: process.env.TEST_ADMIN_USERNAME,
+  password: process.env.TEST_ADMIN_PASSWORD,
 };
 
 export async function authenticate(

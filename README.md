@@ -91,10 +91,9 @@ yarn test:cov
 ### Testes E2E
 
 > Certifique-se de que o MongoDB esteja rodando.
-> Certifique-se de que existe um `employee` cadastrado no banco de dados com:
+> Certifique-se de que existe um `employee` cadastrado no banco de dados com `role` `admin`:
 
-* **username:** `admin`
-* **password:** `123456`
+Após isso certifique de registrar esse usuario no arquivo `.env` na variável `TEST_ADMIN_USERNAME` e `TEST_ADMIN_PASSWORD`.
 
 > Se não existir, o teste irá falhar na rota de login.
 
