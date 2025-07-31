@@ -1,4 +1,5 @@
 import type { Cache } from "@nestjs/cache-manager";
+import { Logger } from "@nestjs/common";
 
 import getAndSetCache from "./get-and-set.cache";
 
@@ -6,6 +7,10 @@ describe("getAndSetCache", () => {
   const key = "test-key";
   let cacheManager: Cache;
   let fetchCbFn: jest.Mock;
+
+  beforeAll(() => {
+    jest.spyOn(Logger.prototype, "debug").mockImplementation(() => {});
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
