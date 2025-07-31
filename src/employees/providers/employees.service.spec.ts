@@ -185,9 +185,11 @@ describe("EmployeesService", () => {
       expect(mockEmployeeModel.find).toHaveBeenCalledWith({});
     });
 
-    it("should call lean if is requested", async () => {
+    it("should not call lean if is requested", async () => {
+      mockEmployeeModel.find.mockResolvedValue([mockDefaultEmployee]);
+
       const result = await service.findAll(undefined, {
-        lean: true,
+        lean: false,
       });
 
       expect(result).toEqual([mockDefaultEmployee]);
@@ -264,6 +266,19 @@ describe("EmployeesService", () => {
 
       const result = await service.findOneByUsername("jane.doe", {
         populates: ["contractEvents"],
+      });
+
+      expect(result).toEqual(mockDefaultEmployee);
+      expect(mockEmployeeModel.findOne).toHaveBeenCalledWith({
+        username: "jane.doe",
+      });
+    });
+
+    it("should not call lean if is requested", async () => {
+      mockEmployeeModel.findOne.mockReturnValue(mockDefaultEmployee);
+
+      const result = await service.findOneByUsername("jane.doe", {
+        lean: false,
       });
 
       expect(result).toEqual(mockDefaultEmployee);
