@@ -68,20 +68,21 @@ describe("Protected Routes (e2e)", () => {
       documentType1 = existingDocumentTypeBody[0];
       documentType2 = existingDocumentTypeBody[1];
     } else {
-      const newDocumentType1 = await request(app.getHttpServer())
-        .post("/document-types")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .send({ name: "CPF" })
-        .expect(HttpStatus.CREATED);
+      const [newType1, newType2] = await Promise.all([
+        request(app.getHttpServer())
+          .post("/document-types")
+          .set("Authorization", `Bearer ${accessToken}`)
+          .send({ name: "CPF" })
+          .expect(HttpStatus.CREATED),
+        request(app.getHttpServer())
+          .post("/document-types")
+          .set("Authorization", `Bearer ${accessToken}`)
+          .send({ name: "CNPJ" })
+          .expect(HttpStatus.CREATED),
+      ]);
 
-      const newDocumentType2 = await request(app.getHttpServer())
-        .post("/document-types")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .send({ name: "CNPJ" })
-        .expect(HttpStatus.CREATED);
-
-      documentType1 = newDocumentType1.body as { id: string; name: string };
-      documentType2 = newDocumentType2.body as { id: string; name: string };
+      documentType1 = newType1.body as { id: string; name: string };
+      documentType2 = newType2.body as { id: string; name: string };
     }
   });
 
