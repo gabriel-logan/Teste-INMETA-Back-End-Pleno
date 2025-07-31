@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 import type { Connection } from "mongoose";
@@ -41,6 +42,8 @@ describe("DocumentTypeLinkersService", () => {
   };
 
   beforeAll(() => {
+    jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+
     // Mock the Mongoose connection
     MongooseProvider.setMongooseInstance(
       mockConnection as unknown as Connection,
@@ -127,6 +130,83 @@ describe("DocumentTypeLinkersService", () => {
         ],
       });
       expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw BadRequestException when trying to link already linked document types", async () => {
+      const duplicatedId = new Types.ObjectId("111111111111111111111111");
+
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
+        documentTypeIds: [duplicatedId],
+      };
+
+      // Mock retorno do DocumentTypeService
+      mockDocumentTypesService.findById = jest.fn().mockResolvedValue({
+        id: duplicatedId,
+        _id: duplicatedId,
+        name: "Document Type Already Linked",
+      });
+
+      // Mock retorno do EmployeesService
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        documentTypes: [{ _id: duplicatedId }],
+        save: jest.fn(),
+      });
+
+      await expect(
+        service.linkDocumentTypes(mockGenericObjectId, linkDocumentTypesDto),
+      ).rejects.toThrow(
+        `Document types ${duplicatedId.toString()} are already linked to employee ${mockGenericObjectId.toString()}`,
+      );
+
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypesService.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should link new document types when employee already has other document types (no duplicates)", async () => {
+      const existingDocId = new Types.ObjectId("aaaaaaaaaaaaaaaaaaaaaaaa");
+      const newDocId = new Types.ObjectId("bbbbbbbbbbbbbbbbbbbbbbbb");
+
+      const employeeId = mockGenericObjectId;
+
+      const linkDocumentTypesDto: LinkDocumentTypesRequestDto = {
+        documentTypeIds: [newDocId],
+      };
+
+      // employee already has one document type
+      mockEmployeesService.findById = jest.fn().mockResolvedValue({
+        _id: employeeId,
+        documentTypes: [{ _id: existingDocId }],
+        save: jest.fn().mockResolvedValue({
+          documentTypes: [{ _id: existingDocId }, { _id: newDocId }],
+        }),
+      });
+
+      mockDocumentTypesService.findById = jest.fn().mockResolvedValue({
+        id: newDocId,
+        _id: newDocId,
+        name: "New Document Type",
+      });
+
+      mockEmployeeDocumentService.createDocument = jest.fn().mockResolvedValue({
+        _id: "created-doc-id",
+        name: "Created Document",
+      });
+
+      const result = await service.linkDocumentTypes(
+        employeeId,
+        linkDocumentTypesDto,
+      );
+
+      expect(result).toEqual({
+        documentTypeIdsLinked: [existingDocId.toString(), newDocId.toString()],
+        documentIdsCreated: ["created-doc-id"],
+      });
+
+      expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
+      expect(mockDocumentTypesService.findById).toHaveBeenCalledTimes(1);
+      expect(mockEmployeeDocumentService.createDocument).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 
