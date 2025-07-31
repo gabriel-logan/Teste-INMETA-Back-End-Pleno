@@ -107,7 +107,6 @@ describe("Protected Routes (e2e)", () => {
       .send({
         firstName: fakeData.firstName,
         lastName: fakeData.lastName,
-        username: fakeData.username,
         password: fakeData.password,
         cpf: fakeData.cpf,
       })
