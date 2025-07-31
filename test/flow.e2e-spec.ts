@@ -138,47 +138,52 @@ describe("Protected Routes (e2e)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    const body = res.body as Array<{
-      id: string;
-      status: string;
-      documentUrl: string;
-      createdAt: string;
-      updatedAt: string;
-      employee: {
+    const body = res.body as {
+      documents: Array<{
         id: string;
-        firstName: string;
-        lastName: string;
-        fullName: string;
-        username: string;
-        contractStatus: string;
-        cpf: string;
-        role: string;
+        status: string;
+        documentUrl: string;
         createdAt: string;
         updatedAt: string;
-      };
-      documentType: {
-        id: string;
-        name: string;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
+        employee: {
+          id: string;
+          firstName: string;
+          lastName: string;
+          fullName: string;
+          username: string;
+          contractStatus: string;
+          cpf: string;
+          role: string;
+          createdAt: string;
+          updatedAt: string;
+        };
+        documentType: {
+          id: string;
+          name: string;
+          createdAt: string;
+          updatedAt: string;
+        };
+      }>;
+      total: number;
+      page: number;
+      limit: number;
+    };
 
-    // Verifica se é um array
-    expect(Array.isArray(body)).toBe(true);
+    expect(Array.isArray(body.documents)).toBe(true);
 
-    // Se quiser garantir que tenha ao menos um item
-    expect(body.length).toBeGreaterThan(0);
+    expect(body.documents.length).toBeGreaterThan(0);
 
-    // Verifica estrutura de cada item
-    for (const item of body) {
+    expect(typeof body.total).toBe("number");
+    expect(typeof body.page).toBe("number");
+    expect(typeof body.limit).toBe("number");
+
+    for (const item of body.documents) {
       expect(item).toHaveProperty("id");
       expect(item).toHaveProperty("status", "missing");
       expect(item).toHaveProperty("documentUrl");
       expect(item).toHaveProperty("createdAt");
       expect(item).toHaveProperty("updatedAt");
 
-      // Verifica estrutura do employee
       expect(item).toHaveProperty("employee");
       expect(item.employee).toMatchObject({
         id: expect.any(String) as string,
@@ -193,7 +198,6 @@ describe("Protected Routes (e2e)", () => {
         updatedAt: expect.any(String) as string,
       });
 
-      // Verifica estrutura do documentType
       expect(item).toHaveProperty("documentType");
       expect(item.documentType).toMatchObject({
         id: expect.any(String) as string,
@@ -202,6 +206,14 @@ describe("Protected Routes (e2e)", () => {
         updatedAt: expect.any(String) as string,
       });
     }
+
+    documentToSend = {
+      documentName: body.documents[0].documentType.name,
+      documentStatus: {
+        documentId: body.documents[0].id,
+        status: body.documents[0].status,
+      },
+    };
   });
 
   it("should get an missing document by employee ID", async () => {
