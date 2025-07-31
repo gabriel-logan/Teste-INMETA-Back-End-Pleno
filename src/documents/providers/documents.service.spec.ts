@@ -177,6 +177,30 @@ describe("DocumentsService", () => {
       expect(result).toEqual([]);
       expect(mockDocumentModel.find).toHaveBeenCalledTimes(1);
     });
+
+    it("should not call lean if requested", async () => {
+      mockDocumentModel.find = jest
+        .fn()
+        .mockResolvedValue([mockDefaultDocument]);
+
+      const result = await service.findAll(undefined, {
+        lean: false,
+      });
+
+      expect(result).toEqual([
+        {
+          _id: mockDefaultDocument._id,
+          id: mockDefaultDocument._id.toString(),
+          employee: mockDefaultDocument.employee,
+          documentType: mockDefaultDocument.documentType,
+          status: mockDefaultDocument.status,
+          documentUrl: mockDefaultDocument.documentUrl,
+          createdAt: expect.any(Date) as Date,
+          updatedAt: expect.any(Date) as Date,
+        },
+      ]);
+      expect(mockDocumentModel.find).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("findAllWithDocumentTypeAndEmployee", () => {
@@ -219,7 +243,7 @@ describe("DocumentsService", () => {
       ).rejects.toThrow("Document with id nonexistent-id not found");
     });
 
-    it("should aply populates if provided", async () => {
+    it("should apply populates if provided", async () => {
       mockDocumentModel.findById.mockReturnValue({
         populate: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue(mockDefaultDocument),
@@ -227,6 +251,26 @@ describe("DocumentsService", () => {
 
       const result = await service.findById(mockGenericObjectId, {
         populates: ["employee", "documentType"],
+      });
+
+      expect(result).toEqual({
+        _id: mockDefaultDocument._id,
+        id: mockDefaultDocument._id.toString(),
+        employee: mockDefaultDocument.employee,
+        documentType: mockDefaultDocument.documentType,
+        status: mockDefaultDocument.status,
+        documentUrl: mockDefaultDocument.documentUrl,
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
+      });
+      expect(mockDocumentModel.findById).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not call lean if requested", async () => {
+      mockDocumentModel.findById.mockResolvedValue(mockDefaultDocument);
+
+      const result = await service.findById(mockGenericObjectId, {
+        lean: false,
       });
 
       expect(result).toEqual({
