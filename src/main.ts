@@ -31,14 +31,14 @@ async function bootstrap(): Promise<void> {
     // For example, Nginx via reverse proxy, you might use "loopback" and configure it in Nginx
     // To override the header to the real client IP
     app.set("trust proxy", true);
+  } else {
+    // Initialize Swagger
+    swaggerInitializer(app, { globalPrefix: apiPrefix });
   }
 
   app.useGlobalFilters(new MongodbExceptionFilter());
 
   app.useGlobalPipes(new ValidationPipe());
-
-  // Initialize Swagger
-  swaggerInitializer(app, { globalPrefix: apiPrefix });
 
   await app.listen(port);
 
