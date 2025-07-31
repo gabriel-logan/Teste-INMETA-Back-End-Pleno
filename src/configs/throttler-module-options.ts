@@ -27,7 +27,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       }
 
       if (request.url.startsWith(`${apiPrefix}/document-files`)) {
-        return 10;
+        return 8;
       }
 
       return 15;

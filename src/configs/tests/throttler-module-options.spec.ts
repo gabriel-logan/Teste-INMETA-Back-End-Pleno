@@ -75,7 +75,7 @@ describe("throttlerModuleOptions", () => {
       expect(result).toBe(20);
     });
 
-    it("returns 10 for document-files endpoint", () => {
+    it("returns 8 for document-files endpoint", () => {
       mockContext.switchToHttp = (): HttpArgumentsHost =>
         ({
           getRequest: () => ({
@@ -86,7 +86,7 @@ describe("throttlerModuleOptions", () => {
 
       const result = options.limit(mockContext);
 
-      expect(result).toBe(10);
+      expect(result).toBe(8);
     });
 
     it("returns 15 for other endpoints", () => {
