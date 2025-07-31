@@ -185,4 +185,21 @@ describe("DocumentTypeLinkersService", () => {
       expect(mockEmployeesService.findById).toHaveBeenCalledTimes(1);
     });
   });
+
+  it("should throw an error when no linked document types found for employee", async () => {
+    const employeeId = mockGenericObjectId;
+
+    mockEmployeesService.findById = jest.fn().mockReturnValue({
+      documentTypes: [],
+      save: jest.fn(),
+    });
+
+    await expect(
+      service.unlinkDocumentTypes(employeeId, {
+        documentTypeIds: [new Types.ObjectId("123456789012345678901234")],
+      }),
+    ).rejects.toThrow(
+      "No linked document types found for employee 507f1f77bcf86cd799439011",
+    );
+  });
 });
