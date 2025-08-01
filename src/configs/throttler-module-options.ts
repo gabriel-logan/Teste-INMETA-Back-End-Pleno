@@ -63,16 +63,16 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
     getTracker(req: Request): string {
       const deviceId = req.headers["x-device-id"] || "unknown";
 
-      if (typeof deviceId !== "string") {
-        throw new Error("X Device ID must be a string");
-      }
-
       const ua = req.headers["user-agent"] || "unknown";
       const ip = req.ip || "unknown";
 
       logger.debug(`Request received from device: ${String(deviceId)}`);
       logger.debug(`Request IP: ${ip}`);
       logger.debug(`User-Agent: ${ua}`);
+
+      if (typeof deviceId !== "string") {
+        return `unknown-${ip}-${ua}`;
+      }
 
       return `${deviceId}-${ip}-${ua}`;
     },
