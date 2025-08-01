@@ -180,6 +180,7 @@ describe("throttlerModuleOptions", () => {
     beforeEach(() => {
       jest.spyOn(Logger.prototype, "debug").mockImplementation(() => {});
       jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+      jest.spyOn(Logger.prototype, "warn").mockImplementation(() => {});
     });
 
     it("returns a string fingerprint when IP, User-Agent, and Accept header are present", () => {
