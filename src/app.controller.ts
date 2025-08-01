@@ -9,6 +9,7 @@ import {
   parseSafeIp,
   parseSafeUserAgent,
 } from "./common/utils/parse-safe-headers";
+import generateTrackerFingerprint from "./common/utils/tracker-fingerprint";
 
 @Public()
 @ApiGlobalErrorResponses()
@@ -31,11 +32,14 @@ export class AppController {
     const ua = parseSafeUserAgent(req.headers["user-agent"]);
     const accept = parseSafeAcceptHeader(req.headers["accept"]);
 
+    const fingerprint = generateTrackerFingerprint(`${ip}-${ua}`);
+
     this.logger.debug({
       message: "Request received",
       ip,
       userAgent: ua,
       acceptHeader: accept,
+      fingerprint,
     });
 
     return "Hello World!";
