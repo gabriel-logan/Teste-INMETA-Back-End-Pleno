@@ -1,6 +1,7 @@
 import { type ExecutionContext, Logger } from "@nestjs/common";
 import type { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { seconds } from "@nestjs/throttler";
+import * as crypto from "crypto";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
@@ -178,11 +179,16 @@ describe("throttlerModuleOptions", () => {
   describe("getTracker", () => {
     beforeEach(() => {
       jest.spyOn(Logger.prototype, "debug").mockImplementation(() => {});
+      jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+      jest.spyOn(Logger.prototype, "warn").mockImplementation(() => {});
     });
 
-    it("returns a string fingerprint when IP and User-Agent are present", () => {
+    it("returns a string fingerprint when IP, User-Agent, and Accept header are present", () => {
       const req = {
-        headers: { "user-agent": "test-agent" },
+        headers: {
+          "user-agent": "test-agent",
+          accept: "application/json",
+        },
         ip: "1.2.3.4",
       } as Request;
 
@@ -191,9 +197,12 @@ describe("throttlerModuleOptions", () => {
       expect(result).toEqual(expect.any(String));
     });
 
-    it("returns a string fingerprint even with long User-Agent", () => {
+    it("returns a fingerprint with long User-Agent and Accept truncated", () => {
       const req = {
-        headers: { "user-agent": "a".repeat(151) },
+        headers: {
+          "user-agent": "a".repeat(151),
+          accept: "b".repeat(101),
+        },
         ip: "5.6.7.8",
       } as Request;
 
@@ -202,9 +211,26 @@ describe("throttlerModuleOptions", () => {
       expect(result).toEqual(expect.any(String));
     });
 
-    it("returns a string fallback if IP is missing", () => {
+    it("returns a fingerprint with long ip truncated to 46 characters", () => {
       const req = {
-        headers: { "user-agent": "fallback-agent" },
+        headers: {
+          "user-agent": "test-agent",
+          accept: "application/json",
+        },
+        ip: "1.2.3.4".repeat(46),
+      } as Request;
+
+      const result = options.getTracker(req);
+
+      expect(result).toEqual(expect.any(String));
+    });
+
+    it("still returns a fingerprint when IP is missing", () => {
+      const req = {
+        headers: {
+          "user-agent": "fallback-agent",
+          accept: "application/json",
+        },
         ip: "",
       } as Request;
 
@@ -213,15 +239,45 @@ describe("throttlerModuleOptions", () => {
       expect(result).toEqual(expect.any(String));
     });
 
-    it("returns a string fallback if user-agent is missing", () => {
+    it("still returns a fingerprint when User-Agent is missing", () => {
       const req = {
-        headers: {},
+        headers: {
+          accept: "application/json",
+        },
         ip: "9.8.7.6",
       } as Request;
 
       const result = options.getTracker(req);
 
       expect(result).toEqual(expect.any(String));
+    });
+
+    it("still returns a fingerprint when Accept header is missing", () => {
+      const req = {
+        headers: {
+          "user-agent": "test-agent",
+        },
+        ip: "9.8.7.6",
+      } as Request;
+
+      const result = options.getTracker(req);
+
+      expect(result).toEqual(expect.any(String));
+    });
+
+    it("falls back to IP when fingerprint generation throws an error", () => {
+      const req = {
+        headers: { "user-agent": "test-agent", accept: "application/json" },
+        ip: "fallback-ip",
+      } as Request;
+
+      jest.spyOn(crypto, "createHash").mockImplementationOnce(() => {
+        throw new Error("simulate hash failure");
+      });
+
+      const result = options.getTracker(req);
+
+      expect(result).toBe("fallback-ip");
     });
   });
 });

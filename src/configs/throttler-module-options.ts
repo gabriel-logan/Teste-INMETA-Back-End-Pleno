@@ -64,25 +64,35 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
     getTracker(req: Request): string {
       const ip = req.ip || "unknown";
       const ua = req.headers["user-agent"] || "unknown";
-      const safeUa = ua.length > 150 ? ua.slice(0, 150) : ua;
+      const accept = req.headers["accept"] || "";
 
-      logger.debug(`Request IP: ${ip}`);
-      logger.debug(`User-Agent: ${safeUa}`);
+      const safeIp = ip.length > 45 ? ip.slice(0, 45) : ip; // Max length for IPv6
 
-      const fingerprint = createHash("sha1")
-        .update(`${ip}-${safeUa}`)
-        .digest("hex");
+      try {
+        const safeUa = ua.length > 150 ? ua.slice(0, 150) : ua;
+        const safeAccept = accept.length > 100 ? accept.slice(0, 100) : accept;
 
-      logger.debug(`Fingerprint: ${fingerprint}`);
+        logger.debug({
+          message: "Generating fingerprint for throttling",
+          ip: safeIp,
+          userAgent: safeUa,
+          acceptHeader: safeAccept,
+        });
 
-      if (!fingerprint) {
+        const fingerprint = createHash("sha1")
+          .update(`${safeIp}-${safeUa}-${safeAccept}`)
+          .digest("hex");
+
+        logger.debug(`Fingerprint: ${fingerprint}`);
+
+        return fingerprint;
+      } catch (error) {
+        logger.error("Failed to generate fingerprint", error);
         logger.warn(
-          "Failed to generate fingerprint, using default 'req.ip' format",
+          "Using default 'req.ip' format due to fingerprint generation failure",
         );
-        return ip;
+        return safeIp; // Fallback to IP if fingerprint generation fails
       }
-
-      return fingerprint;
     },
   },
 ];
