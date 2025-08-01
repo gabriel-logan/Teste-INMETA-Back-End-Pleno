@@ -1,9 +1,12 @@
+import { Logger } from "@nestjs/common";
 import type { ThrottlerOptions } from "@nestjs/throttler";
 import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
+const logger = new Logger("ThrottlerModuleOptions");
 
 const throttlerModuleOptions: ThrottlerOptions[] = [
   {
@@ -59,6 +62,9 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
 
     getTracker(req: Request): string {
       const deviceId = req.headers["x-device-id"];
+
+      logger.debug(`Request received from device: ${String(deviceId)}`);
+      logger.debug(`Request IP: ${req.ip}`);
 
       return typeof deviceId === "string" ? deviceId : req.ip || "unknown";
     },
