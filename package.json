@@ -1,6 +1,6 @@
 {
   "name": "employees-documents",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A NestJS application for managing employee documents",
   "author": {
     "name": "Gabriel Logan",
