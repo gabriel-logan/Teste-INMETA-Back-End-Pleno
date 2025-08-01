@@ -28,4 +28,4 @@ export const cacheKeys = {
   },
 };
 
-export const cacheTtl = 60000 * 60 * 24; // 1 day
+export const defaultCacheTtl = 60000 * 60 * 24; // 1 day

@@ -9,7 +9,7 @@ import mongoose, { Connection } from "mongoose";
 
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
-import { cacheTtl } from "./common/constants";
+import { defaultCacheTtl } from "./common/constants";
 import envDatabase from "./configs/env.database";
 import envGlobal from "./configs/env.global";
 import { MongooseProvider } from "./configs/mongoose-provider";
@@ -38,7 +38,7 @@ import { TasksModule } from "./tasks/tasks.module";
     CacheModule.register({
       // Using local storage, because of resources constraints
       isGlobal: true,
-      ttl: cacheTtl,
+      ttl: defaultCacheTtl,
     }),
     ScheduleModule.forRoot(),
     AuthModule,

@@ -1,4 +1,4 @@
-import { apiPrefix, cacheKeys, cacheTtl, fileValidation } from ".";
+import { apiPrefix, cacheKeys, defaultCacheTtl, fileValidation } from ".";
 
 describe("cacheKeys", () => {
   describe("documentTypes", () => {
@@ -77,9 +77,9 @@ describe("cacheKeys", () => {
   });
 });
 
-describe("cacheTtl", () => {
+describe("defaultCacheTtl", () => {
   it("should be equal to 86400000 (1 day in ms)", () => {
-    expect(cacheTtl).toBe(60000 * 60 * 24);
+    expect(defaultCacheTtl).toBe(60000 * 60 * 24);
   });
 });
 
