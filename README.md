@@ -140,7 +140,7 @@ Você pode acessá-la pelo link abaixo:
 
 ### ⚠️ Observações
 
-Se notar lentidão na conexão, isso pode ocorrer por dois motivos:
+Se notar lentidão na conexão, isso pode ocorrer pelo seguinte motivo:
 
 1. Estou utilizando os planos gratuitos do MongoDB Atlas e da Vercel. Por ser servidores compartilhados. A latência pode variar dependendo do tráfego no momento.
 
