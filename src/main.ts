@@ -43,9 +43,13 @@ async function bootstrap(): Promise<void> {
   await app.listen(port);
 
   logger.log(`Application is running on: ${baseUrl}${apiPrefix}`);
-  logger.log(
-    `Access the Swagger documentation at: ${baseUrl}${apiPrefix}/docs`,
-  );
+
+  if (nodeEnv !== "production") {
+    logger.log(
+      `Access the Swagger documentation at: ${baseUrl}${apiPrefix}/docs`,
+    );
+  }
+
   logger.log(`Environment: ${nodeEnv}`);
 }
 
