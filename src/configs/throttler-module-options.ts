@@ -77,9 +77,9 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
 
       if (!fingerprint) {
         logger.warn(
-          "Failed to generate fingerprint, using default 'req.ip-user-agent' format",
+          "Failed to generate fingerprint, using default 'req.ip' format",
         );
-        return `${ip}-${safeUa}`;
+        return ip;
       }
 
       return fingerprint;
