@@ -237,6 +237,7 @@ describe("throttlerModuleOptions", () => {
 
     it("still returns a fingerprint when User-Agent is missing", () => {
       const req = {
+        headers: {},
         ip: "9.8.7.6",
       } as Request;
 
