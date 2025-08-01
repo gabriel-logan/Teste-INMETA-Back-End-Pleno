@@ -200,7 +200,7 @@ describe("throttlerModuleOptions", () => {
     it("returns a fingerprint with long User-Agent and Accept truncated", () => {
       const req = {
         headers: {
-          "user-agent": "a".repeat(151),
+          "user-agent": "a".repeat(301),
           accept: "b".repeat(101),
         },
         ip: "5.6.7.8",

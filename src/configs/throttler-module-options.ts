@@ -69,21 +69,12 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       const safeIp = ip.length > 45 ? ip.slice(0, 45) : ip; // Max length for IPv6
 
       try {
-        const safeUa = ua.length > 150 ? ua.slice(0, 150) : ua;
+        const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
         const safeAccept = accept.length > 100 ? accept.slice(0, 100) : accept;
-
-        logger.debug({
-          message: "Generating fingerprint for throttling",
-          ip: safeIp,
-          userAgent: safeUa,
-          acceptHeader: safeAccept,
-        });
 
         const fingerprint = createHash("sha1")
           .update(`${safeIp}-${safeUa}-${safeAccept}`)
           .digest("hex");
-
-        logger.debug(`Fingerprint: ${fingerprint}`);
 
         return fingerprint;
       } catch (error) {
