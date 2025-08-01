@@ -142,8 +142,7 @@ Você pode acessá-la pelo link abaixo:
 
 Se notar lentidão na conexão, isso pode ocorrer por dois motivos:
 
-1. Estou utilizando os planos gratuitos do MongoDB Atlas e da Vercel.
-2. Ambos os servidores estão localizados nos EUA, o que pode gerar certa latência para usuários em outras regiões.
+1. Estou utilizando os planos gratuitos do MongoDB Atlas e da Vercel. Por ser servidores compartilhados. A latência pode variar dependendo do tráfego no momento.
 
 Nos testes realizados, a latência variou entre **100ms e 400ms**.
 Além disso, a API entra em modo de hibernação após um tempo sem requisições, o que pode tornar a **primeira requisição um pouco mais lenta** (cerca de **3 segundos**). Após isso, as demais devem responder rapidamente.
