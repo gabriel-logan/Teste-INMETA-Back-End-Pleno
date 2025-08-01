@@ -4,6 +4,11 @@ import { seconds } from "@nestjs/throttler";
 import { createHash } from "crypto";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
+import {
+  parseSafeAcceptHeader,
+  parseSafeIp,
+  parseSafeUserAgent,
+} from "src/common/utils/parse-safe-headers";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -62,17 +67,13 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
     },
 
     getTracker(req: Request): string {
-      const ip = req.ip || "unknown";
-      const ua = req.headers["user-agent"] || "unknown";
-      const accept = req.headers["accept"] || "";
-
-      const safeIp = ip.length > 45 ? ip.slice(0, 45) : ip; // Max length for IPv6
-      const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
-      const safeAccept = accept.length > 300 ? accept.slice(0, 300) : accept;
+      const ip = parseSafeIp(req.ip);
+      const ua = parseSafeUserAgent(req.headers["user-agent"]);
+      const accept = parseSafeAcceptHeader(req.headers["accept"]);
 
       try {
         const fingerprint = createHash("sha1")
-          .update(`${safeIp}-${safeUa}-${safeAccept}`)
+          .update(`${ip}-${ua}-${accept}`)
           .digest("hex");
 
         return fingerprint;
@@ -81,7 +82,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
         logger.warn(
           "Using default 'req.ip' format due to fingerprint generation failure",
         );
-        return safeIp; // Fallback to IP if fingerprint generation fails
+        return ip; // Fallback to IP if fingerprint generation fails
       }
     },
   },

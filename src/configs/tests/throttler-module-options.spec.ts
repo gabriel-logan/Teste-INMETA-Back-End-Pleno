@@ -1,4 +1,4 @@
-import { type ExecutionContext } from "@nestjs/common";
+import { type ExecutionContext, Logger } from "@nestjs/common";
 import type { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { seconds } from "@nestjs/throttler";
 import * as crypto from "crypto";
@@ -177,6 +177,11 @@ describe("throttlerModuleOptions", () => {
   });
 
   describe("getTracker", () => {
+    beforeEach(() => {
+      jest.spyOn(Logger.prototype, "debug").mockImplementation(() => {});
+      jest.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+    });
+
     it("returns a string fingerprint when IP, User-Agent, and Accept header are present", () => {
       const req = {
         headers: {
