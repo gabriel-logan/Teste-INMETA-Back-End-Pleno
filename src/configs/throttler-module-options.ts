@@ -1,13 +1,13 @@
 import { Logger } from "@nestjs/common";
 import type { ThrottlerOptions } from "@nestjs/throttler";
 import { seconds } from "@nestjs/throttler";
-import { createHash } from "crypto";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 import {
   parseSafeIp,
   parseSafeUserAgent,
 } from "src/common/utils/parse-safe-headers";
+import generateTrackerFingerprint from "src/common/utils/tracker-fingerprint";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -73,11 +73,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       // For this example, I will not use any validation logic,
 
       try {
-        const fingerprint = createHash("sha1")
-          .update(`${ip}-${ua}`)
-          .digest("hex");
-
-        return fingerprint;
+        return generateTrackerFingerprint(`${ip}-${ua}`);
       } catch (error) {
         logger.error("Failed to generate fingerprint", error);
         logger.warn(
