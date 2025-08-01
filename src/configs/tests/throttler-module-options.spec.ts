@@ -183,11 +183,10 @@ describe("throttlerModuleOptions", () => {
       jest.spyOn(Logger.prototype, "warn").mockImplementation(() => {});
     });
 
-    it("returns a string fingerprint when IP, User-Agent, and Accept header are present", () => {
+    it("returns a string fingerprint when IP and User-Agent are present", () => {
       const req = {
         headers: {
           "user-agent": "test-agent",
-          accept: "application/json",
         },
         ip: "1.2.3.4",
       } as Request;
@@ -197,11 +196,10 @@ describe("throttlerModuleOptions", () => {
       expect(result).toEqual(expect.any(String));
     });
 
-    it("returns a fingerprint with long User-Agent and Accept truncated", () => {
+    it("returns a fingerprint with long User-Agent truncated", () => {
       const req = {
         headers: {
           "user-agent": "a".repeat(301),
-          accept: "b".repeat(301),
         },
         ip: "5.6.7.8",
       } as Request;
@@ -215,7 +213,6 @@ describe("throttlerModuleOptions", () => {
       const req = {
         headers: {
           "user-agent": "test-agent",
-          accept: "application/json",
         },
         ip: "1.2.3.4".repeat(46),
       } as Request;
@@ -229,7 +226,6 @@ describe("throttlerModuleOptions", () => {
       const req = {
         headers: {
           "user-agent": "fallback-agent",
-          accept: "application/json",
         },
         ip: "",
       } as Request;
@@ -241,22 +237,6 @@ describe("throttlerModuleOptions", () => {
 
     it("still returns a fingerprint when User-Agent is missing", () => {
       const req = {
-        headers: {
-          accept: "application/json",
-        },
-        ip: "9.8.7.6",
-      } as Request;
-
-      const result = options.getTracker(req);
-
-      expect(result).toEqual(expect.any(String));
-    });
-
-    it("still returns a fingerprint when Accept header is missing", () => {
-      const req = {
-        headers: {
-          "user-agent": "test-agent",
-        },
         ip: "9.8.7.6",
       } as Request;
 

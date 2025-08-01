@@ -5,7 +5,6 @@ import { createHash } from "crypto";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 import {
-  parseSafeAcceptHeader,
   parseSafeIp,
   parseSafeUserAgent,
 } from "src/common/utils/parse-safe-headers";
@@ -69,11 +68,13 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
     getTracker(req: Request): string {
       const ip = parseSafeIp(req.ip);
       const ua = parseSafeUserAgent(req.headers["user-agent"]);
-      const accept = parseSafeAcceptHeader(req.headers["accept"]);
+
+      // Add some logic to handle only valid user agents
+      // For this example, I will not use any validation logic,
 
       try {
         const fingerprint = createHash("sha1")
-          .update(`${ip}-${ua}-${accept}`)
+          .update(`${ip}-${ua}`)
           .digest("hex");
 
         return fingerprint;
