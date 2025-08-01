@@ -16,7 +16,7 @@ export function parseSafeUserAgent(userAgent: string | undefined): string {
 
 export function parseSafeAcceptHeader(accept: string | undefined): string {
   if (!accept) {
-    return "unknown";
+    return "";
   }
 
   return accept.length > 300 ? accept.slice(0, 300) : accept;

@@ -36,8 +36,8 @@ describe("parseSafeUserAgent", () => {
 });
 
 describe("parseSafeAcceptHeader", () => {
-  it("should return 'unknown' if accept is undefined", () => {
-    expect(parseSafeAcceptHeader(undefined)).toBe("unknown");
+  it("should return '' if accept is undefined", () => {
+    expect(parseSafeAcceptHeader(undefined)).toBe("");
   });
 
   it("should return the accept header if length <= 300", () => {
