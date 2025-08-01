@@ -184,7 +184,7 @@ describe("throttlerModuleOptions", () => {
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("device-123");
+      expect(result).toBe("device-123-1.2.3.4-unknown");
     });
 
     it("returns req.ip if x-device-id header is not present", () => {
@@ -195,7 +195,7 @@ describe("throttlerModuleOptions", () => {
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("5.6.7.8");
+      expect(result).toBe("unknown-5.6.7.8-unknown");
     });
 
     it("returns 'unknown' if neither x-device-id nor ip is present", () => {
@@ -206,7 +206,7 @@ describe("throttlerModuleOptions", () => {
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("unknown");
+      expect(result).toBe("unknown-unknown-unknown");
     });
   });
 });
