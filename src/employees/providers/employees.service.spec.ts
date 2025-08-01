@@ -309,8 +309,12 @@ describe("EmployeesService", () => {
         },
       ];
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { documentTypes, ...employeeWithoutDocumentTypes } =
+        mockDefaultEmployee;
+
       const mockEmployeeWithEvents = {
-        ...mockDefaultEmployee,
+        ...employeeWithoutDocumentTypes,
         contractEvents: mockContractEvents,
       };
 
