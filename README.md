@@ -147,6 +147,8 @@ Se notar lentidão na conexão, isso pode ocorrer pelo seguinte motivo:
 Nos testes realizados, a latência variou entre **100ms e 400ms**.
 Além disso, a API entra em modo de hibernação após um tempo sem requisições, o que pode tornar a **primeira requisição um pouco mais lenta** (cerca de **3 segundos**). Após isso, as demais devem responder rapidamente.
 
+CORS não está habilitado então, para testar a API, utilize o Insomnia ou Postman. Caso sejá necessário habilitar o CORS, faça um PR para que eu possa aceitá-lo ou me envie um email informando a necessidade.
+
 ---
 
 ## 👤 Créditos
