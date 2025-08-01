@@ -15,14 +15,13 @@ const logger = new Logger("Bootstrap");
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.setGlobalPrefix(apiPrefix);
-
   const configService = app.get(ConfigService<EnvGlobalConfig, true>);
 
   const { nodeEnv, baseUrl, port } =
     configService.get<EnvGlobalConfig["server"]>("server");
 
   if (nodeEnv === "production") {
+    // Need to be on the top of the middleware stack
     app.use(helmet());
 
     // Trust proxy headers in production for correct request IPs
@@ -31,7 +30,11 @@ async function bootstrap(): Promise<void> {
     // For example, Nginx via reverse proxy, you might use "loopback" and configure it in Nginx
     // To override the header to the real client IP
     app.set("trust proxy", true);
-  } else {
+  }
+
+  app.setGlobalPrefix(apiPrefix);
+
+  if (nodeEnv === "development") {
     // Initialize Swagger
     swaggerInitializer(app);
   }
@@ -44,7 +47,7 @@ async function bootstrap(): Promise<void> {
 
   logger.log(`Application is running on: ${baseUrl}${apiPrefix}`);
 
-  if (nodeEnv !== "production") {
+  if (nodeEnv === "development") {
     logger.log(
       `Access the Swagger documentation at: ${baseUrl}${apiPrefix}/docs`,
     );
