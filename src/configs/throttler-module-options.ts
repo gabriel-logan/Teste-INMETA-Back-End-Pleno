@@ -67,11 +67,10 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
       const accept = req.headers["accept"] || "";
 
       const safeIp = ip.length > 45 ? ip.slice(0, 45) : ip; // Max length for IPv6
+      const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
+      const safeAccept = accept.length > 300 ? accept.slice(0, 300) : accept;
 
       try {
-        const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
-        const safeAccept = accept.length > 300 ? accept.slice(0, 300) : accept;
-
         const fingerprint = createHash("sha1")
           .update(`${safeIp}-${safeUa}-${safeAccept}`)
           .digest("hex");
