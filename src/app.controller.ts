@@ -32,6 +32,7 @@ export class AppController {
     const ua = parseSafeUserAgent(req.headers["user-agent"]);
     const accept = parseSafeAcceptHeader(req.headers["accept"]);
 
+    // Only for debugging purposes, demostration purpose
     const fingerprint = generateTrackerFingerprint(`${ip}-${ua}`);
 
     this.logger.debug({
