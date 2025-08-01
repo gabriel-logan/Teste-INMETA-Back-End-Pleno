@@ -1,4 +1,4 @@
-import type { ExecutionContext } from "@nestjs/common";
+import { type ExecutionContext, Logger } from "@nestjs/common";
 import type { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { seconds } from "@nestjs/throttler";
 import type { Request } from "express";
@@ -176,37 +176,52 @@ describe("throttlerModuleOptions", () => {
   });
 
   describe("getTracker", () => {
-    it("returns x-device-id header if present", () => {
+    beforeEach(() => {
+      jest.spyOn(Logger.prototype, "debug").mockImplementation(() => {});
+    });
+
+    it("returns a string fingerprint when IP and User-Agent are present", () => {
       const req = {
-        headers: { "x-device-id": "device-123" },
+        headers: { "user-agent": "test-agent" },
         ip: "1.2.3.4",
-      } as unknown as Request;
+      } as Request;
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("device-123-1.2.3.4-unknown");
+      expect(result).toEqual(expect.any(String));
     });
 
-    it("returns req.ip if x-device-id header is not present", () => {
+    it("returns a string fingerprint even with long User-Agent", () => {
       const req = {
-        headers: {},
+        headers: { "user-agent": "a".repeat(151) },
         ip: "5.6.7.8",
       } as Request;
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("unknown-5.6.7.8-unknown");
+      expect(result).toEqual(expect.any(String));
     });
 
-    it("returns 'unknown' if neither x-device-id nor ip is present", () => {
+    it("returns a string fallback if IP is missing", () => {
       const req = {
-        headers: {},
-        ip: undefined,
-      } as unknown as Request;
+        headers: { "user-agent": "fallback-agent" },
+        ip: "",
+      } as Request;
 
       const result = options.getTracker(req);
 
-      expect(result).toBe("unknown-unknown-unknown");
+      expect(result).toEqual(expect.any(String));
+    });
+
+    it("returns a string fallback if user-agent is missing", () => {
+      const req = {
+        headers: {},
+        ip: "9.8.7.6",
+      } as Request;
+
+      const result = options.getTracker(req);
+
+      expect(result).toEqual(expect.any(String));
     });
   });
 });

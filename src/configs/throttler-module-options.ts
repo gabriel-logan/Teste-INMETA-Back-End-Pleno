@@ -1,6 +1,7 @@
 import { Logger } from "@nestjs/common";
 import type { ThrottlerOptions } from "@nestjs/throttler";
 import { seconds } from "@nestjs/throttler";
+import { createHash } from "crypto";
 import type { Request } from "express";
 import { apiPrefix } from "src/common/constants";
 
@@ -61,20 +62,27 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
     },
 
     getTracker(req: Request): string {
-      const deviceId = req.headers["x-device-id"] || "unknown";
-
-      const ua = req.headers["user-agent"] || "unknown";
       const ip = req.ip || "unknown";
+      const ua = req.headers["user-agent"] || "unknown";
+      const safeUa = ua.length > 150 ? ua.slice(0, 150) : ua;
 
-      logger.debug(`Request received from device: ${String(deviceId)}`);
       logger.debug(`Request IP: ${ip}`);
-      logger.debug(`User-Agent: ${ua}`);
+      logger.debug(`User-Agent: ${safeUa}`);
 
-      if (typeof deviceId !== "string") {
-        return `unknown-${ip}-${ua}`;
+      const fingerprint = createHash("sha1")
+        .update(`${ip}-${safeUa}`)
+        .digest("hex");
+
+      logger.debug(`Fingerprint: ${fingerprint}`);
+
+      if (!fingerprint) {
+        logger.warn(
+          "Failed to generate fingerprint, using default 'req.ip-user-agent' format",
+        );
+        return `${ip}-${safeUa}`;
       }
 
-      return `${deviceId}-${ip}-${ua}`;
+      return fingerprint;
     },
   },
 ];
