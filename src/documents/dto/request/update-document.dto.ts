@@ -6,7 +6,7 @@ export class UpdateDocumentRequestDto {
   @ApiProperty({
     enum: DocumentStatus,
     description: "The status of the document",
-    examples: [DocumentStatus.AVAILABLE, DocumentStatus.MISSING],
+    example: DocumentStatus.AVAILABLE,
     required: false,
   })
   @IsEnum(DocumentStatus)
