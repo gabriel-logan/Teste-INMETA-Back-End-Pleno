@@ -24,6 +24,8 @@ describe("isCpf", () => {
     expect(isCpf("abc.def.ghi-jk")).toBe(false);
     expect(isCpf("")).toBe(false);
     expect(isCpf("  ")).toBe(false);
+    expect(isCpf("123456789")).toBe(false);
+    expect(isCpf("1234567890123456")).toBe(false);
   });
 
   it("should return true for valid CPF numbers", () => {
@@ -33,6 +35,8 @@ describe("isCpf", () => {
   it("should return false for invalid CPF numbers", () => {
     expect(isCpf(11111111111)).toBe(false);
     expect(isCpf(0)).toBe(false);
+    expect(isCpf(1234567890951511)).toBe(false);
+    expect(isCpf(123456789)).toBe(false);
   });
 });
 

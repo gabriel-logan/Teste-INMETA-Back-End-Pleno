@@ -9,7 +9,13 @@ export function isCpf(value: unknown): boolean {
     return false; // Ensure the value is a string or number
   }
 
-  return cpfIsValid(value.toString()).isValid;
+  const stringValue = typeof value === "number" ? value.toString() : value;
+
+  if (stringValue.length > 15 || stringValue.length < 11) {
+    return false;
+  }
+
+  return cpfIsValid(stringValue).isValid;
 }
 
 export function IsCpf(
