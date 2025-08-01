@@ -40,7 +40,7 @@ export class DocumentFilesController {
     notFound: true,
     badRequest: true,
   })
-  @ApiTypeFormData()
+  @ApiTypeFormData({ description: "Document file to be sent" })
   @ApiParam({
     name: "documentId",
     description: "ID of the document",

@@ -134,11 +134,15 @@ export function ApiGlobalErrorResponses(): MethodDecorator & ClassDecorator {
   );
 }
 
-export function ApiTypeFormData(): MethodDecorator & ClassDecorator {
+export function ApiTypeFormData({
+  description = "Document file to be sent",
+}: {
+  description?: string;
+} = {}): MethodDecorator & ClassDecorator {
   return applyDecorators(
     ApiConsumes("multipart/form-data"),
     ApiBody({
-      description: "Document file to be sent",
+      description,
       schema: {
         type: "object",
         properties: {
