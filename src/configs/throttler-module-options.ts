@@ -70,7 +70,7 @@ const throttlerModuleOptions: ThrottlerOptions[] = [
 
       try {
         const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
-        const safeAccept = accept.length > 100 ? accept.slice(0, 100) : accept;
+        const safeAccept = accept.length > 300 ? accept.slice(0, 300) : accept;
 
         const fingerprint = createHash("sha1")
           .update(`${safeIp}-${safeUa}-${safeAccept}`)

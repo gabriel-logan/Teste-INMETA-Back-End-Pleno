@@ -201,7 +201,7 @@ describe("throttlerModuleOptions", () => {
       const req = {
         headers: {
           "user-agent": "a".repeat(301),
-          accept: "b".repeat(101),
+          accept: "b".repeat(301),
         },
         ip: "5.6.7.8",
       } as Request;
