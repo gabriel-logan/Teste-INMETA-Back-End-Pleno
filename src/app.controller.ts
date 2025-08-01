@@ -4,6 +4,11 @@ import type { Request } from "express";
 
 import { ApiGlobalErrorResponses } from "./common/decorators/routes/docs.decorator";
 import { Public } from "./common/decorators/routes/public.decorator";
+import {
+  parseSafeAcceptHeader,
+  parseSafeIp,
+  parseSafeUserAgent,
+} from "./common/utils/parse-safe-headers";
 
 @Public()
 @ApiGlobalErrorResponses()
@@ -22,19 +27,15 @@ export class AppController {
   })
   @Get()
   getHello(@Req() req: Request): string {
-    const ip = req.ip || "unknown";
-    const ua = req.headers["user-agent"] || "unknown";
-    const accept = req.headers["accept"] || "";
-
-    const safeIp = ip.length > 45 ? ip.slice(0, 45) : ip; // Max length for IPv6
-    const safeUa = ua.length > 300 ? ua.slice(0, 300) : ua;
-    const safeAccept = accept.length > 300 ? accept.slice(0, 300) : accept;
+    const ip = parseSafeIp(req.ip);
+    const ua = parseSafeUserAgent(req.headers["user-agent"]);
+    const accept = parseSafeAcceptHeader(req.headers["accept"]);
 
     this.logger.debug({
       message: "Request received",
-      ip: safeIp,
-      userAgent: safeUa,
-      acceptHeader: safeAccept,
+      ip,
+      userAgent: ua,
+      acceptHeader: accept,
     });
 
     return "Hello World!";
