@@ -56,7 +56,6 @@ export class ContractEventsService {
   ): Promise<void> {
     await setMultipleKeys(this.cacheManager, event, [
       cacheKeys.contractEvents.findById(event._id.toString()),
-      cacheKeys.contractEvents.findManyByIds([event._id.toString()]),
     ]);
   }
 
